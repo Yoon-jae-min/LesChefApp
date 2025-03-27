@@ -23,18 +23,16 @@ function Top(props: PageProps): React.JSX.Element{
 
 const styles = StyleSheet.create({
     body:{
-        height: 55,
+        height: 70,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        backgroundColor: "#fff",
     },
     logo:{
-        width: "30%",
+        width: "35%",
         height: "100%",
         resizeMode: "contain",
-        // borderColor: "#000",
-        // borderWidth: 1,
-
     }
 })
 

@@ -1,5 +1,5 @@
 //기타
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, View } from "react-native";
 
 interface TopProps{
@@ -18,80 +18,84 @@ function MenuBtn(props: TopProps): React.JSX.Element{
     const topLineTranslateY = useRef(new Animated.Value(0)).current;
     const bottomLineTranslateY = useRef(new Animated.Value(0)).current;
 
+    useEffect(() => {
+        menuAnimate();
+    },[menuActive]);
+
+    const menuAnimate = () => {
+        if(!menuActive){
+            Animated.sequence([
+                Animated.parallel([
+                    Animated.timing(topLineTranslateY, {
+                        toValue: 6.5,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(bottomLineTranslateY, {
+                        toValue: -6.5,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(middleLineAni, {
+                        toValue: 0,
+                        duration: 300,
+                        useNativeDriver: false,
+                    }),
+                ]),
+                Animated.parallel([
+                    Animated.timing(topLineAni,{
+                        toValue: 45,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(bottomLineAni,{
+                        toValue: 45,
+                        duration: 300,
+                        useNativeDriver: true,
+                    })
+                ]),
+            ]).start();
+        }else{
+            Animated.sequence([
+                Animated.parallel([
+                    Animated.timing(topLineAni,{
+                        toValue: 0,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(bottomLineAni,{
+                        toValue: 0,
+                        duration: 300,
+                        useNativeDriver: true,
+                    })
+                ]),
+                Animated.parallel([
+                    Animated.timing(topLineTranslateY, {
+                        toValue:0,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(bottomLineTranslateY, {
+                        toValue: 0,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(middleLineAni, {
+                        toValue: 1,
+                        duration: 300,
+                        useNativeDriver: false,
+                    }),
+                ]),
+            ]).start();
+        }
+        setAnimating(false);
+    }
+
     const touchMenuBtn = () => {
         if(!animating){
             setAnimating(true);
             setMenuActive((prev) => (!prev));
-
-            if(!menuActive){
-                Animated.sequence([
-                    Animated.parallel([
-                        Animated.timing(topLineTranslateY, {
-                            toValue: 6.5,
-                            duration: 300,
-                            useNativeDriver: true,
-                        }),
-                        Animated.timing(bottomLineTranslateY, {
-                            toValue: -6.5,
-                            duration: 300,
-                            useNativeDriver: true,
-                        }),
-                        Animated.timing(middleLineAni, {
-                            toValue: 0,
-                            duration: 300,
-                            useNativeDriver: false,
-                        }),
-                    ]),
-                    Animated.parallel([
-                        Animated.timing(topLineAni,{
-                            toValue: 45,
-                            duration: 300,
-                            useNativeDriver: true,
-                        }),
-                        Animated.timing(bottomLineAni,{
-                            toValue: 45,
-                            duration: 300,
-                            useNativeDriver: true,
-                        })
-                    ]),
-                ]).start(() => {
-                    setAnimating(false);
-                });
-            }else{
-                Animated.sequence([
-                    Animated.parallel([
-                        Animated.timing(topLineAni,{
-                            toValue: 0,
-                            duration: 300,
-                            useNativeDriver: true,
-                        }),
-                        Animated.timing(bottomLineAni,{
-                            toValue: 0,
-                            duration: 300,
-                            useNativeDriver: true,
-                        })
-                    ]),
-                    Animated.parallel([
-                        Animated.timing(topLineTranslateY, {
-                            toValue:0,
-                            duration: 300,
-                            useNativeDriver: true,
-                        }),
-                        Animated.timing(bottomLineTranslateY, {
-                            toValue: 0,
-                            duration: 300,
-                            useNativeDriver: true,
-                        }),
-                        Animated.timing(middleLineAni, {
-                            toValue: 1,
-                            duration: 300,
-                            useNativeDriver: false,
-                        }),
-                    ]),
-                ]).start(() => {
-                    setAnimating(false);
-                });
-            }
+            menuAnimate();
         }
     }
 

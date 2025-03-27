@@ -11,6 +11,9 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		B3F3B6ACA1E542C7A976C65B /* Jua-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04799E2C9A3944338B6C3C9F /* Jua-Regular.ttf */; };
+		91C55BB839F04C26AF20536E /* Kavoon-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4606A0B4D8A44C99F2E2930 /* Kavoon-Regular.ttf */; };
+		89E401783D4F4F11BF86221D /* Wellfleet-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4B6592BAE33343B5B691BBE9 /* Wellfleet-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +38,9 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = LesChefApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = LesChefApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		04799E2C9A3944338B6C3C9F /* Jua-Regular.ttf */ = {isa = PBXFileReference; name = "Jua-Regular.ttf"; path = "../assets/fonts/Jua-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F4606A0B4D8A44C99F2E2930 /* Kavoon-Regular.ttf */ = {isa = PBXFileReference; name = "Kavoon-Regular.ttf"; path = "../assets/fonts/Kavoon-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4B6592BAE33343B5B691BBE9 /* Wellfleet-Regular.ttf */ = {isa = PBXFileReference; name = "Wellfleet-Regular.ttf"; path = "../assets/fonts/Wellfleet-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +99,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				BF55951DE48A41BAB6EF99D7 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -115,6 +122,17 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		BF55951DE48A41BAB6EF99D7 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				04799E2C9A3944338B6C3C9F /* Jua-Regular.ttf */,
+				F4606A0B4D8A44C99F2E2930 /* Kavoon-Regular.ttf */,
+				4B6592BAE33343B5B691BBE9 /* Wellfleet-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -185,6 +203,9 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				B3F3B6ACA1E542C7A976C65B /* Jua-Regular.ttf in Resources */,
+				91C55BB839F04C26AF20536E /* Kavoon-Regular.ttf in Resources */,
+				89E401783D4F4F11BF86221D /* Wellfleet-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

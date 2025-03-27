@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Jua-Regular.ttf",
+      "sha1": "9122d54d461d57735caeeb843b9961a96225468b"
+    },
+    {
+      "path": "assets/fonts/Kavoon-Regular.ttf",
+      "sha1": "3c2ce2e6ded93054f5b43ef09f80ff3b96dfd09d"
+    },
+    {
+      "path": "assets/fonts/Wellfleet-Regular.ttf",
+      "sha1": "6a1d32c2eacfb799c448c7a0892d3ee286848304"
+    }
+  ]
+}

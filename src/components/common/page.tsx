@@ -15,7 +15,7 @@ function Page(): React.JSX.Element{
                 <Top menuActive={menuActive} setMenuActive={setMenuActive}/>
                 <MenuBox menuActive={menuActive}/>
                 <View style={styles.container}>
-                    <Text style={{color: "#fff"}}>Hello hi!!!</Text>
+                    <Text style={{color: "#000"}}>Hello hi!!!</Text>
                 </View>
             </View>
         </React.Fragment>
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
         position: "relative",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#000",
+        backgroundColor: "#fff",
     },
 });
 
