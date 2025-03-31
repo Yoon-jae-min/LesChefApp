@@ -14,6 +14,8 @@
 		B3F3B6ACA1E542C7A976C65B /* Jua-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04799E2C9A3944338B6C3C9F /* Jua-Regular.ttf */; };
 		91C55BB839F04C26AF20536E /* Kavoon-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F4606A0B4D8A44C99F2E2930 /* Kavoon-Regular.ttf */; };
 		89E401783D4F4F11BF86221D /* Wellfleet-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4B6592BAE33343B5B691BBE9 /* Wellfleet-Regular.ttf */; };
+		3B1BCF75E644474FB71A1B55 /* SourceSerif4-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C79C49C6BA4D49C3B66BD450 /* SourceSerif4-Bold.ttf */; };
+		4B8AB6FD5FE54BF096DF5694 /* SourceSerif4-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3A530F9E33784D799B19C853 /* SourceSerif4-Light.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +43,8 @@
 		04799E2C9A3944338B6C3C9F /* Jua-Regular.ttf */ = {isa = PBXFileReference; name = "Jua-Regular.ttf"; path = "../assets/fonts/Jua-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		F4606A0B4D8A44C99F2E2930 /* Kavoon-Regular.ttf */ = {isa = PBXFileReference; name = "Kavoon-Regular.ttf"; path = "../assets/fonts/Kavoon-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		4B6592BAE33343B5B691BBE9 /* Wellfleet-Regular.ttf */ = {isa = PBXFileReference; name = "Wellfleet-Regular.ttf"; path = "../assets/fonts/Wellfleet-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C79C49C6BA4D49C3B66BD450 /* SourceSerif4-Bold.ttf */ = {isa = PBXFileReference; name = "SourceSerif4-Bold.ttf"; path = "../assets/fonts/SourceSerif4-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3A530F9E33784D799B19C853 /* SourceSerif4-Light.ttf */ = {isa = PBXFileReference; name = "SourceSerif4-Light.ttf"; path = "../assets/fonts/SourceSerif4-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +133,8 @@
 				04799E2C9A3944338B6C3C9F /* Jua-Regular.ttf */,
 				F4606A0B4D8A44C99F2E2930 /* Kavoon-Regular.ttf */,
 				4B6592BAE33343B5B691BBE9 /* Wellfleet-Regular.ttf */,
+				C79C49C6BA4D49C3B66BD450 /* SourceSerif4-Bold.ttf */,
+				3A530F9E33784D799B19C853 /* SourceSerif4-Light.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -206,6 +212,8 @@
 				B3F3B6ACA1E542C7A976C65B /* Jua-Regular.ttf in Resources */,
 				91C55BB839F04C26AF20536E /* Kavoon-Regular.ttf in Resources */,
 				89E401783D4F4F11BF86221D /* Wellfleet-Regular.ttf in Resources */,
+				3B1BCF75E644474FB71A1B55 /* SourceSerif4-Bold.ttf in Resources */,
+				4B8AB6FD5FE54BF096DF5694 /* SourceSerif4-Light.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

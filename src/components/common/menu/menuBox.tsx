@@ -29,7 +29,7 @@ function MenuBox(props: PageProps): React.JSX.Element{
     return(
         <Animated.View style={[styles.container, {height: height - 70, transform: [{translateX}]}]}>
             <View style={styles.profileBox}>
-                <Image style={styles.profileImg} source={require("../../assets/image/profile.png")}/>
+                <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
                 <View style={styles.profileTextBox}>
                     <Text style={styles.profileText}>로그인 해주세요</Text>
                 </View>

@@ -15,7 +15,7 @@ function Top(props: PageProps): React.JSX.Element{
 
     return(
         <View style={styles.body}>
-            <Image style={styles.logo} source={require('../../assets/image/LesChef_Logo.png')}/>
+            <Image style={styles.logo} source={require('../../../assets/image/LesChef_Logo.png')}/>
             <MenuBtn menuActive={menuActive} setMenuActive={setMenuActive}/>
         </View>
     )

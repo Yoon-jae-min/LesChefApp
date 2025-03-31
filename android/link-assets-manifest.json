@@ -10,6 +10,14 @@
       "sha1": "3c2ce2e6ded93054f5b43ef09f80ff3b96dfd09d"
     },
     {
+      "path": "assets/fonts/SourceSerif4-Bold.ttf",
+      "sha1": "bd4f1c2681cc14e9309db4d2367d3487c50642ab"
+    },
+    {
+      "path": "assets/fonts/SourceSerif4-Light.ttf",
+      "sha1": "1b566cb611d391c13fd61cc47839ef90ec8736e0"
+    },
+    {
       "path": "assets/fonts/Wellfleet-Regular.ttf",
       "sha1": "6a1d32c2eacfb799c448c7a0892d3ee286848304"
     }
