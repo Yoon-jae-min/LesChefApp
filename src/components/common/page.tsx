@@ -24,6 +24,8 @@ function Page(): React.JSX.Element{
                     {/* <SelectMyMenu/> */}
                     {/* <PageMain/> */}
                     <PageRecipe/>
+                    {/* <PageBoard/> */}
+                    {/* <PageMy/> */}
                 </View>
             </View>
         </React.Fragment>

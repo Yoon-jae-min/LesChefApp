@@ -5,11 +5,15 @@ import { ScrollView, StyleSheet, View } from "react-native";
 //컴포넌트
 import SwitchTop from "../common/body/switchTop";
 
-function PageBoard(): React.JSX.Element{
+function ListContainer(): React.JSX.Element{
+    const elements = ["Korean", "Japanese", "Chinese", "Western", "Other"];
+
     return(
         <View style={styles.container}>
-            <SwitchTop elements={["Notice", "Board"]}/>
-            <ScrollView style={styles.list}></ScrollView>
+            <SwitchTop elements={elements}/>
+            <ScrollView style={styles.list} contentContainerStyle={styles.listAlign}>
+
+            </ScrollView>
         </View>
     )
 }
@@ -30,5 +34,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default PageBoard;
-
+export default ListContainer;

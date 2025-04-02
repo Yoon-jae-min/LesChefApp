@@ -2,10 +2,13 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
+//컴포넌트
+import ListContainer from "./listContainer";
+
 function PageRecipe(): React.JSX.Element{
     return(
         <View style={styles.container}>
-
+            <ListContainer/>
         </View>
     )
 }
@@ -13,8 +16,8 @@ function PageRecipe(): React.JSX.Element{
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        borderColor: "#E0A05E",
-        borderWidth: 3,
+        // borderColor: "#E0A05E",
+        // borderWidth: 3,
     },
 })
 

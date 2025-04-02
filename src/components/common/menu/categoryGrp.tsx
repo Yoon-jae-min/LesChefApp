@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 interface menuBoxProps {
     mainTxt: String,
-    subTxts: Array<String>,
+    subTxts: string[],
 }
 
 function CategoryGrp(props: menuBoxProps): React.JSX.Element{
