@@ -5,11 +5,17 @@ import RNPickerSelect from "react-native-picker-select";
 
 interface SwitchTopProps {
     elements: string[]
+    setMainCg: React.Dispatch<React.SetStateAction<string>>
 }
 
 function SwitchTop(props: SwitchTopProps): React.JSX.Element{
-    const {elements} = props;
+    const {elements, setMainCg} = props;
     const [selectedValue, setSelectedValue] = useState(elements[0]);
+
+    const ChangeMainCg = (value: string) => {
+        setSelectedValue(value);
+        setMainCg(value);
+    }
 
     return(
         <View style={styles.container}>
@@ -20,7 +26,7 @@ function SwitchTop(props: SwitchTopProps): React.JSX.Element{
                 useNativeAndroidPickerStyle={false}
                 placeholder={{}}
                 items={elements.map((item) => ({label: item, value: item}))}
-                onValueChange={(value) => setSelectedValue(value)}/>
+                onValueChange={(value) => ChangeMainCg(value)}/>
             <Image source={require("../../../assets/image/rightArrow.png")}/>
         </View>
     )
