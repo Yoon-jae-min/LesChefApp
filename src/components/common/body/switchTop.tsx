@@ -1,6 +1,6 @@
 //기타
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 interface SwitchTopProps {
@@ -17,9 +17,37 @@ function SwitchTop(props: SwitchTopProps): React.JSX.Element{
         setMainCg(value);
     }
 
+    const pressArrow = (arrow: string, value : string) => {
+        let indexSave = 0;
+
+        elements.map((item, index) => {
+            if(item === value){
+                indexSave = index;
+            }
+        })
+
+        if(arrow === "left"){
+            if(indexSave === 0) {
+                indexSave = elements.length - 1;
+            }else{
+                indexSave -= 1;
+            }
+        }else if(arrow === "right"){
+            if(indexSave === elements.length - 1){
+                indexSave = 0;
+            }else{
+                indexSave += 1;
+            }
+        }
+
+        ChangeMainCg(elements[indexSave]);
+    }
+
     return(
         <View style={styles.container}>
-            <Image source={require("../../../assets/image/leftArrow.png")}/>
+            <Pressable onPress={() => pressArrow("left", selectedValue)}>
+                <Image source={require("../../../assets/image/leftArrow.png")}/>
+            </Pressable>
             <RNPickerSelect
                 style={pickerStyles}
                 value={selectedValue}
@@ -27,7 +55,9 @@ function SwitchTop(props: SwitchTopProps): React.JSX.Element{
                 placeholder={{}}
                 items={elements.map((item) => ({label: item, value: item}))}
                 onValueChange={(value) => ChangeMainCg(value)}/>
-            <Image source={require("../../../assets/image/rightArrow.png")}/>
+            <Pressable onPress={() => pressArrow("right", selectedValue)}>
+                <Image source={require("../../../assets/image/rightArrow.png")}/>
+            </Pressable>
         </View>
     )
 }

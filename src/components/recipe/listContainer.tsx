@@ -1,6 +1,6 @@
 //기타
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 //컴포넌트
 import SwitchTop from "../common/body/switchTop";
@@ -42,7 +42,7 @@ function ListContainer(): React.JSX.Element{
             time: 20,
         },
         {
-            foodName: "김치 비빔 국수수",
+            foodName: "김치 비빔 국수",
             foodImg: "../../assets/image/noImage.png",
             userId: "kim",
             profileImg: "../../assets/image/profile.png",
@@ -91,7 +91,22 @@ function ListContainer(): React.JSX.Element{
             <ScrollView style={styles.list} contentContainerStyle={styles.listAlign}>
                 {exListElements.map((item, index) => (
                     <View key={index} style={styles.element}>
-                        <Image style={styles.foodImg} source={require("../../assets/image/noImage.png")}/>
+                        <View style={styles.foodImgBox}>
+                            {/* 코드 변경 필요 */}
+                            <Image style={styles.foodImg} source={require("../../assets/image/noImage.png")}/>
+                        </View>
+                        <Text style={[styles.elementTxt, styles.foodName]}>{item.foodName}</Text>
+                        <View style={styles.subInfo}>
+                            <View style={styles.userTimeBox}>
+                                {/* 코드 변경 필요 */}
+                                <Image style={styles.subInfoImg} source={require("../../assets/image/profile.png")}/>
+                                <Text style={[styles.elementTxt, styles.subInfoTxt, styles.userTxt]}>{item.userId}</Text>
+                            </View>
+                            <View style={styles.userTimeBox}>
+                                <Image style={styles.subInfoImg} source={require("../../assets/image/time.png")}/>
+                                <Text style={[styles.elementTxt, styles.subInfoTxt, styles.timeTxt]}>{`${item.time}분`}</Text>
+                            </View>
+                        </View>
                     </View>
                 ))}
             </ScrollView>
@@ -119,18 +134,62 @@ const styles = StyleSheet.create({
         marginLeft: "3%",
         marginRight: "3%",
         borderRadius: 5,
-        aspectRatio: 3 / 5.1,
         borderWidth: 1,
-        borderColor: "rgba(99, 99, 99, 1)",
+        borderColor: "rgb(61, 61, 61)",
         flexDirection: "column",
         alignItems: "center",
     },
-    foodImg: {
-        height: "70%",
-        marginTop: "5%",
+    foodImgBox: {
+        borderColor: "rgba(152, 152, 152, 1)",
+        borderWidth: 1,
+        borderRadius: 3,
+        marginTop: "7%",
+        marginBottom: "3%",
+        width: "86%",
+        aspectRatio: 1 / 1
+    },
+    foodImg:{
+        width: "100%",
+        height: "100%",
         resizeMode: "contain",
         aspectRatio: 1 / 1,
-    }
+    },
+    elementTxt:{
+        fontFamily: "SourceSerif4-Bold",
+    },
+    foodName:{
+        fontSize: 14,
+        color: "rgb(90, 90, 90)"
+    },
+    subInfo:{
+        width: "90%",
+        height: 15,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 7,
+        marginBottom: 7,
+    },
+    subInfoImg:{
+        width: 13,
+        height: 13,
+        resizeMode: "contain",
+    },
+    subInfoTxt:{
+        height: 15,
+        color: "rgba(160, 160, 160, 1)",
+        fontSize: 12,
+        lineHeight: 15,
+    },
+    userTxt:{
+        marginLeft: 2
+    },
+    timeTxt:{
+        marginLeft: 1
+    },
+    userTimeBox:{
+        flexDirection: "row",
+        alignItems: "flex-end",
+    },
 })
 
 export default ListContainer;
