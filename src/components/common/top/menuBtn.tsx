@@ -1,6 +1,6 @@
 //기타
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, View } from "react-native";
+import { Alert, Animated, Pressable, StyleSheet, View } from "react-native";
 
 interface TopProps{
     menuActive: boolean;
@@ -9,6 +9,7 @@ interface TopProps{
 
 function MenuBtn(props: TopProps): React.JSX.Element{
     const [animating, setAnimating] = useState(false);
+    const isFirstRender = useRef(true);
     
     const {menuActive, setMenuActive} = props;
 
@@ -19,11 +20,16 @@ function MenuBtn(props: TopProps): React.JSX.Element{
     const bottomLineTranslateY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        menuAnimate();
+        if(isFirstRender.current){
+            isFirstRender.current = false;
+            return
+        }else{
+            menuAnimate();
+        }
     },[menuActive]);
 
     const menuAnimate = () => {
-        if(!menuActive){
+        if(menuActive){
             Animated.sequence([
                 Animated.parallel([
                     Animated.timing(topLineTranslateY, {
@@ -93,9 +99,8 @@ function MenuBtn(props: TopProps): React.JSX.Element{
 
     const touchMenuBtn = () => {
         if(!animating){
-            setAnimating(true);
             setMenuActive((prev) => (!prev));
-            menuAnimate();
+            setAnimating(true);
         }
     }
 

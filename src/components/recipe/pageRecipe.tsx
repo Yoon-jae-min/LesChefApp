@@ -16,8 +16,6 @@ function PageRecipe(): React.JSX.Element{
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        // borderColor: "#E0A05E",
-        // borderWidth: 3,
     },
 })
 

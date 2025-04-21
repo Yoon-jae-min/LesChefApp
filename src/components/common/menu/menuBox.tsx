@@ -7,10 +7,16 @@ import CategoryGrp from "./categoryGrp";
 
 interface PageProps{
     menuActive: Boolean;
+    pageValue: React.RefObject<string>;
+    pageSubValue: React.RefObject<string>;
+    pageRender: React.RefObject<string>;
+    setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function MenuBox(props: PageProps): React.JSX.Element{
-    const {menuActive} = props;
+    const {menuActive, pageValue, pageSubValue, setMenuActive, pageRender} = props;
+    const mainTxts = ["Recipe", "MyPage", "Community"];
+    const subTxts = [["Korean", "Japanese", "Chinese", "Western"], ["Foods", "WishList", "MyRecipe"], ["default"]]
 
     const translateX = useRef(new Animated.Value(-250)).current;
 
@@ -35,9 +41,16 @@ function MenuBox(props: PageProps): React.JSX.Element{
                 </View>
             </View>
             <View style={[styles.categoryBox, {height: height - 150}]}>
-                <CategoryGrp mainTxt="Recipe" subTxts={["Korean", "Japanese", "Chinese", "Western"]}/>
-                <CategoryGrp mainTxt="MyPage" subTxts={["Foods", "WishList", "MyRecipe"]}/>
-                <CategoryGrp mainTxt="Community" subTxts={[]}/>
+                {mainTxts.map((item, index) => 
+                    <CategoryGrp
+                        key={index}
+                        pageValue={pageValue} 
+                        pageSubValue={pageSubValue} 
+                        setMenuActive={setMenuActive}
+                        pageRender={pageRender}
+                        mainTxt={item}
+                        subTxts={subTxts[index]}/>
+                )}
             </View>
         </Animated.View>
     )

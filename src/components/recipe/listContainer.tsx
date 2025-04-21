@@ -1,6 +1,6 @@
 //기타
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 //컴포넌트
 import SwitchTop from "../common/body/switchTop";
@@ -8,21 +8,24 @@ import SelectSubCg from "../common/body/selectSubCg";
 
 function ListContainer(): React.JSX.Element{
     const [mainCg, setMainCg] = useState("Korean");
+    const [subCg, setSubCg] = useState(0);
     const elementsMain = ["Korean", "Japanese", "Chinese", "Western", "Other"];
     const elementsSubArr = [
-        ["전체", "국, 찌개", "밥, 면", "반찬", "기타"], 
-        ["전체", "국, 전골", "밥", "면", "기타"],
+        ["전체", "국/찌개", "밥/면", "반찬", "기타"], 
+        ["전체", "국/전골", "밥", "면", "기타"],
         ["전체", "튀김, 찜", "밥", "면", "기타"],
-        ["전체", "스프, 스튜", "빵", "면", "기타"], []]
-    const [elementsSub, setElementsSub] = useState(["전체", "국, 찌개", "밥, 면", "반찬", "기타"]);
+        ["전체", "스프/스튜", "빵", "면", "기타"], []]
+    const [elementsSub, setElementsSub] = useState(elementsSubArr[0]);
 
+    //임시 데이터
     const exListElements = [
         {
             foodName: "성게미역국",
             foodImg: "../../assets/image/noImage.png",
             userId: "yoon",
             profileImg: "../../assets/image/profile.png",
-            category: "국, 찌개",
+            mainCg: "Korean",
+            subCg: "국/찌개",
             time: 30,
         },
         {
@@ -30,7 +33,8 @@ function ListContainer(): React.JSX.Element{
             foodImg: "../../assets/image/noImage.png",
             userId: "hong",
             profileImg: "../../assets/image/profile.png",
-            category: "국, 찌개",
+            mainCg: "Korean",
+            subCg: "국/찌개",
             time: 10,
         },
         {
@@ -38,7 +42,8 @@ function ListContainer(): React.JSX.Element{
             foodImg: "../../assets/image/noImage.png",
             userId: "kim",
             profileImg: "../../assets/image/profile.png",
-            category: "기타",
+            mainCg: "Korean",
+            subCg: "기타",
             time: 20,
         },
         {
@@ -46,7 +51,8 @@ function ListContainer(): React.JSX.Element{
             foodImg: "../../assets/image/noImage.png",
             userId: "kim",
             profileImg: "../../assets/image/profile.png",
-            category: "밥, 면",
+            mainCg: "Korean",
+            subCg: "밥/면",
             time: 20,
         },
         {
@@ -54,7 +60,8 @@ function ListContainer(): React.JSX.Element{
             foodImg: "../../assets/image/noImage.png",
             userId: "kim",
             profileImg: "../../assets/image/profile.png",
-            category: "반찬",
+            mainCg: "Korean",
+            subCg: "반찬",
             time: 20,
         },
         {
@@ -62,7 +69,8 @@ function ListContainer(): React.JSX.Element{
             foodImg: "../../assets/image/noImage.png",
             userId: "kim",
             profileImg: "../../assets/image/profile.png",
-            category: "반찬",
+            mainCg: "Korean",
+            subCg: "반찬",
             time: 20,
         },
         {
@@ -70,7 +78,8 @@ function ListContainer(): React.JSX.Element{
             foodImg: "../../assets/image/noImage.png",
             userId: "kim",
             profileImg: "../../assets/image/profile.png",
-            category: "밥, 면",
+            mainCg: "Korean",
+            subCg: "밥/면",
             time: 20,
         }
     ]
@@ -86,28 +95,32 @@ function ListContainer(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            <SwitchTop elements={elementsMain} setMainCg={setMainCg}/>
-            {mainCg !== "Other" && <SelectSubCg elements={elementsSub}/>}
+            <SwitchTop elements={elementsMain} setSelectCg={setMainCg}/>
+            {mainCg !== "Other" && <SelectSubCg elements={elementsSub} subCg={subCg} setSubCg={setSubCg}/>}
             <ScrollView style={styles.list} contentContainerStyle={styles.listAlign}>
-                {exListElements.map((item, index) => (
-                    <View key={index} style={styles.element}>
-                        <View style={styles.foodImgBox}>
-                            {/* 코드 변경 필요 */}
-                            <Image style={styles.foodImg} source={require("../../assets/image/noImage.png")}/>
-                        </View>
-                        <Text style={[styles.elementTxt, styles.foodName]}>{item.foodName}</Text>
-                        <View style={styles.subInfo}>
-                            <View style={styles.userTimeBox}>
+                {exListElements.filter((item) => {
+                        const isMainCg = (item.mainCg === mainCg);
+                        const isSubCg = (subCg === 0 || item.subCg === elementsSub[subCg]);
+                        return isMainCg && isSubCg;
+                    }).map((item, index) => (
+                        <Pressable key={index} style={styles.element}>
+                            <View style={styles.foodImgBox}>
                                 {/* 코드 변경 필요 */}
-                                <Image style={styles.subInfoImg} source={require("../../assets/image/profile.png")}/>
-                                <Text style={[styles.elementTxt, styles.subInfoTxt, styles.userTxt]}>{item.userId}</Text>
+                                <Image style={styles.foodImg} source={require("../../assets/image/참치김치찌개.jpg")}/>
                             </View>
-                            <View style={styles.userTimeBox}>
-                                <Image style={styles.subInfoImg} source={require("../../assets/image/time.png")}/>
-                                <Text style={[styles.elementTxt, styles.subInfoTxt, styles.timeTxt]}>{`${item.time}분`}</Text>
+                            <Text style={[styles.elementTxt, styles.foodName]}>{item.foodName}</Text>
+                            <View style={styles.subInfo}>
+                                <View style={styles.userTimeBox}>
+                                    {/* 코드 변경 필요 */}
+                                    <Image style={styles.subInfoImg} source={require("../../assets/image/profile.png")}/>
+                                    <Text style={[styles.elementTxt, styles.subInfoTxt, styles.userTxt]}>{item.userId}</Text>
+                                </View>
+                                <View style={styles.userTimeBox}>
+                                    <Image style={styles.subInfoImg} source={require("../../assets/image/time.png")}/>
+                                    <Text style={[styles.elementTxt, styles.subInfoTxt, styles.timeTxt]}>{`${item.time}분`}</Text>
+                                </View>
                             </View>
-                        </View>
-                    </View>
+                        </Pressable>
                 ))}
             </ScrollView>
         </View>
@@ -135,12 +148,13 @@ const styles = StyleSheet.create({
         marginRight: "3%",
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: "rgb(61, 61, 61)",
+        borderColor: "rgb(71, 71, 71)",
         flexDirection: "column",
         alignItems: "center",
     },
     foodImgBox: {
-        borderColor: "rgba(152, 152, 152, 1)",
+        borderColor: "rgba(152, 152, 152, 0.5)",
+        elevation: 4,
         borderWidth: 1,
         borderRadius: 3,
         marginTop: "7%",

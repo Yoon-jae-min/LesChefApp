@@ -5,16 +5,16 @@ import RNPickerSelect from "react-native-picker-select";
 
 interface SwitchTopProps {
     elements: string[]
-    setMainCg: React.Dispatch<React.SetStateAction<string>>
+    setSelectCg: React.Dispatch<React.SetStateAction<string>>
 }
 
 function SwitchTop(props: SwitchTopProps): React.JSX.Element{
-    const {elements, setMainCg} = props;
+    const {elements, setSelectCg} = props;
     const [selectedValue, setSelectedValue] = useState(elements[0]);
 
     const ChangeMainCg = (value: string) => {
         setSelectedValue(value);
-        setMainCg(value);
+        setSelectCg(value);
     }
 
     const pressArrow = (arrow: string, value : string) => {
@@ -46,7 +46,7 @@ function SwitchTop(props: SwitchTopProps): React.JSX.Element{
     return(
         <View style={styles.container}>
             <Pressable onPress={() => pressArrow("left", selectedValue)}>
-                <Image source={require("../../../assets/image/leftArrow.png")}/>
+                <Image style={styles.arrow} source={require("../../../assets/image/leftArrow.png")}/>
             </Pressable>
             <RNPickerSelect
                 style={pickerStyles}
@@ -56,7 +56,7 @@ function SwitchTop(props: SwitchTopProps): React.JSX.Element{
                 items={elements.map((item) => ({label: item, value: item}))}
                 onValueChange={(value) => ChangeMainCg(value)}/>
             <Pressable onPress={() => pressArrow("right", selectedValue)}>
-                <Image source={require("../../../assets/image/rightArrow.png")}/>
+                <Image style={styles.arrow} source={require("../../../assets/image/rightArrow.png")}/>
             </Pressable>
         </View>
     )
@@ -69,9 +69,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "93%",
     },
-    arrowAll:{
-        height: 50,
-        aspectRatio: 1 / 1
+    arrow:{
+        width: 40,
+        height: 40
     }
 })
 

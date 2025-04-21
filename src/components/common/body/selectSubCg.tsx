@@ -3,15 +3,18 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface SelectSubCgProps{
-    elements: string[]
+    elements: string[],
+    subCg: number,
+    setSubCg: React.Dispatch<React.SetStateAction<number>>
 }
 
 function SelectSubCg(props: SelectSubCgProps): React.JSX.Element{
-    const {elements} = props;
-    const [selected, setSelected] = useState(0);
+    const {elements, subCg, setSubCg} = props;
+    // const [selected, setSelected] = useState(0);
+    
 
     useEffect(() => {
-        setSelected(0);
+        setSubCg(0);
     }, [elements]);
 
     return(
@@ -19,9 +22,9 @@ function SelectSubCg(props: SelectSubCgProps): React.JSX.Element{
             {elements.map((item, index) => (
                 <React.Fragment key={index}>
                     <TouchableOpacity 
-                        style={[styles.element, selected === index ? styles.selectE : styles.nonSelectE]}
-                        onPress={() => setSelected(index)}>
-                        <Text style={[styles.txt, selected === index ? styles.selectT : styles.nonSelectT]}>{item}</Text>
+                        style={[styles.element, subCg === index ? styles.selectE : styles.nonSelectE]}
+                        onPress={() => setSubCg(index)}>
+                        <Text style={[styles.txt, subCg === index ? styles.selectT : styles.nonSelectT]}>{item}</Text>
                     </TouchableOpacity>
                 </React.Fragment>
             ))}
