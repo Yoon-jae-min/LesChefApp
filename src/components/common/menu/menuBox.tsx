@@ -5,19 +5,29 @@ import { Animated, Dimensions, Image, StyleSheet, Text, View } from "react-nativ
 //컴포넌트
 import CategoryGrp from "./categoryGrp";
 
-interface PageProps{
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
+}
+
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
+
+interface Props{
     menuActive: Boolean;
-    pageValue: React.RefObject<string>;
-    pageSubValue: React.RefObject<string>;
-    pageRender: React.RefObject<string>;
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+    categoryTotal: categoryTotalType[];
     setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function MenuBox(props: PageProps): React.JSX.Element{
-    const {menuActive, pageValue, pageSubValue, setMenuActive, pageRender} = props;
-    const mainTxts = ["Recipe", "MyPage", "Community"];
-    const subTxts = [["Korean", "Japanese", "Chinese", "Western"], ["Foods", "WishList", "MyRecipe"], ["default"]]
-
+function MenuBox(props: Props): React.JSX.Element{
+    const {menuActive, setCategoryValue, categoryTotal, setMenuActive} = props;
     const translateX = useRef(new Animated.Value(-250)).current;
 
     useEffect(() => {
@@ -41,15 +51,15 @@ function MenuBox(props: PageProps): React.JSX.Element{
                 </View>
             </View>
             <View style={[styles.categoryBox, {height: height - 150}]}>
-                {mainTxts.map((item, index) => 
-                    <CategoryGrp
+                {categoryTotal.map((item, index) => 
+                    index !== 0 && (<CategoryGrp
                         key={index}
-                        pageValue={pageValue} 
-                        pageSubValue={pageSubValue} 
+                        mainIndex={index}
                         setMenuActive={setMenuActive}
-                        pageRender={pageRender}
-                        mainTxt={item}
-                        subTxts={subTxts[index]}/>
+                        mainTxt={item.main}
+                        subTxts={item.main === "Recipe" ? item.detail[0] : item.sub}
+                        setCategoryValue={setCategoryValue}
+                        categoryTotal={categoryTotal}/>)
                 )}
             </View>
         </Animated.View>

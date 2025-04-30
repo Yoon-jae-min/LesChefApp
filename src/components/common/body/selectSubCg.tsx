@@ -1,30 +1,61 @@
 //기타
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-interface SelectSubCgProps{
-    elements: string[],
-    subCg: number,
-    setSubCg: React.Dispatch<React.SetStateAction<number>>
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
 }
 
-function SelectSubCg(props: SelectSubCgProps): React.JSX.Element{
-    const {elements, subCg, setSubCg} = props;
-    // const [selected, setSelected] = useState(0);
-    
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
 
-    useEffect(() => {
-        setSubCg(0);
-    }, [elements]);
+interface Props{
+    categoryValue: categoryValueType;
+    categoryTotal: categoryTotalType[];
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+    // pageRenderTrig: () => void;
+    detailIndex: number;
+    detailIndex_1: number;
+    // elements: string[],
+    // subCg: number,
+    // setSubCg: React.Dispatch<React.SetStateAction<number>>
+}
+
+function SelectSubCg(props: Props): React.JSX.Element{
+    const {categoryValue, categoryTotal, setCategoryValue, detailIndex, detailIndex_1} = props;
+    // const [selected, setSelected] = useState(0);
+    // const detailIndex = categoryTotal[1].detail[0].findIndex((item) => item === categoryValue.current.detail);
+    // const detailIndex_1 =  categoryTotal[1].detail_1[0][detailIndex].findIndex((item) => item === categoryValue.current.detail_1);
+    const elements = categoryTotal[1].detail_1[0][detailIndex];
+
+    // useEffect(() => {
+    //     setSubCg(0);
+    // }, [elements]);
+
+    const touchMenu = (index: number) => {
+        setCategoryValue((prev) => ({
+            ...prev,
+            detail_1: categoryTotal[1].detail_1[0][detailIndex][index]
+        }))
+        // categoryValue.current.detail_1 = categoryTotal[1].detail_1[0][detailIndex][index];
+        // pageRenderTrig();
+    }
 
     return(
         <View style={styles.container}>
             {elements.map((item, index) => (
                 <React.Fragment key={index}>
                     <TouchableOpacity 
-                        style={[styles.element, subCg === index ? styles.selectE : styles.nonSelectE]}
-                        onPress={() => setSubCg(index)}>
-                        <Text style={[styles.txt, subCg === index ? styles.selectT : styles.nonSelectT]}>{item}</Text>
+                        style={[styles.element, detailIndex_1 === index ? styles.selectE : styles.nonSelectE]}
+                        onPress={() => touchMenu(index)}>
+                        <Text style={[styles.txt, detailIndex_1 === index ? styles.selectT : styles.nonSelectT]}>{item}</Text>
                     </TouchableOpacity>
                 </React.Fragment>
             ))}

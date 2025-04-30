@@ -9,21 +9,51 @@ interface selectedBoardType{
     content: string;
 }
 
-interface PageProps{
-    pageSubValue: React.RefObject<string>;
-    selectedBoard: React.RefObject<selectedBoardType>;
-    setBoardCg: React.Dispatch<React.SetStateAction<string>>;
-    pageRenderTrig: () => void;
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
 }
 
-function InfoWriteTop(props: PageProps): React.JSX.Element{
-    const {pageSubValue, selectedBoard, setBoardCg, pageRenderTrig} = props;
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
+
+interface Props{
+    // pageSubValue: React.RefObject<string>;
+    selectedBoard: React.RefObject<selectedBoardType>;
+    // setBoardCg: React.Dispatch<React.SetStateAction<string>>;
+    // pageRenderTrig: () => void;
+    categoryValue: categoryValueType;
+    categoryTotal: categoryTotalType[];
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+}
+
+function InfoWriteTop(props: Props): React.JSX.Element{
+    const {selectedBoard, categoryValue, setCategoryValue, categoryTotal} = props;
 
     const pressBtn = (type: string) => {
+        let mainIndex = categoryValue.main === "Community" ? 
+                            3 : categoryValue.main === "MyPage" ? 
+                            2 : categoryValue.main === "Recipe" ? 
+                            1 : 0;
         if(type === "back"){
-            pageSubValue.current = "default";
-            pageRenderTrig();
-            setBoardCg("Notice");
+            setCategoryValue((prev) => ({
+                ...prev,
+                sub: categoryTotal[mainIndex].sub[0],
+                detail: categoryTotal[mainIndex].sub[0][0],
+                detail_1: categoryTotal[mainIndex].detail_1[0][0][0]
+            }));
+            // categoryValue.current.sub = categoryTotal[mainIndex].sub[0];
+            // categoryValue.current.detail = categoryTotal[mainIndex].sub[0][0];
+            // categoryValue.current.detail_1 = categoryTotal[mainIndex].detail_1[0][0][0];
+            // pageSubValue.current = "default";
+            // pageRenderTrig();
+            // setBoardCg("Notice");
         }else if(type === "like"){
             Toast.show({
                 type: "info",
@@ -38,10 +68,15 @@ function InfoWriteTop(props: PageProps): React.JSX.Element{
             <Pressable onPress={() => pressBtn("back")}>
                 <Image style={styles.icon} source={require("../../../assets/image/back.png")}/>
             </Pressable>
-            {pageSubValue.current === "Info" && <Text style={[styles.center, styles.title]}>{selectedBoard.current.title}</Text>}
-            {pageSubValue.current === "Write" && <TextInput style={[styles.center, styles.inputTitle]} placeholder="- title -"/>}
+            {categoryValue.sub === "Info" && <Text style={[styles.center, styles.title]}>{selectedBoard.current.title}</Text>}
+            {categoryValue.sub === "Write" && <TextInput style={[styles.center, styles.inputTitle]} placeholder="- title -"/>}
             <Pressable onPress={() => pressBtn("like")}>
-                <Image style={styles.icon} source={require("../../../assets/image/upload.png")}/>
+                {categoryValue.sub === "Info" && 
+                    (categoryValue.main === "Community" ? 
+                        <Image style={styles.icon} source={require("../../../assets/image/thumb.png")}/> :
+                        <Image style={styles.icon} source={require("../../../assets/image/unlike.png")}/>
+                    )}
+                {categoryValue.sub === "Write" && <Image style={styles.icon} source={require("../../../assets/image/upload.png")}/>}
             </Pressable>
         </View>
     )

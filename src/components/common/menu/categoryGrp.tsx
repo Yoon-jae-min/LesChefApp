@@ -2,37 +2,55 @@
 import React from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
-interface menuBoxProps {
-    mainTxt: string;
-    subTxts: string[];
-    pageValue: React.RefObject<string>;
-    pageSubValue: React.RefObject<string>;
-    pageRender: React.RefObject<string>;
-    setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
 }
 
-function CategoryGrp(props: menuBoxProps): React.JSX.Element{
-    const {mainTxt, subTxts, pageValue, pageSubValue, pageRender, setMenuActive} = props;
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
 
-    const pageTouch = () => {
-        pageRender.current = "N";
-        pageValue.current = mainTxt;
-        // pageSubValue.current = subTxts[0];
-        setMenuActive(false);
-    }
+interface Props {
+    mainIndex: number;
+    mainTxt: string;
+    subTxts: string[];
+    setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+    categoryTotal: categoryTotalType[];
+}
 
-    const pageSubTouch = (index: number) => {
-        pageRender.current = "N";
-        pageValue.current = mainTxt;
-        pageSubValue.current = subTxts[index];
+function CategoryGrp(props: Props): React.JSX.Element{
+    const {mainIndex, mainTxt, subTxts, setMenuActive, setCategoryValue, categoryTotal} = props;
+
+    const pageTouch = (subValue: string) => {
+        const subIndex = mainTxt === "Recipe" ? 
+                            categoryTotal[mainIndex].detail[0].findIndex(item => item === subValue) :
+                            categoryTotal[mainIndex].sub.findIndex(item => item === subValue);
+        setCategoryValue({
+            main: categoryTotal[mainIndex].main,
+            sub: mainTxt === "Recipe" ? categoryTotal[mainIndex].sub[0] : categoryTotal[mainIndex].sub[subIndex],
+            detail: mainTxt === "Recipe" ? categoryTotal[mainIndex].detail[0][subIndex] : categoryTotal[mainIndex].detail[subIndex][0],
+            detail_1: mainTxt === "Recipe" ? categoryTotal[mainIndex].detail_1[0][subIndex][0] : categoryTotal[mainIndex].detail_1[subIndex][0][0]
+        });
         setMenuActive(false);
     }
 
     return(
         <View style={styles.container}>
-            <Pressable onPress={pageTouch} style={styles.pressBox}><Text style={styles.mainTxt}>{mainTxt}</Text></Pressable>
+            <Pressable onPress={() => 
+                    pageTouch(mainTxt === "Recipe" ? 
+                    categoryTotal[mainIndex].detail[0][0] : 
+                    categoryTotal[mainIndex].sub[0])} style={styles.pressBox}>
+                        <Text style={styles.mainTxt}>{mainTxt}</Text>
+            </Pressable>
             {mainTxt !== "Community" && subTxts.length > 0 && subTxts.map((text, index) => 
-                <Pressable key={index} onPress={() => pageSubTouch(index)} style={styles.pressBox}><Text style={styles.subTxt}>{text}</Text></Pressable>
+                <Pressable key={index} onPress={() => pageTouch(text)} style={styles.pressBox}><Text style={styles.subTxt}>{text}</Text></Pressable>
             )}
         </View>
     )

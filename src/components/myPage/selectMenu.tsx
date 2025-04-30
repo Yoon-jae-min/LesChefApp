@@ -1,24 +1,51 @@
 //기타
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-function SelectMyMenu(): React.JSX.Element{
-    const [selectedMenu, setSelectedMenu] = useState("My Info");
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
+}
 
-    const menuItems = ["My Info", "Wish List", "Foods", "My Recipe"]
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
+
+interface Props{
+    categoryValue: categoryValueType;
+    categoryTotal: categoryTotalType[];
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+}
+
+function SelectMyMenu(props: Props): React.JSX.Element{
+    const {categoryValue, categoryTotal, setCategoryValue} = props;
+
+    const selectMenu = (index: number) => {
+        setCategoryValue((prev) => ({
+            ...prev,
+            sub: categoryTotal[2].sub[index],
+            detail: categoryTotal[2].detail[index][0],
+            detail_1: categoryTotal[2].detail_1[index][0][0]
+        }));
+    }
 
     return(
         <View style={styles.container}>
-            {menuItems.map((item, index) => (
+            {categoryTotal[2].sub.map((item, index) => (
                 <React.Fragment key={index}>
                     <TouchableOpacity
                         style={styles.element}
-                        onPress={() => setSelectedMenu(item)}>
-                        <Text style={selectedMenu === item ? styles.selected : styles.nonSelected}>
+                        onPress={() => selectMenu(index)}>
+                        <Text style={categoryValue.sub === item ? styles.selected : styles.nonSelected}>
                             {item}
                         </Text>
                     </TouchableOpacity>
-                    {index !== menuItems.length - 1 && <View style={styles.sepaator}/>}
+                    {index !== categoryTotal[2].sub.length - 1 && <View style={styles.sepaator}/>}
                 </React.Fragment>
             ))}
         </View>

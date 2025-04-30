@@ -1,30 +1,42 @@
 //기타
-import React, { useState } from "react";
+import React from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
-interface SwitchTopProps {
-    elements: string[]
-    setSelectCg: React.Dispatch<React.SetStateAction<string>>
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
 }
 
-function SwitchTop(props: SwitchTopProps): React.JSX.Element{
-    const {elements, setSelectCg} = props;
-    const [selectedValue, setSelectedValue] = useState(elements[0]);
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
 
-    const ChangeMainCg = (value: string) => {
-        setSelectedValue(value);
-        setSelectCg(value);
+interface Props {
+    // elements: string[]
+    // setSelectCg: React.Dispatch<React.SetStateAction<string>>
+    categoryValue: categoryValueType;
+    categoryTotal: categoryTotalType[];
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+    // pageRenderTrig: () => void;
+}
+
+function SwitchTop(props: Props): React.JSX.Element{
+    const {categoryValue, categoryTotal, setCategoryValue} = props;
+    // const [selectedValue, setSelectedValue] = useState(elements[0]);
+    const elements = categoryValue.main === "Recipe" ? categoryTotal[1].detail[0] : categoryTotal[3].detail[0];
+
+    const indexCount = (value: string) => {
+        return elements.findIndex((item) => item === value);
     }
 
-    const pressArrow = (arrow: string, value : string) => {
-        let indexSave = 0;
-
-        elements.map((item, index) => {
-            if(item === value){
-                indexSave = index;
-            }
-        })
+    const switchMenu = (arrow: string, value: string) => {
+        let indexSave = indexCount(value);
 
         if(arrow === "left"){
             if(indexSave === 0) {
@@ -39,23 +51,59 @@ function SwitchTop(props: SwitchTopProps): React.JSX.Element{
                 indexSave += 1;
             }
         }
-
-        ChangeMainCg(elements[indexSave]);
+        setCategoryValue((prev) => ({
+            ...prev,
+            detail: elements[indexSave],
+            detail_1: categoryValue.main === "Recipe" ?
+                        categoryTotal[1].detail_1[0][indexSave][0] : 
+                        categoryTotal[3].detail_1[0][indexSave][0]
+        }))
+        // categoryValue.current.detail = elements[indexSave];
+        // categoryValue.current.detail_1 = categoryValue.current.main === "Recipe" ?
+        //                                 categoryTotal[1].detail_1[0][indexSave][0] : 
+        //                                 categoryTotal[3].detail_1[0][indexSave][0];
+        // pageRenderTrig();
+        // setSelectedValue(value);
+        // setSelectCg(value);
     }
+
+    // const pressArrow = (arrow: string, value : string) => {
+    //     let indexSave = indexCount(value);
+
+    //     if(arrow === "left"){
+    //         if(indexSave === 0) {
+    //             indexSave = elements.length - 1;
+    //         }else{
+    //             indexSave -= 1;
+    //         }
+    //     }else if(arrow === "right"){
+    //         if(indexSave === elements.length - 1){
+    //             indexSave = 0;
+    //         }else{
+    //             indexSave += 1;
+    //         }
+    //     }
+    //     switchMenu(elements[indexSave]);
+    // }
 
     return(
         <View style={styles.container}>
-            <Pressable onPress={() => pressArrow("left", selectedValue)}>
+            <Pressable onPress={() => switchMenu("left", categoryValue.detail)}>
                 <Image style={styles.arrow} source={require("../../../assets/image/leftArrow.png")}/>
             </Pressable>
             <RNPickerSelect
                 style={pickerStyles}
-                value={selectedValue}
+                // value={selectedValue}
+                value={categoryValue.detail}
                 useNativeAndroidPickerStyle={false}
                 placeholder={{}}
-                items={elements.map((item) => ({label: item, value: item}))}
-                onValueChange={(value) => ChangeMainCg(value)}/>
-            <Pressable onPress={() => pressArrow("right", selectedValue)}>
+                items={categoryTotal
+                    .find((item) => item.main === categoryValue.main)
+                    ?.detail[0].map((item) => ({label: item, value: item})) ?? []
+                }
+                // items={elements.map((item) => ({label: item, value: item}))}
+                onValueChange={(value) => switchMenu("center", value)}/>
+            <Pressable onPress={() => switchMenu("right", categoryValue.detail)}>
                 <Image style={styles.arrow} source={require("../../../assets/image/rightArrow.png")}/>
             </Pressable>
         </View>

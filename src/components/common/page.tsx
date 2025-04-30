@@ -11,17 +11,59 @@ import PageRecipe from "../recipe/pageRecipe";
 import PageMy from "../myPage/pageMy";
 import PageBoard from "../board/pageBoard";
 
+//pageCategory
+const categoryTotal = [
+    {
+        main: "Main",
+        sub: ["Default"],
+        detail: [["Default"]],
+        detail_1: [[["Default"]]], 
+    },
+    {
+        main: "Recipe",
+        sub: ["List", "Info"],
+        detail: [["Korean", "Japanese", "Chinese", "Western", "Other"], ["Default"]],
+        detail_1: [[["전체", "국/찌개", "밥/면", "반찬", "기타"],
+                    ["전체", "국/전골", "밥", "면", "기타"],
+                    ["전체", "튀김, 찜", "밥", "면", "기타"],
+                    ["전체", "스프/스튜", "빵", "면", "기타"],
+                    ["Default"]],[["Default"]]]
+    },
+    {
+        main: "MyPage",
+        sub: ["Info", "Foods", "WishList", "MyRecipe"],
+        detail: [["Default"], 
+                ["Default"], 
+                ["Korean", "Japanese", "Chinese", "Western", "Other"], 
+                ["Korean", "Japanese", "Chinese", "Western", "Other"]],
+        detail_1: [[["Default"]],[["Default"]], 
+                    [["전체", "국/찌개", "밥/면", "반찬", "기타"],
+                    ["전체", "국/전골", "밥", "면", "기타"],
+                    ["전체", "튀김, 찜", "밥", "면", "기타"],
+                    ["전체", "스프/스튜", "빵", "면", "기타"],
+                    ["Default"]],
+                    [["전체", "국/찌개", "밥/면", "반찬", "기타"],
+                    ["전체", "국/전골", "밥", "면", "기타"],
+                    ["전체", "튀김, 찜", "밥", "면", "기타"],
+                    ["전체", "스프/스튜", "빵", "면", "기타"],
+                    ["Default"]]]
+    },
+    {
+        main: "Community",
+        sub: ["List", "Info", "Write"],
+        detail: [["Notice", "Board"], ["Default"], ["Default"]],
+        detail_1: [[["Default"], ["Default"]], [["Default"]], [["Default"]]]
+    }
+];
+
 function Page(): React.JSX.Element{
     const [menuActive, setMenuActive] = useState(false);
-    const [pageTrig, setPageTrig] = useState(false);
-    const pageValue = useRef("Main");
-    const pageSubValue = useRef("Default");
-    const pageRender = useRef("Y");
-
-    //페이지 렌더링
-    const pageRenderTrig = () => {
-        setPageTrig((prev) => (!prev));
-    }
+    const [categoryValue, setCategoryValue] = useState({
+        main: categoryTotal[0].main,
+        sub: categoryTotal[0].sub[0],
+        detail: categoryTotal[0].detail[0][0],
+        detail_1: categoryTotal[0].detail_1[0][0][0]
+    })
 
     return(
         <React.Fragment>
@@ -29,25 +71,32 @@ function Page(): React.JSX.Element{
                 <Top 
                     menuActive={menuActive} 
                     setMenuActive={setMenuActive} 
-                    setPageTrig={setPageTrig} 
-                    pageValue={pageValue} 
-                    pageSubValue={pageSubValue}
-                    pageRender={pageRender}/>
+                    setCategoryValue={setCategoryValue}
+                    categoryTotal={categoryTotal}/>
                 <MenuBox 
                     menuActive={menuActive} 
-                    pageValue={pageValue} 
-                    pageSubValue={pageSubValue} 
-                    setMenuActive={setMenuActive}
-                    pageRender={pageRender}/>
+                    setCategoryValue={setCategoryValue}
+                    categoryTotal={categoryTotal}
+                    setMenuActive={setMenuActive}/>
                 {menuActive && <Pressable onPress={() => setMenuActive(false)} style={styles.menuBackground}/>}
                 <View style={styles.body}>
-                    {(pageValue.current !== "MyPage" && pageSubValue.current === "default") && 
+                    {(categoryValue.main !== "MyPage" && 
+                        (categoryValue.main === "Main" || categoryValue.sub === "List")) && 
                             <TextInput style={styles.searchBox} placeholder="입력하세요..."/>}
-                    {pageValue.current === "MyPage" && <SelectMyMenu/>}
-                    {pageValue.current === "Main" && <PageMain/>}
-                    {pageValue.current === "Recipe" && <PageRecipe/>}
-                    {pageValue.current === "Community" && <PageBoard pageSubValue={pageSubValue} pageRenderTrig={pageRenderTrig}/>}
-                    {pageValue.current === "MyPage" && <PageMy/>}
+                    {categoryValue.main === "MyPage" && 
+                        <React.Fragment>
+                            <SelectMyMenu 
+                                categoryValue={categoryValue} 
+                                categoryTotal={categoryTotal} 
+                                setCategoryValue={setCategoryValue}/>
+                            <PageMy/>
+                        </React.Fragment>}
+                    {categoryValue.main === "Main" && 
+                        <PageMain/>}
+                    {categoryValue.main === "Recipe" && 
+                        <PageRecipe categoryValue={categoryValue} categoryTotal={categoryTotal} setCategoryValue={setCategoryValue}/>}
+                    {categoryValue.main === "Community" && 
+                        <PageBoard categoryValue={categoryValue} categoryTotal={categoryTotal} setCategoryValue={setCategoryValue}/>}
                 </View>
             </View>
         </React.Fragment>

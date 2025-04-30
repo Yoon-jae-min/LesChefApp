@@ -1,106 +1,120 @@
 //기타
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 //컴포넌트
 import SwitchTop from "../common/body/switchTop";
 import SelectSubCg from "../common/body/selectSubCg";
 
-function ListContainer(): React.JSX.Element{
-    const [mainCg, setMainCg] = useState("Korean");
-    const [subCg, setSubCg] = useState(0);
-    const elementsMain = ["Korean", "Japanese", "Chinese", "Western", "Other"];
-    const elementsSubArr = [
-        ["전체", "국/찌개", "밥/면", "반찬", "기타"], 
-        ["전체", "국/전골", "밥", "면", "기타"],
-        ["전체", "튀김, 찜", "밥", "면", "기타"],
-        ["전체", "스프/스튜", "빵", "면", "기타"], []]
-    const [elementsSub, setElementsSub] = useState(elementsSubArr[0]);
-
-    //임시 데이터
-    const exListElements = [
-        {
-            foodName: "성게미역국",
-            foodImg: "../../assets/image/noImage.png",
-            userId: "yoon",
-            profileImg: "../../assets/image/profile.png",
-            mainCg: "Korean",
-            subCg: "국/찌개",
-            time: 30,
-        },
-        {
-            foodName: "미역오이냉국",
-            foodImg: "../../assets/image/noImage.png",
-            userId: "hong",
-            profileImg: "../../assets/image/profile.png",
-            mainCg: "Korean",
-            subCg: "국/찌개",
-            time: 10,
-        },
-        {
-            foodName: "곤드레전",
-            foodImg: "../../assets/image/noImage.png",
-            userId: "kim",
-            profileImg: "../../assets/image/profile.png",
-            mainCg: "Korean",
-            subCg: "기타",
-            time: 20,
-        },
-        {
-            foodName: "김치 비빔 국수",
-            foodImg: "../../assets/image/noImage.png",
-            userId: "kim",
-            profileImg: "../../assets/image/profile.png",
-            mainCg: "Korean",
-            subCg: "밥/면",
-            time: 20,
-        },
-        {
-            foodName: "꼬막장",
-            foodImg: "../../assets/image/noImage.png",
-            userId: "kim",
-            profileImg: "../../assets/image/profile.png",
-            mainCg: "Korean",
-            subCg: "반찬",
-            time: 20,
-        },
-        {
-            foodName: "파채불고기",
-            foodImg: "../../assets/image/noImage.png",
-            userId: "kim",
-            profileImg: "../../assets/image/profile.png",
-            mainCg: "Korean",
-            subCg: "반찬",
-            time: 20,
-        },
-        {
-            foodName: "표고버섯 덮밥",
-            foodImg: "../../assets/image/noImage.png",
-            userId: "kim",
-            profileImg: "../../assets/image/profile.png",
-            mainCg: "Korean",
-            subCg: "밥/면",
-            time: 20,
-        }
-    ]
-
-    const subCheck = (value: string) => {
-        const index = elementsMain.indexOf(value);
-        setElementsSub(elementsSubArr[index]);
+//임시 데이터
+const exListElements = [
+    {
+        foodName: "성게미역국",
+        foodImg: "../../assets/image/noImage.png",
+        userId: "yoon",
+        profileImg: "../../assets/image/profile.png",
+        mainCg: "Korean",
+        subCg: "국/찌개",
+        time: 30,
+    },
+    {
+        foodName: "미역오이냉국",
+        foodImg: "../../assets/image/noImage.png",
+        userId: "hong",
+        profileImg: "../../assets/image/profile.png",
+        mainCg: "Korean",
+        subCg: "국/찌개",
+        time: 10,
+    },
+    {
+        foodName: "곤드레전",
+        foodImg: "../../assets/image/noImage.png",
+        userId: "kim",
+        profileImg: "../../assets/image/profile.png",
+        mainCg: "Korean",
+        subCg: "기타",
+        time: 20,
+    },
+    {
+        foodName: "김치 비빔 국수",
+        foodImg: "../../assets/image/noImage.png",
+        userId: "kim",
+        profileImg: "../../assets/image/profile.png",
+        mainCg: "Korean",
+        subCg: "밥/면",
+        time: 20,
+    },
+    {
+        foodName: "꼬막장",
+        foodImg: "../../assets/image/noImage.png",
+        userId: "kim",
+        profileImg: "../../assets/image/profile.png",
+        mainCg: "Korean",
+        subCg: "반찬",
+        time: 20,
+    },
+    {
+        foodName: "파채불고기",
+        foodImg: "../../assets/image/noImage.png",
+        userId: "kim",
+        profileImg: "../../assets/image/profile.png",
+        mainCg: "Korean",
+        subCg: "반찬",
+        time: 20,
+    },
+    {
+        foodName: "표고버섯 덮밥",
+        foodImg: "../../assets/image/noImage.png",
+        userId: "kim",
+        profileImg: "../../assets/image/profile.png",
+        mainCg: "Korean",
+        subCg: "밥/면",
+        time: 20,
     }
+]
 
-    useEffect(() => {
-        subCheck(mainCg);
-    }, [mainCg]);
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
+}
+
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
+
+interface Props{
+    categoryValue: categoryValueType;
+    categoryTotal: categoryTotalType[];
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+}
+
+function ListContainer(props: Props): React.JSX.Element{
+    const {categoryValue, categoryTotal, setCategoryValue} = props;
+    const detailIndex = categoryTotal[1].detail[0].findIndex((item) => item === categoryValue.detail);
+    const detailIndex_1 =  categoryTotal[1].detail_1[0][detailIndex].findIndex((item) => item === categoryValue.detail_1);
 
     return(
         <View style={styles.container}>
-            <SwitchTop elements={elementsMain} setSelectCg={setMainCg}/>
-            {mainCg !== "Other" && <SelectSubCg elements={elementsSub} subCg={subCg} setSubCg={setSubCg}/>}
+            {categoryValue.sub === "List" && 
+                <SwitchTop categoryValue={categoryValue} categoryTotal={categoryTotal} setCategoryValue={setCategoryValue}/>}
+            {(categoryValue.sub === "List") && 
+                (categoryValue.detail !== "Other") && 
+                    <SelectSubCg 
+                        categoryValue={categoryValue} 
+                        categoryTotal={categoryTotal} 
+                        setCategoryValue={setCategoryValue} 
+                        detailIndex={detailIndex} 
+                        detailIndex_1={detailIndex_1}/>}
             <ScrollView style={styles.list} contentContainerStyle={styles.listAlign}>
                 {exListElements.filter((item) => {
-                        const isMainCg = (item.mainCg === mainCg);
-                        const isSubCg = (subCg === 0 || item.subCg === elementsSub[subCg]);
+                        const isMainCg = (item.mainCg === categoryValue.detail);
+                        const isSubCg = ((categoryTotal[1].detail_1[0][detailIndex][0] === categoryValue.detail_1) || 
+                                            (item.subCg === categoryValue.detail_1));
                         return isMainCg && isSubCg;
                     }).map((item, index) => (
                         <Pressable key={index} style={styles.element}>

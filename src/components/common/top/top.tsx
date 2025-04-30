@@ -5,23 +5,37 @@ import { Image, Pressable, StyleSheet, View } from "react-native";
 //컴포넌트
 import MenuBtn from "./menuBtn";
 
-interface PageProps{
-    menuActive: boolean;
-    setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
-    setPageTrig: React.Dispatch<React.SetStateAction<boolean>>;
-    pageValue: React.RefObject<string>;
-    pageSubValue: React.RefObject<string>;
-    pageRender: React.RefObject<string>;
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
 }
 
-function Top(props: PageProps): React.JSX.Element{
-    const {menuActive, setMenuActive, setPageTrig, pageValue, pageSubValue, pageRender} = props;
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
+
+interface Props{
+    menuActive: boolean;
+    setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+    categoryTotal: categoryTotalType[];
+}
+
+function Top(props: Props): React.JSX.Element{
+    const {menuActive, setMenuActive, setCategoryValue, categoryTotal} = props;
 
     const goHome = () => {
-        pageRender.current === "N";
-        pageValue.current = "Main";
-        pageSubValue.current = "default";
-        setPageTrig((prev) => (!prev));
+        setCategoryValue({
+            main: categoryTotal[0].main,
+            sub: categoryTotal[0].sub[0],
+            detail: categoryTotal[0].detail[0][0],
+            detail_1: categoryTotal[0].detail_1[0][0][0]
+        });
         setMenuActive(false);
     }
 

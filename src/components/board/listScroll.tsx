@@ -21,16 +21,30 @@ interface selectedBoardRef{
     viewCount: number,
 }
 
-interface BoardBodyProps{
-    listValue: Element[];
-    boardCg: string;
-    pageSubValue: React.RefObject<string>;
-    pageRenderTrig: () => void;
-    selectedBoard: React.RefObject<selectedBoardRef>;
+interface categoryValueType{
+    main: string;
+    sub: string;
+    detail: string;
+    detail_1: string;
 }
 
-function ListContainer(props: BoardBodyProps): React.JSX.Element{
-    const {listValue, boardCg, pageSubValue, pageRenderTrig, selectedBoard} = props;
+interface categoryTotalType{
+    main: string;
+    sub: string[];
+    detail: string[][];
+    detail_1: string[][][];
+}
+
+interface Props{
+    listValue: Element[];
+    selectedBoard: React.RefObject<selectedBoardRef>;
+    categoryValue: categoryValueType;
+    categoryTotal: categoryTotalType[];
+    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+}
+
+function ListScroll(props: Props): React.JSX.Element{
+    const {listValue, selectedBoard, categoryValue, categoryTotal, setCategoryValue} = props;
 
     const pressBoard = (boardId: string, title: string, userId: string) => {
         selectedBoard.current = {
@@ -42,8 +56,13 @@ function ListContainer(props: BoardBodyProps): React.JSX.Element{
             time: "2025.04.22 00:54:32",
             viewCount: 0,
         }
-        pageSubValue.current = "Info";
-        pageRenderTrig();
+        
+        setCategoryValue((prev) => ({
+            ...prev,
+            sub: categoryTotal[3].sub[1],
+            detail: categoryTotal[3].detail[1][0],
+            detail_1: categoryTotal[3].detail_1[1][0][0]
+        }));
     }
 
     return(
@@ -52,7 +71,8 @@ function ListContainer(props: BoardBodyProps): React.JSX.Element{
                 <Pressable key={index} style={styles.element} onPress={() => pressBoard(item.boardId, item.title, item.userId)}>
                     <Text style={styles.title}>{item.title}</Text>
                     <View style={styles.bottomBox}>
-                        {boardCg === "Notice" ? <View></View> :
+                        {categoryValue.detail === "Notice" ? 
+                            <View></View> :
                             <React.Fragment>
                                 <View style={styles.leftInfo}>
                                     <Image style={styles.bottomImg} source={require("../../assets/image/profile.png")}/>
@@ -114,4 +134,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ListContainer;
+export default ListScroll;
