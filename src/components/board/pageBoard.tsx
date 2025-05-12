@@ -1,13 +1,18 @@
 //기타
 import React, { useRef, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { CategoryTotalType, CategoryValueType } from "../../types/commonTypes";
 
 //컴포넌트
-import SwitchTop from "../common/body/switchTop";
-import ListBody from "./listBody";
-import InfoWriteTop from "../common/body/infoWriteTop";
-import InfoBody from "./infoBody";
-import WriteBody from "./writeBody";
+import ListBody from "./list/listBody";
+import InfoBody from "./info/infoBody";
+import WriteBody from "./write/writeBody";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useCommon } from "../../context/commonContext";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+
+const Stack = createNativeStackNavigator();
 
 //임시 데이터
 const exList = [
@@ -73,33 +78,19 @@ const exList = [
     ]
 ];
 
-interface categoryValueType{
-    main: string;
-    sub: string;
-    detail: string;
-    detail_1: string;
-}
+// type Props = {
+//     categoryValue: React.RefObject<CategoryValueType>;
+//     categoryTotal: CategoryTotalType[];
+//     // setCategoryValue: React.Dispatch<React.SetStateAction<CategoryValueType>>;
+// }
 
-interface categoryTotalType{
-    main: string;
-    sub: string[];
-    detail: string[][];
-    detail_1: string[][][];
-}
-
-interface PageProps{
-    categoryValue: categoryValueType;
-    categoryTotal: categoryTotalType[];
-    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
-}
-
-function PageBoard(props: PageProps): React.JSX.Element{
-    const {categoryValue, categoryTotal, setCategoryValue} = props;
+function PageBoard(): React.JSX.Element{
+    // const {categoryValue, categoryTotal} = props;
+    const {categoryTotal} = useCommon();
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const [boardCg, setBoardCg] = useState("Notice");
-    const listValue = categoryValue.detail === "Notice" ? exList[0] : exList[1];
-
-    //예시 데이터 추후 제거예정
-    const selectedBoard = useRef({
+    const listType = useRef(categoryValue.detail);
+    const [selectedBoard, setSelectedBoard] = useState({
         boardId: "",
         title: "",
         content: "",
@@ -107,34 +98,65 @@ function PageBoard(props: PageProps): React.JSX.Element{
         profileImg: "",
         time: "",
         viewCount: 0,
-    });
-
-    const commentList = useRef([]);
+        comments:[{
+            profileImg: "",
+            userId: "",
+            time: "",
+            content: "",
+        }]
+    })
 
     return(
         <View style={styles.container}>
-            {categoryValue.sub === "List" ? 
-                <React.Fragment>
-                    <SwitchTop categoryValue={categoryValue} categoryTotal={categoryTotal} setCategoryValue={setCategoryValue}/>
-                    <ListBody 
-                        listValue={listValue}
-                        selectedBoard={selectedBoard}
-                        categoryValue={categoryValue}
-                        categoryTotal={categoryTotal}
-                        setCategoryValue={setCategoryValue}/>
-                </React.Fragment> :
-                <React.Fragment>
-                    <InfoWriteTop 
-                        selectedBoard={selectedBoard} 
-                        categoryValue={categoryValue}
-                        categoryTotal={categoryTotal}
-                        setCategoryValue={setCategoryValue}/>
-                    {categoryValue.sub === "Info" && <InfoBody
-                        selectedBoard={selectedBoard}
-                        commentList={commentList}
-                        boardType={boardCg}/>}
-                    {categoryValue.sub === "Write" && <WriteBody/>}
-                </React.Fragment>}
+            <Stack.Navigator screenOptions={{headerShown: true}}>
+                <Stack.Screen name="List">
+                    {() => 
+                        <ListBody 
+                            listType={listType}
+                            categoryValue={categoryValue}
+                            categoryTotal={categoryTotal}
+                            setSelectedBoard={setSelectedBoard}/>}
+                </Stack.Screen>
+                <Stack.Screen name="Info">
+                    {() => 
+                        <InfoBody
+                            listType={listType}
+                            selectedBoard={selectedBoard} 
+                            categoryValue={categoryValue}
+                            categoryTotal={categoryTotal}
+                            boardType={boardCg}/>}
+                </Stack.Screen>
+                <Stack.Screen name="Write">
+                    {() => 
+                        <WriteBody
+                            listType={listType}
+                            selectedBoard={selectedBoard} 
+                            categoryValue={categoryValue}
+                            categoryTotal={categoryTotal}/>}
+                </Stack.Screen>
+            </Stack.Navigator>
+            {/* {categoryValue.sub === "List" && 
+                <ListBody 
+                    listType={listType}
+                    categoryValue={categoryValue}
+                    categoryTotal={categoryTotal}
+                    setCategoryValue={setCategoryValue}
+                    setSelectedBoard={setSelectedBoard}/>} */}
+            {/* {categoryValue.sub === "Info" && 
+                <InfoBody
+                    listType={listType}
+                    selectedBoard={selectedBoard} 
+                    categoryValue={categoryValue}
+                    categoryTotal={categoryTotal}
+                    setCategoryValue={setCategoryValue}
+                    boardType={boardCg}/>} */}
+            {/* {categoryValue.sub === "Write" && 
+                <WriteBody
+                    listType={listType}
+                    selectedBoard={selectedBoard} 
+                    categoryValue={categoryValue}
+                    categoryTotal={categoryTotal}
+                    setCategoryValue={setCategoryValue}/>} */}
         </View>
     )
 }

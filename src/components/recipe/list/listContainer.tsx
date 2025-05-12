@@ -1,14 +1,23 @@
 //기타
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
+import { SelectedRecipeType } from "../../../types/recipeTypes";
+import { NavigateType } from "../../../types/navigateTypes";
 
 //컴포넌트
-import SwitchTop from "../common/body/switchTop";
-import SelectSubCg from "../common/body/selectSubCg";
+import ListSwitch from "../../common/body/listSwitch";
+import SelectSubCg from "../../common/body/selectSubCg";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { TextInput } from "react-native-gesture-handler";
+import { useDispatch } from "react-redux";
+import { setCategoryValue } from "../../../redux/commonSlice";
 
 //임시 데이터
 const exListElements = [
     {
+        recipeId: "1",
         foodName: "성게미역국",
         foodImg: "../../assets/image/noImage.png",
         userId: "yoon",
@@ -18,6 +27,7 @@ const exListElements = [
         time: 30,
     },
     {
+        recipeId: "2",
         foodName: "미역오이냉국",
         foodImg: "../../assets/image/noImage.png",
         userId: "hong",
@@ -27,6 +37,7 @@ const exListElements = [
         time: 10,
     },
     {
+        recipeId: "3",
         foodName: "곤드레전",
         foodImg: "../../assets/image/noImage.png",
         userId: "kim",
@@ -36,6 +47,7 @@ const exListElements = [
         time: 20,
     },
     {
+        recipeId: "4",
         foodName: "김치 비빔 국수",
         foodImg: "../../assets/image/noImage.png",
         userId: "kim",
@@ -45,6 +57,7 @@ const exListElements = [
         time: 20,
     },
     {
+        recipeId: "5",
         foodName: "꼬막장",
         foodImg: "../../assets/image/noImage.png",
         userId: "kim",
@@ -54,6 +67,7 @@ const exListElements = [
         time: 20,
     },
     {
+        recipeId: "6",
         foodName: "파채불고기",
         foodImg: "../../assets/image/noImage.png",
         userId: "kim",
@@ -63,6 +77,7 @@ const exListElements = [
         time: 20,
     },
     {
+        recipeId: "7",
         foodName: "표고버섯 덮밥",
         foodImg: "../../assets/image/noImage.png",
         userId: "kim",
@@ -73,64 +88,119 @@ const exListElements = [
     }
 ]
 
-interface categoryValueType{
-    main: string;
-    sub: string;
-    detail: string;
-    detail_1: string;
-}
+type NavigateProps = NativeStackNavigationProp<NavigateType>;
 
-interface categoryTotalType{
-    main: string;
-    sub: string[];
-    detail: string[][];
-    detail_1: string[][][];
-}
-
-interface Props{
-    categoryValue: categoryValueType;
-    categoryTotal: categoryTotalType[];
-    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
+type Props = {
+    listType: React.RefObject<string>;
+    categoryValue: CategoryValueType;
+    categoryTotal: CategoryTotalType[];
+    setSelectedRecipe: React.Dispatch<React.SetStateAction<SelectedRecipeType>>;
+    // setCategoryValue: React.Dispatch<React.SetStateAction<CategoryValueType>>;
 }
 
 function ListContainer(props: Props): React.JSX.Element{
-    const {categoryValue, categoryTotal, setCategoryValue} = props;
-    const detailIndex = categoryTotal[1].detail[0].findIndex((item) => item === categoryValue.detail);
-    const detailIndex_1 =  categoryTotal[1].detail_1[0][detailIndex].findIndex((item) => item === categoryValue.detail_1);
+    const {listType, categoryValue, categoryTotal, setSelectedRecipe} = props;
+    const dispatch = useDispatch();
+    // const detailIndex = categoryTotal[1].detail[0].findIndex((item) => item === categoryValue.current.detail);
+    // const detailIndex_1 =  categoryTotal[1].detail_1[0][detailIndex].findIndex((item) => item === categoryValue.current.detail_1);
+    const [listState, setListState] = useState(false);
+
+    const navigation = useNavigation<NavigateProps>();
+
+    useFocusEffect(() => {
+        const mainIndex = categoryTotal.findIndex(item => item.main === "Recipe");
+        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "List");
+        const nextValue = {
+            main: categoryTotal[mainIndex].main,
+            sub: categoryTotal[mainIndex].sub[subIndex],
+            detail: categoryTotal[mainIndex].detail[subIndex][0],
+            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+        };
+
+        if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
+            dispatch(setCategoryValue({
+                ...categoryValue,
+                ...nextValue
+            }));
+        }
+    });
+
+    const touchRecipe = (recipeId: string, foodName: string) => {
+        const mainIndex = categoryTotal.findIndex((item) => item.main === categoryValue.main);
+        const subIndex = categoryTotal[mainIndex].sub.findIndex((item) => item === "Info");
+
+        listType.current = categoryValue.detail;
+
+        dispatch(setCategoryValue({
+            ...categoryValue,
+            sub: categoryTotal[mainIndex].sub[subIndex],
+            detail: categoryTotal[mainIndex].detail[subIndex][0],
+            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+        }));
+
+        setSelectedRecipe({
+            title: foodName,
+            mainSolt: "",
+            subSolt: "",
+            portion: 0,
+            time: 0,
+            imgUrl: "",
+            ingres: [{
+                sortName: "",
+                units:[{
+                    name: "",
+                    amount: 0,
+                    unit: "",
+                }]
+            }],
+            steps: [{
+                stepNum: 0,
+                imgUrl: "",
+                content: "",
+            }],
+            comments: [{
+                profileImg: "",
+                userId: "",
+                time: "",
+                content: "",
+            }]
+        });
+
+        navigation.navigate("Recipe",{
+            screen: "Info",
+        })
+    }
 
     return(
         <View style={styles.container}>
-            {categoryValue.sub === "List" && 
-                <SwitchTop categoryValue={categoryValue} categoryTotal={categoryTotal} setCategoryValue={setCategoryValue}/>}
-            {(categoryValue.sub === "List") && 
-                (categoryValue.detail !== "Other") && 
+            <TextInput style={styles.searchBox} placeholder="입력하세요..."/>
+            {categoryValue.main === "Recipe" && <ListSwitch listType={listType} categoryValue={categoryValue} categoryTotal={categoryTotal} setListState={setListState}/>}
+            {(categoryValue.detail !== "Other") && 
                     <SelectSubCg 
-                        categoryValue={categoryValue} 
                         categoryTotal={categoryTotal} 
-                        setCategoryValue={setCategoryValue} 
-                        detailIndex={detailIndex} 
-                        detailIndex_1={detailIndex_1}/>}
+                        categoryValue={categoryValue}
+                        setListState={setListState}/>}
             <ScrollView style={styles.list} contentContainerStyle={styles.listAlign}>
                 {exListElements.filter((item) => {
                         const isMainCg = (item.mainCg === categoryValue.detail);
-                        const isSubCg = ((categoryTotal[1].detail_1[0][detailIndex][0] === categoryValue.detail_1) || 
+                        const isSubCg = ((categoryValue.detail_1 === "전체") || 
                                             (item.subCg === categoryValue.detail_1));
                         return isMainCg && isSubCg;
                     }).map((item, index) => (
-                        <Pressable key={index} style={styles.element}>
+                        <Pressable key={index} style={styles.element} onPress={() => touchRecipe(item.recipeId, item.foodName)}>
                             <View style={styles.foodImgBox}>
                                 {/* 코드 변경 필요 */}
-                                <Image style={styles.foodImg} source={require("../../assets/image/참치김치찌개.jpg")}/>
+                                <Image style={styles.foodImg} source={require("../../../assets/image/참치김치찌개.jpg")}/>
                             </View>
                             <Text style={[styles.elementTxt, styles.foodName]}>{item.foodName}</Text>
                             <View style={styles.subInfo}>
                                 <View style={styles.userTimeBox}>
                                     {/* 코드 변경 필요 */}
-                                    <Image style={styles.subInfoImg} source={require("../../assets/image/profile.png")}/>
+                                    <Image style={styles.subInfoImg} source={require("../../../assets/image/profile.png")}/>
                                     <Text style={[styles.elementTxt, styles.subInfoTxt, styles.userTxt]}>{item.userId}</Text>
                                 </View>
                                 <View style={styles.userTimeBox}>
-                                    <Image style={styles.subInfoImg} source={require("../../assets/image/time.png")}/>
+                                    <Image style={styles.subInfoImg} source={require("../../../assets/image/time.png")}/>
                                     <Text style={[styles.elementTxt, styles.subInfoTxt, styles.timeTxt]}>{`${item.time}분`}</Text>
                                 </View>
                             </View>
@@ -145,6 +215,21 @@ const styles = StyleSheet.create({
     container:{
         flex: 1,
         alignItems: "center",
+        backgroundColor: "white"
+    },
+    searchBox:{
+        width: "90%",
+        height: 44,
+        marginLeft: "5%",
+        marginRight: "5%",
+        marginTop: 5,
+        marginBottom: 10,
+        textAlign: "center",
+        borderColor: "rgba(81, 81, 81, 1)",
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderRadius: 10,
+        color: "rgba(160, 160, 160, 1)"
     },
     list:{
         flex: 1,

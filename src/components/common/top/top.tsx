@@ -1,42 +1,30 @@
 //기타
-import React, { useState } from "react";
+import React from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
+import { NavigateType } from "../../../types/navigateTypes";
+import { useNavigation } from "@react-navigation/native";
 
 //컴포넌트
 import MenuBtn from "./menuBtn";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-interface categoryValueType{
-    main: string;
-    sub: string;
-    detail: string;
-    detail_1: string;
-}
-
-interface categoryTotalType{
-    main: string;
-    sub: string[];
-    detail: string[][];
-    detail_1: string[][][];
-}
-
-interface Props{
+type Props = {
     menuActive: boolean;
     setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
-    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
-    categoryTotal: categoryTotalType[];
 }
 
+type NavigateProps = NativeStackNavigationProp<NavigateType>;
+
 function Top(props: Props): React.JSX.Element{
-    const {menuActive, setMenuActive, setCategoryValue, categoryTotal} = props;
+    const {menuActive, setMenuActive} = props;
+    const navigation = useNavigation<NavigateProps>();
 
     const goHome = () => {
-        setCategoryValue({
-            main: categoryTotal[0].main,
-            sub: categoryTotal[0].sub[0],
-            detail: categoryTotal[0].detail[0][0],
-            detail_1: categoryTotal[0].detail_1[0][0][0]
-        });
         setMenuActive(false);
+        navigation.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+        });
     }
 
     return(

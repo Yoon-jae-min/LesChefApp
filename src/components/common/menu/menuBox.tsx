@@ -5,29 +5,20 @@ import { Animated, Dimensions, Image, StyleSheet, Text, View } from "react-nativ
 //컴포넌트
 import CategoryGrp from "./categoryGrp";
 
-interface categoryValueType{
-    main: string;
-    sub: string;
-    detail: string;
-    detail_1: string;
-}
+//컨텍스트
+import { useCommon } from "../../../context/commonContext";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 
-interface categoryTotalType{
-    main: string;
-    sub: string[];
-    detail: string[][];
-    detail_1: string[][][];
-}
-
-interface Props{
+type Props = {
     menuActive: Boolean;
-    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
-    categoryTotal: categoryTotalType[];
     setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function MenuBox(props: Props): React.JSX.Element{
-    const {menuActive, setCategoryValue, categoryTotal, setMenuActive} = props;
+    const {menuActive, setMenuActive} = props;
+    const {categoryTotal} = useCommon();
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const translateX = useRef(new Animated.Value(-250)).current;
 
     useEffect(() => {
@@ -57,8 +48,8 @@ function MenuBox(props: Props): React.JSX.Element{
                         mainIndex={index}
                         setMenuActive={setMenuActive}
                         mainTxt={item.main}
-                        subTxts={item.main === "Recipe" ? item.detail[0] : item.sub}
-                        setCategoryValue={setCategoryValue}
+                        subTxts={item.main === "Recipe" ? item.detail[0] : item.main === "MyPage" ? item.sub.slice(0, -2) : item.sub}
+                        categoryValue={categoryValue}
                         categoryTotal={categoryTotal}/>)
                 )}
             </View>

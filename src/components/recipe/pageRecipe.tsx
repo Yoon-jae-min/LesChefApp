@@ -1,36 +1,71 @@
 //기타
-import React from "react";
+import React, { useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 //컴포넌트
-import ListContainer from "./listContainer";
+import ListContainer from "./list/listContainer";
+import InfoContainer from "./info/infoContainer";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-interface categoryValueType{
-    main: string;
-    sub: string;
-    detail: string;
-    detail_1: string;
-}
+//컨텍스트트
+import { useCommon } from "../../context/commonContext";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
-interface categoryTotalType{
-    main: string;
-    sub: string[];
-    detail: string[][];
-    detail_1: string[][][];
-}
+const Stack = createNativeStackNavigator();
 
-interface Props{
-    categoryValue: categoryValueType;
-    categoryTotal: categoryTotalType[];
-    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
-}
-
-function PageRecipe(props: Props): React.JSX.Element{
-    const {categoryValue, categoryTotal, setCategoryValue} = props;
+function PageRecipe(): React.JSX.Element{
+    const {categoryTotal} = useCommon();
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue)
+    const [selectedRecipe, setSelectedRecipe] = useState({
+        title: "",
+        mainSolt: "",
+        subSolt: "",
+        portion: 0,
+        time: 0,
+        imgUrl: "",
+        ingres: [{
+            sortName: "",
+            units:[{
+                name: "",
+                amount: 0,
+                unit: "",
+            }]
+        }],
+        steps: [{
+            stepNum: 0,
+            imgUrl: "",
+            content: "",
+        }],
+        comments: [{
+            profileImg: "",
+            userId: "",
+            time: "",
+            content: "",
+        }]
+    });
+    const listType = useRef(categoryValue.detail);
 
     return(
         <View style={styles.container}>
-            <ListContainer categoryValue={categoryValue} categoryTotal={categoryTotal} setCategoryValue={setCategoryValue}/>
+            <Stack.Navigator screenOptions={{headerShown: false}}>
+                <Stack.Screen name="List">
+                    {() => 
+                        <ListContainer 
+                            listType={listType} 
+                            categoryValue={categoryValue} 
+                            categoryTotal={categoryTotal} 
+                            setSelectedRecipe={setSelectedRecipe}/>}
+                </Stack.Screen>
+                <Stack.Screen name="Info">
+                    {() => 
+                        <InfoContainer
+                            listType={listType}
+                            selectedRecipe={selectedRecipe}
+                            categoryTotal={categoryTotal}
+                            categoryValue={categoryValue}/>}
+                </Stack.Screen>
+            </Stack.Navigator>
         </View>
     )
 }

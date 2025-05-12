@@ -1,44 +1,39 @@
 //기타
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
+import { SelectedBoardType } from "../../../types/boardTypes";
+import { CategoryValueType, CategoryTotalType } from "../../../types/commonTypes";
 
 //컴포넌트
-import CommentBox from "../common/body/commentBox";
+import CommentBox from "../../common/body/commentBox";
+import TitleTop from "../../common/body/titleTop";
 
-interface selectedBoard{
-    boardId: string,
-    title: string,
-    content: string,
-    userId: string,
-    profileImg: string,
-    time: string,
-    viewCount: number,
-}
 
-interface commentElement{
-    userId: string;
-    writeTime: string;
-    content: string;
-}
-
-interface pageBoardProps{
-    selectedBoard: React.RefObject<selectedBoard>;
-    commentList: React.RefObject<commentElement[]>;
+type Props = {
+    listType: React.RefObject<string>;
+    selectedBoard: SelectedBoardType;
+    categoryValue: CategoryValueType;
+    categoryTotal: CategoryTotalType[];
     boardType: string;
 }
 
-function InfoBody(props: pageBoardProps): React.JSX.Element{
-    const {selectedBoard, commentList, boardType} = props;
+function InfoBody(props: Props): React.JSX.Element{
+    const {listType, categoryTotal, categoryValue, selectedBoard, boardType} = props;
 
     return(
         <View style={styles.container}>
+            <TitleTop
+                listType={listType}
+                selectedTitle={selectedBoard.title} 
+                categoryValue={categoryValue}
+                categoryTotal={categoryTotal}/>
             <View style={boardType === "Board" ? styles.top : styles.topNotice}>
                 {boardType === "Board" && 
                     <View style={styles.profileBox}>
-                        <Image style={styles.profileImg} source={require("../../assets/image/profile.png")}/>
+                        <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
                         <View style={styles.profileTxt}>
-                            <Text style={styles.userId}>{selectedBoard.current.userId}</Text>
-                            <Text style={styles.writeTime}>{selectedBoard.current.time}</Text>
+                            <Text style={styles.userId}>{selectedBoard.userId}</Text>
+                            <Text style={styles.writeTime}>{selectedBoard.time}</Text>
                         </View>
                     </View>}
                 <View style={styles.viewBox}>
@@ -46,7 +41,7 @@ function InfoBody(props: pageBoardProps): React.JSX.Element{
                 </View>
             </View>
             <View style={styles.body}></View>
-            <CommentBox/>
+            <CommentBox comments={selectedBoard.comments}/>
         </View>
     )
 }

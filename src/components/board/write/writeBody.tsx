@@ -1,23 +1,43 @@
 //기타
 import React from "react";
 import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { SelectedBoardType } from "../../../types/boardTypes";
+import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
 
-function WriteBody(): React.JSX.Element{
+//컴포넌트
+import TitleTop from "../../common/body/titleTop";
+
+type Props = {
+    listType: React.RefObject<string>;
+    selectedBoard: SelectedBoardType;
+    categoryValue: CategoryValueType;
+    categoryTotal: CategoryTotalType[];
+    // setCategoryValue: React.Dispatch<React.SetStateAction<CategoryValueType>>;
+}
+
+function WriteBody(props: Props): React.JSX.Element{
+    const {listType, selectedBoard, categoryValue, categoryTotal} = props;
+
     return(
         <View style={styles.container}>
+            <TitleTop
+                listType={listType}
+                selectedTitle={selectedBoard.title}
+                categoryValue={categoryValue}
+                categoryTotal={categoryTotal}/>
             <View style={styles.iconBox}>
                 <Pressable>
-                    <Image style={styles.icon} source={require("../../assets/image/addImg.png")}/>
+                    <Image style={styles.icon} source={require("../../../assets/image/addImg.png")}/>
                 </Pressable>
                 <View style={styles.alignBox}>
                     <Pressable>
-                        <Image style={styles.icon} source={require("../../assets/image/textAlignLeft.png")}/>
+                        <Image style={styles.icon} source={require("../../../assets/image/textAlignLeft.png")}/>
                     </Pressable>
                     <Pressable>
-                        <Image style={styles.icon} source={require("../../assets/image/textAlignCenter.png")}/>
+                        <Image style={styles.icon} source={require("../../../assets/image/textAlignCenter.png")}/>
                     </Pressable>
                     <Pressable>
-                        <Image style={styles.icon} source={require("../../assets/image/textAlignRight.png")}/>
+                        <Image style={styles.icon} source={require("../../../assets/image/textAlignRight.png")}/>
                     </Pressable>
                 </View>
             </View>

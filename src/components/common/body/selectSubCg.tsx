@@ -1,61 +1,39 @@
 //기타
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
+import { useDispatch } from "react-redux";
+import { setCategoryValue } from "../../../redux/commonSlice";
 
-interface categoryValueType{
-    main: string;
-    sub: string;
-    detail: string;
-    detail_1: string;
-}
-
-interface categoryTotalType{
-    main: string;
-    sub: string[];
-    detail: string[][];
-    detail_1: string[][][];
-}
-
-interface Props{
-    categoryValue: categoryValueType;
-    categoryTotal: categoryTotalType[];
-    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
-    // pageRenderTrig: () => void;
-    detailIndex: number;
-    detailIndex_1: number;
-    // elements: string[],
-    // subCg: number,
-    // setSubCg: React.Dispatch<React.SetStateAction<number>>
+type Props = {
+    categoryTotal: CategoryTotalType[];
+    categoryValue: CategoryValueType;
+    setListState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function SelectSubCg(props: Props): React.JSX.Element{
-    const {categoryValue, categoryTotal, setCategoryValue, detailIndex, detailIndex_1} = props;
-    // const [selected, setSelected] = useState(0);
-    // const detailIndex = categoryTotal[1].detail[0].findIndex((item) => item === categoryValue.current.detail);
-    // const detailIndex_1 =  categoryTotal[1].detail_1[0][detailIndex].findIndex((item) => item === categoryValue.current.detail_1);
+    const { categoryTotal, categoryValue, setListState} = props;
+    const detailIndex = categoryTotal[1].detail[0].findIndex(item => item === categoryValue.detail);
+    const dispatch = useDispatch();
     const elements = categoryTotal[1].detail_1[0][detailIndex];
 
-    // useEffect(() => {
-    //     setSubCg(0);
-    // }, [elements]);
-
     const touchMenu = (index: number) => {
-        setCategoryValue((prev) => ({
-            ...prev,
+        dispatch(setCategoryValue({
+            ...categoryValue,
             detail_1: categoryTotal[1].detail_1[0][detailIndex][index]
-        }))
-        // categoryValue.current.detail_1 = categoryTotal[1].detail_1[0][detailIndex][index];
-        // pageRenderTrig();
+        }));
+
+        setListState((prev) => (!prev));
     }
 
     return(
         <View style={styles.container}>
-            {elements.map((item, index) => (
+            {elements?.map((item, index) => (
                 <React.Fragment key={index}>
                     <TouchableOpacity 
-                        style={[styles.element, detailIndex_1 === index ? styles.selectE : styles.nonSelectE]}
+                        style={[styles.element, categoryValue.detail_1 === item ? styles.selectE : styles.nonSelectE]}
                         onPress={() => touchMenu(index)}>
-                        <Text style={[styles.txt, detailIndex_1 === index ? styles.selectT : styles.nonSelectT]}>{item}</Text>
+                        <Text style={[styles.txt, categoryValue.detail_1 === item ? styles.selectT : styles.nonSelectT]}>{item}</Text>
                     </TouchableOpacity>
                 </React.Fragment>
             ))}

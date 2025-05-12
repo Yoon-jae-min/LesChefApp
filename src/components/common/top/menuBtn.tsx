@@ -1,13 +1,13 @@
 //기타
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Animated, Pressable, StyleSheet, View } from "react-native";
+import { Animated, Pressable, StyleSheet } from "react-native";
 
-interface TopProps{
+type Props = {
     menuActive: boolean;
     setMenuActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function MenuBtn(props: TopProps): React.JSX.Element{
+function MenuBtn(props: Props): React.JSX.Element{
     const [animating, setAnimating] = useState(false);
     const isFirstRender = useRef(true);
     

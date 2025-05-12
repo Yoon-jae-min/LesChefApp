@@ -1,42 +1,33 @@
 //기타
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { CategoryTotalType, CategoryValueType } from "../../types/commonTypes";
+import { useDispatch } from "react-redux";
+import { setCategoryValue } from "../../redux/commonSlice";
 
-interface categoryValueType{
-    main: string;
-    sub: string;
-    detail: string;
-    detail_1: string;
+type Props = {
+    categoryValue: CategoryValueType;
+    categoryTotal: CategoryTotalType[];
+    setCategoryTrig: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-interface categoryTotalType{
-    main: string;
-    sub: string[];
-    detail: string[][];
-    detail_1: string[][][];
-}
-
-interface Props{
-    categoryValue: categoryValueType;
-    categoryTotal: categoryTotalType[];
-    setCategoryValue: React.Dispatch<React.SetStateAction<categoryValueType>>;
-}
-
-function SelectMyMenu(props: Props): React.JSX.Element{
-    const {categoryValue, categoryTotal, setCategoryValue} = props;
+function SelectMenu(props: Props): React.JSX.Element{
+    const {categoryValue, categoryTotal, setCategoryTrig} = props;
+    const dispatch = useDispatch();
 
     const selectMenu = (index: number) => {
-        setCategoryValue((prev) => ({
-            ...prev,
+        dispatch(setCategoryValue({
+            ...categoryValue,
             sub: categoryTotal[2].sub[index],
             detail: categoryTotal[2].detail[index][0],
             detail_1: categoryTotal[2].detail_1[index][0][0]
-        }));
+        }))
+        setCategoryTrig((prev) => (!prev));
     }
 
     return(
         <View style={styles.container}>
-            {categoryTotal[2].sub.map((item, index) => (
+            {categoryTotal[2].sub.filter((item, index) => index < 4).map((item, index) => (
                 <React.Fragment key={index}>
                     <TouchableOpacity
                         style={styles.element}
@@ -45,7 +36,7 @@ function SelectMyMenu(props: Props): React.JSX.Element{
                             {item}
                         </Text>
                     </TouchableOpacity>
-                    {index !== categoryTotal[2].sub.length - 1 && <View style={styles.sepaator}/>}
+                    {index < 3 && <View style={styles.sepaator}/>}
                 </React.Fragment>
             ))}
         </View>
@@ -86,4 +77,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SelectMyMenu;
+export default SelectMenu;
