@@ -23,6 +23,7 @@ export type CommentType = {
 }
 
 export type SelectedRecipeType = {
+    recipeId: string,
     title: string,
     mainSolt: string,
     subSolt: string,

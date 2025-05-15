@@ -1,6 +1,8 @@
 //기타
 import React from "react";
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
+
+//Type
 import { CommentType } from "../../../types/recipeTypes";
 
 type Prop = {

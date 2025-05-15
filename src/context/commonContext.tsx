@@ -3,7 +3,6 @@ import { CategoryTotalType } from "../types/commonTypes";
 
 type CommonContextType = {
     categoryTotal: CategoryTotalType[];
-    // categoryValue: React.RefObject<CategoryValueType>;
 }
 
 const CommonContext = createContext<CommonContextType | undefined>(undefined);
@@ -46,19 +45,12 @@ export const CommonProvider = ({children}: {children: ReactNode}) => {
                         ["Default"]], [["Default"]], [["Default"]]]
         },
         {
-            main: "Board",
+            main: "Community",
             sub: ["List", "Info", "Write"],
             detail: [["Notice", "Board"], ["Default"], ["Default"]],
             detail_1: [[["Default"], ["Default"]], [["Default"]], [["Default"]]]
         }
     ];
-    
-    // const categoryValue = useRef<CategoryValueType>({
-    //     main: categoryTotal[0].main,
-    //     sub: categoryTotal[0].sub[0],
-    //     detail: categoryTotal[0].detail[0][0],
-    //     detail_1: categoryTotal[0].detail_1[0][0][0]
-    // });
 
     return(
         <CommonContext.Provider value={{categoryTotal}}>

@@ -2,12 +2,18 @@
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-//컴포넌트
+//Component
 import SelectMyMenu from "./selectMenu";
+
+//Navigation
+import { useFocusEffect } from "@react-navigation/native";
+
+//Context
 import { useCommon } from "../../context/commonContext";
+
+//Redux
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { useFocusEffect } from "@react-navigation/native";
 import { setCategoryValue } from "../../redux/commonSlice";
 
 function PageMy(): React.JSX.Element{

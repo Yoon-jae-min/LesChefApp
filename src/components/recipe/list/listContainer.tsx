@@ -1,18 +1,28 @@
 //기타
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { TextInput } from "react-native-gesture-handler";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
-import { SelectedRecipeType } from "../../../types/recipeTypes";
+
+//Type
 import { NavigateType } from "../../../types/navigateTypes";
 
-//컴포넌트
-import ListSwitch from "../../common/body/listSwitch";
-import SelectSubCg from "../../common/body/selectSubCg";
+//Navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { TextInput } from "react-native-gesture-handler";
-import { useDispatch } from "react-redux";
+
+//Component
+import ListSwitch from "../../common/body/listSwitch";
+import SelectSubCg from "../../common/body/selectSubCg";
+
+//Redux
+import { useDispatch, useSelector } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
+import { setSelectedRecipe } from "../../../redux/recipeSlice";
+import { RootState } from "../../../redux/store";
+
+//Context
+import { useCommon } from "../../../context/commonContext";
+
 
 //임시 데이터
 const exListElements = [
@@ -90,20 +100,12 @@ const exListElements = [
 
 type NavigateProps = NativeStackNavigationProp<NavigateType>;
 
-type Props = {
-    listType: React.RefObject<string>;
-    categoryValue: CategoryValueType;
-    categoryTotal: CategoryTotalType[];
-    setSelectedRecipe: React.Dispatch<React.SetStateAction<SelectedRecipeType>>;
-    // setCategoryValue: React.Dispatch<React.SetStateAction<CategoryValueType>>;
-}
-
-function ListContainer(props: Props): React.JSX.Element{
-    const {listType, categoryValue, categoryTotal, setSelectedRecipe} = props;
-    const dispatch = useDispatch();
-    // const detailIndex = categoryTotal[1].detail[0].findIndex((item) => item === categoryValue.current.detail);
-    // const detailIndex_1 =  categoryTotal[1].detail_1[0][detailIndex].findIndex((item) => item === categoryValue.current.detail_1);
+function ListContainer(): React.JSX.Element{
     const [listState, setListState] = useState(false);
+    const dispatch = useDispatch();
+    const {categoryTotal} = useCommon();
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
+    const selectedRecipe = useSelector((state: RootState) => state.recipe.selectedRecipe);
 
     const navigation = useNavigation<NavigateProps>();
 
@@ -126,19 +128,9 @@ function ListContainer(props: Props): React.JSX.Element{
     });
 
     const touchRecipe = (recipeId: string, foodName: string) => {
-        const mainIndex = categoryTotal.findIndex((item) => item.main === categoryValue.main);
-        const subIndex = categoryTotal[mainIndex].sub.findIndex((item) => item === "Info");
-
-        listType.current = categoryValue.detail;
-
-        dispatch(setCategoryValue({
-            ...categoryValue,
-            sub: categoryTotal[mainIndex].sub[subIndex],
-            detail: categoryTotal[mainIndex].detail[subIndex][0],
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
-        }));
-
-        setSelectedRecipe({
+        dispatch(setSelectedRecipe({
+            ...selectedRecipe,
+            recipeId: recipeId,
             title: foodName,
             mainSolt: "",
             subSolt: "",
@@ -164,7 +156,7 @@ function ListContainer(props: Props): React.JSX.Element{
                 time: "",
                 content: "",
             }]
-        });
+        }));
 
         navigation.navigate("Recipe",{
             screen: "Info",
@@ -174,7 +166,7 @@ function ListContainer(props: Props): React.JSX.Element{
     return(
         <View style={styles.container}>
             <TextInput style={styles.searchBox} placeholder="입력하세요..."/>
-            {categoryValue.main === "Recipe" && <ListSwitch listType={listType} categoryValue={categoryValue} categoryTotal={categoryTotal} setListState={setListState}/>}
+            {categoryValue.main === "Recipe" && <ListSwitch categoryValue={categoryValue} categoryTotal={categoryTotal} setListState={setListState}/>}
             {(categoryValue.detail !== "Other") && 
                     <SelectSubCg 
                         categoryTotal={categoryTotal} 

@@ -1,6 +1,8 @@
 //기타
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
+
+//Type
 import { StepType } from "../../../types/recipeTypes";
 
 type Props = {

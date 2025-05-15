@@ -1,34 +1,56 @@
 //기타
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { SelectedBoardType } from "../../../types/boardTypes";
-import { CategoryValueType, CategoryTotalType } from "../../../types/commonTypes";
 
-//컴포넌트
+//Navigation
+import { useFocusEffect } from "@react-navigation/native";
+
+//Component
 import CommentBox from "../../common/body/commentBox";
 import TitleTop from "../../common/body/titleTop";
 
+//Context
+import { useCommon } from "../../../context/commonContext";
+import { useCommunity } from "../../../context/communityContext";
 
-type Props = {
-    listType: React.RefObject<string>;
-    selectedBoard: SelectedBoardType;
-    categoryValue: CategoryValueType;
-    categoryTotal: CategoryTotalType[];
-    boardType: string;
-}
+//Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import { setCategoryValue } from "../../../redux/commonSlice";
 
-function InfoBody(props: Props): React.JSX.Element{
-    const {listType, categoryTotal, categoryValue, selectedBoard, boardType} = props;
+
+function InfoBody(): React.JSX.Element{
+    const {categoryTotal} = useCommon();
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
+    const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
+    const dispatch = useDispatch();
+
+    useFocusEffect(() => {
+        const mainIndex = categoryTotal.findIndex(item => item.main === "Community");
+        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
+        const nextValue = {
+            main: categoryTotal[mainIndex].main,
+            sub: categoryTotal[mainIndex].sub[subIndex],
+            detail: categoryTotal[mainIndex].detail[subIndex][0],
+            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+        };
+
+        if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
+            dispatch(setCategoryValue({
+                ...categoryValue,
+                ...nextValue
+            }));
+        }
+    });
 
     return(
         <View style={styles.container}>
             <TitleTop
-                listType={listType}
                 selectedTitle={selectedBoard.title} 
                 categoryValue={categoryValue}
                 categoryTotal={categoryTotal}/>
-            <View style={boardType === "Board" ? styles.top : styles.topNotice}>
-                {boardType === "Board" && 
+            <View style={categoryValue.detail === "Board" ? styles.top : styles.topNotice}>
+                {categoryValue.detail === "Board" && 
                     <View style={styles.profileBox}>
                         <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
                         <View style={styles.profileTxt}>

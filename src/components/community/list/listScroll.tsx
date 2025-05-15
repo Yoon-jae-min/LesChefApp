@@ -1,13 +1,18 @@
 //기타
 import React, { useEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
-import { SelectedBoardType } from "../../../types/boardTypes";
+
+//Type
 import { NavigateType } from "../../../types/navigateTypes";
+
+//Navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
-import { setCategoryValue } from "../../../redux/commonSlice";
+
+//Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
+import { setSelectedBoard } from "../../../redux/communitySlice";
 
 //임시 데이터
 const exList = [
@@ -75,16 +80,10 @@ const exList = [
 
 type NavigationProps = NativeStackNavigationProp<NavigateType>;
 
-type Props = {
-    listType: React.RefObject<string>;
-    categoryValue: CategoryValueType;
-    categoryTotal: CategoryTotalType[];
-    setSelectedBoard: React.Dispatch<React.SetStateAction<SelectedBoardType>>;
-}
-
-function ListScroll(props: Props): React.JSX.Element{
-    const {listType, categoryValue, categoryTotal, setSelectedBoard} = props;
+function ListScroll(): React.JSX.Element{
     const [listValue, setListValue] = useState(exList[0]);
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
+    const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
     const dispatch = useDispatch();
 
     const navigation = useNavigation<NavigationProps>();
@@ -96,16 +95,8 @@ function ListScroll(props: Props): React.JSX.Element{
     }, [categoryValue.detail]);
 
     const pressBoard = (boardId: string, title: string, userId: string) => {
-        listType.current = categoryValue.detail;
-
-        dispatch(setCategoryValue({
-            ...categoryValue,
-            sub: categoryTotal[3].sub[1],
-            detail: categoryTotal[3].detail[1][0],
-            detail_1: categoryTotal[3].detail_1[1][0][0]
-        }))
-        setSelectedBoard((prev) => ({
-            ...prev,
+        dispatch(setSelectedBoard({
+            ...selectedBoard,
             boardId: boardId,
             title: title,
             content: "하이요!!",
@@ -113,11 +104,17 @@ function ListScroll(props: Props): React.JSX.Element{
             profileImg: "",
             time: "2025.04.22 00:54:32",
             viewCount: 0,
+            comments:[{
+                profileImg: "",
+                userId: "",
+                time: "",
+                content: "",
+            }]
         }));
 
-        navigation.navigate("Board", {
+        navigation.navigate("Community", {
             screen: "Info",
-        })
+        });
     }
 
     return(
@@ -145,6 +142,8 @@ function ListScroll(props: Props): React.JSX.Element{
 const styles = StyleSheet.create({
     container:{
         flex: 1,
+        width: "93%",
+        margin: "auto",
     },
     element:{
         width: "100%",

@@ -1,37 +1,54 @@
 //기타
 import React from "react";
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
+
+//Type
 import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
 import { NavigateType } from "../../../types/navigateTypes";
+
+//Navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+
+//Redux
+import { useDispatch } from "react-redux";
+import { setCategoryValue } from "../../../redux/commonSlice";
 
 type NavigationProps = NativeStackNavigationProp<NavigateType>;
 
 type Props = {
-    listType: React.RefObject<string>;
     selectedTitle: string;
     categoryValue: CategoryValueType;
     categoryTotal: CategoryTotalType[];
 }
 
 function TitleTop(props: Props): React.JSX.Element{
-    const {listType, selectedTitle, categoryValue, categoryTotal} = props;
-
+    const { selectedTitle, categoryValue, categoryTotal} = props;
+    const dispatch = useDispatch();
     const navigation = useNavigation<NavigationProps>();
 
     const pressBtn = (type: string) => {
         switch (type) {
             case "back":
+                const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
+                const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "List");
+                
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    sub: categoryTotal[mainIndex].sub[subIndex],
+                    detail: categoryTotal[mainIndex].detail[subIndex][0],
+                    detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0],
+                }));
+
                 switch(categoryValue.main){
                     case "Recipe":
                         navigation.navigate("Recipe",{
                             screen: "List"
                         })
                         break;
-                    case "Board":
-                        navigation.navigate("Board",{
+                    case "Community":
+                        navigation.navigate("Community",{
                             screen: "List",
                         })
                         break;

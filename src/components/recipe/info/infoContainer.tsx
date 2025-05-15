@@ -1,28 +1,30 @@
 //기타
 import React from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { SelectedRecipeType } from "../../../types/recipeTypes";
-import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
 
-//컴포넌트
+//Component
 import TitleTop from "../../common/body/titleTop";
 import IngreBox from "./ingreBox";
 import StepBox from "./stepBox";
 import CommentBox from "../../common/body/commentBox";
-import { useDispatch } from "react-redux";
-import { useFocusEffect } from "@react-navigation/native";
+
+//Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../redux/store";
 import { setCategoryValue } from "../../../redux/commonSlice";
 
-type Props = {
-    listType: React.RefObject<string>;
-    selectedRecipe: SelectedRecipeType;
-    categoryValue: CategoryValueType;
-    categoryTotal: CategoryTotalType[];
-}
+//Navigation
+import { useFocusEffect } from "@react-navigation/native";
 
-function InfoContainer(props: Props): React.JSX.Element{
-    const {listType, selectedRecipe, categoryTotal, categoryValue} = props;
+//Context
+import { useCommon } from "../../../context/commonContext";
+import { useRecipe } from "../../../context/recipeContext";
+
+function InfoContainer(): React.JSX.Element{
     const dispatch = useDispatch();
+    const {categoryTotal} = useCommon();
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
+    const selectedRecipe = useSelector((state: RootState) => state.recipe.selectedRecipe);
 
     useFocusEffect(() => {
         const mainIndex = categoryTotal.findIndex(item => item.main === "Recipe");
@@ -46,7 +48,6 @@ function InfoContainer(props: Props): React.JSX.Element{
     return(
         <View style={styles.container}>
             <TitleTop
-                listType={listType}
                 selectedTitle={selectedRecipe.title}
                 categoryTotal={categoryTotal}
                 categoryValue={categoryValue}/>

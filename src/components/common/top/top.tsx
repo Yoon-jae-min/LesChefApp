@@ -1,12 +1,17 @@
 //기타
 import React from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import { NavigateType } from "../../../types/navigateTypes";
-import { useNavigation } from "@react-navigation/native";
 
-//컴포넌트
-import MenuBtn from "./menuBtn";
+//Type
+import { NavigateType } from "../../../types/navigateTypes";
+
+//Navigation
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+//Component
+import MenuBtn from "./menuBtn";
+
 
 type Props = {
     menuActive: boolean;

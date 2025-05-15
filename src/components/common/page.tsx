@@ -1,24 +1,29 @@
 //기타
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, View,  Pressable } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+//Navigation
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-//컴포넌트
+//Component
 import Top from "./top/top";
 import MenuBox from "./menu/menuBox"; 
 import PageMain from "../main/pageMain";
 import PageRecipe from "../recipe/pageRecipe";
 import PageMy from "../myPage/pageMy";
-import PageBoard from "../board/pageBoard";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import PageCommunity from "../community/pageCommunity";
 
-//컨텍스트, redux
+
+//Context
 import { CommonProvider } from "../../context/commonContext";
+
+//Redux
 import { Provider } from "react-redux";
 import { store } from "../../redux/store";
 
-const Stack = createNativeStackNavigator();
+const RootStack = createNativeStackNavigator();
 
 function Page(): React.JSX.Element{
     const [menuActive, setMenuActive] = useState(false);
@@ -37,12 +42,12 @@ function Page(): React.JSX.Element{
                                 setMenuActive={setMenuActive}/>
                             {menuActive && <Pressable onPress={() => setMenuActive(false)} style={styles.menuBackground}/>}
                             <View style={styles.body}>
-                                <Stack.Navigator initialRouteName="Main" screenOptions={{headerShown: false}}>
-                                    <Stack.Screen name="Main" component={PageMain}/>
-                                    <Stack.Screen name="Recipe" component={PageRecipe}/>
-                                    <Stack.Screen name="Board" component={PageBoard}/>
-                                    <Stack.Screen name="MyPage" component={PageMy}/>
-                                </Stack.Navigator>
+                                <RootStack.Navigator initialRouteName="Main" screenOptions={{headerShown: false}}>
+                                    <RootStack.Screen name="Main" component={PageMain}/>
+                                    <RootStack.Screen name="Recipe" component={PageRecipe}/>
+                                    <RootStack.Screen name="Community" component={PageCommunity}/>
+                                    <RootStack.Screen name="MyPage" component={PageMy}/>
+                                </RootStack.Navigator>
                             </View>
                         </View>
                     </Provider>

@@ -1,7 +1,11 @@
 //기타
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+//Type
 import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
+
+//Redux
 import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
 

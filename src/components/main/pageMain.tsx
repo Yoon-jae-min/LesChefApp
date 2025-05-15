@@ -1,15 +1,21 @@
 //기타
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 
-//컴포넌트
+//Component
 import Issue from "./issue";
 import FoodPrice from "./foodPrice";
-import { TextInput } from "react-native-gesture-handler";
+
+//Navigation
 import { useFocusEffect } from "@react-navigation/native";
+
+//Redux
 import { useDispatch, useSelector } from "react-redux";
 import { setCategoryValue } from "../../redux/commonSlice";
 import { RootState } from "../../redux/store";
+
+//Context
 import { useCommon } from "../../context/commonContext";
 
 function PageMain(): React.JSX.Element{

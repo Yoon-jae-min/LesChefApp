@@ -1,6 +1,8 @@
 //기타
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+
+//Type
 import { IngreType } from "../../../types/recipeTypes";
 
 type Props = {

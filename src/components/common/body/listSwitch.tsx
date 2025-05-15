@@ -2,19 +2,22 @@
 import React from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
+
+//Type
 import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
+
+//Redux
 import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
 
 type Props = {
-    listType: React.RefObject<string>;
     categoryValue: CategoryValueType;
     categoryTotal: CategoryTotalType[];
     setListState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function ListSwitch(props: Props): React.JSX.Element{
-    const {listType, categoryValue, categoryTotal, setListState} = props;
+    const { categoryValue, categoryTotal, setListState} = props;
     const elements = categoryValue.main === "Recipe" ? categoryTotal[1].detail[0] : categoryTotal[3].detail[0];
     const dispatch = useDispatch();
 
@@ -38,8 +41,6 @@ function ListSwitch(props: Props): React.JSX.Element{
                 indexSave += 1;
             }
         }
-
-        listType.current = elements[indexSave];
 
         dispatch(setCategoryValue({
             ...categoryValue,

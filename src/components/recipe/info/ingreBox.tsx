@@ -1,9 +1,11 @@
 //기타
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+
+//Type
 import { IngreType } from "../../../types/recipeTypes";
 
-//컴포넌트
+//Component
 import IngreUnit from "./ingreUnit";
 
 type Props = {
