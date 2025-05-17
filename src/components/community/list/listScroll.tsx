@@ -1,6 +1,6 @@
 //기타
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 //Type
 import { NavigateType } from "../../../types/navigateTypes";
@@ -13,6 +13,10 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { setSelectedBoard } from "../../../redux/communitySlice";
+import { useCommunity } from "../../../context/communityContext";
+
+//style
+import styles from "@styles/community/list/listScroll.style";
 
 //임시 데이터
 const exList = [
@@ -22,7 +26,7 @@ const exList = [
             title: "공지1",
             userId: "admin2",
             profileImg: "",
-            time: "",
+            time: "2025.03.01 19:19:19",
             viewCount: 0,
         },
         {
@@ -30,7 +34,7 @@ const exList = [
             title: "반갑습니다",
             userId: "admin2",
             profileImg: "",
-            time: "",
+            time: "2025.01.22 05:30:12",
             viewCount: 0,
         },
         {
@@ -38,7 +42,7 @@ const exList = [
             title: "이벤트1",
             userId: "admin1",
             profileImg: "",
-            time: "",
+            time: "2024.12.12 00:11:22",
             viewCount: 0,
         }
     ],
@@ -48,32 +52,32 @@ const exList = [
             title: "테스트--------",
             userId: "woasl",
             profileImg: "",
-            time: "",
-            viewCount: 0,
+            time: "2025.05.01 20:30:48",
+            viewCount: 4,
         },
         {
             boardId: "!22222",
             title: "자유 게시판",
             userId: "free",
             profileImg: "",
-            time: "",
-            viewCount: 0,
+            time: "2025.01.15 10:23:45",
+            viewCount: 1002,
         },
         {
             boardId: "!33333",
             title: "안녕하세요!!!!!!",
             userId: "hello123",
             profileImg: "",
-            time: "",
-            viewCount: 0,
+            time: "2024.12.22 09:11:22",
+            viewCount: 123,
         },
         {
             boardId: "!44444",
             title: "좋은하루입니다",
             userId: "tleod1818",
             profileImg: "",
-            time: "",
-            viewCount: 0,
+            time: "2024.12.12 00:11:22",
+            viewCount: 1526,
         },
     ]
 ];
@@ -84,6 +88,7 @@ function ListScroll(): React.JSX.Element{
     const [listValue, setListValue] = useState(exList[0]);
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
+    const listType = useCommunity().communityLT;
     const dispatch = useDispatch();
 
     const navigation = useNavigation<NavigationProps>();
@@ -95,6 +100,8 @@ function ListScroll(): React.JSX.Element{
     }, [categoryValue.detail]);
 
     const pressBoard = (boardId: string, title: string, userId: string) => {
+        listType.current = categoryValue.detail;
+
         dispatch(setSelectedBoard({
             ...selectedBoard,
             boardId: boardId,
@@ -104,12 +111,26 @@ function ListScroll(): React.JSX.Element{
             profileImg: "",
             time: "2025.04.22 00:54:32",
             viewCount: 0,
-            comments:[{
-                profileImg: "",
-                userId: "",
-                time: "",
-                content: "",
-            }]
+            comments:[
+                {
+                    profileImg: "",
+                    userId: "kim",
+                    time: "2025.05.12 12:52:22",
+                    content: "반가워요!!!!",
+                },
+                {
+                    profileImg: "",
+                    userId: "hong",
+                    time: "2025.05.10 18:25:49",
+                    content: "ㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
+                },
+                {
+                    profileImg: "",
+                    userId: "yoon",
+                    time: "2025.04.27 03:12:10",
+                    content: "굿굿굿",
+                },
+            ]
         }));
 
         navigation.navigate("Community", {
@@ -121,76 +142,28 @@ function ListScroll(): React.JSX.Element{
         <View style={styles.container}>
             {listValue.map((item, index) => (
                 <Pressable key={index} style={styles.element} onPress={() => pressBoard(item.boardId, item.title, item.userId)}>
-                    <Text style={styles.title}>{item.title}</Text>
-                    <View style={styles.bottomBox}>
-                        {categoryValue.detail === "Notice" ? 
-                            <View style={styles.noticeTime}></View> :
-                            <React.Fragment>
-                                <View style={styles.leftInfo}>
-                                    <Image style={styles.bottomImg} source={require("../../../assets/image/profile.png")}/>
-                                    <Text style={styles.bottomTxt}>{item.userId}</Text>
-                                </View>
-                                <View style={styles.rightInfo}></View>
-                            </React.Fragment>}
+                    <View style={styles.topBox}>
+                        <Text style={styles.title}>{item.title}</Text>
+                        <View style={styles.viewCount}>
+                            <Image source={require("../../../assets/image/viewCount.png")} style={styles.vcImg}/>
+                            <Text style={styles.vcText}>{item.viewCount}</Text>
+                        </View>
+                    </View>
+                    
+                    <View style={[styles.bottomBox, categoryValue.detail === "Notice" ? styles.noticeBtm : styles.boardBtm]}>
+                        {categoryValue.detail === "Board" && 
+                            <View style={styles.leftInfo}>
+                                <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
+                                <Text style={styles.userId}>{item.userId}</Text>
+                            </View>}
+                        <View style={styles.rightInfo}>
+                            <Text style={styles.time}>{item.time}</Text>
+                        </View>
                     </View>
                 </Pressable>
             ))}
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        width: "93%",
-        margin: "auto",
-    },
-    element:{
-        width: "100%",
-        height: 60,
-        borderWidth: 1,
-        borderRadius: 5,
-        marginTop: 3,
-        marginBottom: 3,
-        justifyContent: "space-between"
-    },
-    title:{
-        width: "80%",
-        marginLeft: 10,
-        marginTop: 5,
-    },
-    bottomBox:{
-        marginBottom: 2,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    leftInfo:{
-        height: 15,
-        flexDirection: "row",
-        marginLeft: 7
-    },
-    rightInfo:{
-        height: 15,
-        marginRight: 7,
-        flexDirection: "row",
-        borderWidth: 1
-    },
-    bottomImg:{
-        width: 13,
-        height: 13,
-        marginRight: 5,
-    },
-    bottomTxt:{
-        height: 13,
-        fontSize: 10,
-        color: "rgba(67, 67, 67, 1)"
-    },
-    noticeTime:{
-        borderWidth: 1,
-        height: 15,
-        width: "100%"
-    }
-});
 
 export default ListScroll;

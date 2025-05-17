@@ -1,9 +1,12 @@
 //기타
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 //Type
 import { IngreType } from "../../../types/recipeTypes";
+
+//style
+import styles from "@styles/recipe/info/ingreUnit.style";
 
 type Props = {
     ingre: IngreType;
@@ -27,14 +30,5 @@ function IngreUnit(props: Props): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-
-    },
-    title:{
-
-    }
-});
 
 export default IngreUnit;

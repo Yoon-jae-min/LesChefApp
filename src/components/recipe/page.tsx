@@ -1,16 +1,19 @@
 //기타
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 //Navigation
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 //Component
-import ListContainer from "./list/listContainer";
-import InfoContainer from "./info/infoContainer";
+import ListContainer from "./list/listBox";
+import InfoContainer from "./info/infoBox";
 
 //Context
 import { RecipeProvider } from "../../context/recipeContext";
+
+//style
+import styles from "@styles/recipe/page.style";
 
 const RecipeStack = createNativeStackNavigator();
 
@@ -27,11 +30,5 @@ function PageRecipe(): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-    },
-})
 
 export default PageRecipe;

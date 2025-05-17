@@ -1,19 +1,19 @@
 import React, { createContext, ReactNode, useContext, useRef, useState } from "react";
 
 type RecipeContextType = {
-    // recipeLT: React.RefObject<string>;
-    recipeLT: string;
-    setRecipeLT: React.Dispatch<React.SetStateAction<string>>;
+    recipeLT: React.RefObject<string>;
+    // recipeLT: string;
+    // setRecipeLT: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 
 export const RecipeProvider = ({children}: {children: ReactNode}) => {
-    // const recipeLT = useRef("");
-    const [recipeLT, setRecipeLT] = useState("Korean");
+    const recipeLT = useRef("");
+    // const [recipeLT, setRecipeLT] = useState("Korean");
 
     return(
-        <RecipeContext.Provider value={{recipeLT, setRecipeLT}}>
+        <RecipeContext.Provider value={{recipeLT}}>
             {children}
         </RecipeContext.Provider>
     )

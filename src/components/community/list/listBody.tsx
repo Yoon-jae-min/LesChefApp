@@ -1,7 +1,7 @@
 //기타
 import React, { useState } from "react";
 import { TextInput } from "react-native-gesture-handler";
-import { Pressable, StyleSheet, Text, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 
 //Type
 import { NavigateType } from "../../../types/navigateTypes";
@@ -21,6 +21,9 @@ import { useCommon } from "../../../context/commonContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
 import { RootState } from "../../../redux/store";
+
+//style
+import styles from "@styles/community/list/listBody.style";
 
 type NavigationProps = NativeStackNavigationProp<NavigateType>;
 
@@ -82,46 +85,5 @@ function ListBody(): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: "100%",
-        backgroundColor: "white",
-    },
-    searchBox:{
-        width: "90%",
-        height: 44,
-        marginLeft: "5%",
-        marginRight: "5%",
-        marginTop: 5,
-        marginBottom: 10,
-        textAlign: "center",
-        borderColor: "rgba(81, 81, 81, 1)",
-        backgroundColor: "white",
-        borderWidth: 1,
-        borderRadius: 10,
-        color: "rgba(160, 160, 160, 1)"
-    },
-    head: {
-        width: "100%",
-        height: 25,
-        flexDirection: "row",
-        marginTop: 5,
-        marginBottom: 10,
-    },
-    element:{
-        width: 70,
-        marginLeft: "4%",
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 50,
-        borderWidth: 1,
-        borderColor: "rgba(67, 67, 67, 1)"
-    },
-    txt:{
-        fontFamily: "Jua-Regular",
-    }
-});
 
 export default ListBody;

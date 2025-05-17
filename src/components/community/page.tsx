@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 //Navigation
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -12,6 +12,9 @@ import WriteBody from "./write/writeBody";
 
 //Context
 import { CommunityProvider } from "../../context/communityContext";
+
+//style
+import styles from "@styles/community/page.style";
 
 const CommunityStack = createNativeStackNavigator();
 
@@ -94,11 +97,4 @@ function PageCommunity(): React.JSX.Element{
     )
 }
 
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-    }
-})
-
 export default PageCommunity;
-

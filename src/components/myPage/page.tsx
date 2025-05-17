@@ -1,6 +1,6 @@
 //기타
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 //Component
 import SelectMyMenu from "./selectMenu";
@@ -15,6 +15,9 @@ import { useCommon } from "../../context/commonContext";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { setCategoryValue } from "../../redux/commonSlice";
+
+//style
+import styles from "@styles/myPage/page.style";
 
 function PageMy(): React.JSX.Element{
     const {categoryTotal} = useCommon();
@@ -54,17 +57,5 @@ function PageMy(): React.JSX.Element{
         
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        backgroundColor: "white"
-    },
-    content:{
-        flex: 1,
-        borderColor: "#E0A05E",
-        borderWidth: 3,
-    }
-})
 
 export default PageMy;

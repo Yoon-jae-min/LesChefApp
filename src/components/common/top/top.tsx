@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 
 //Type
 import { NavigateType } from "../../../types/navigateTypes";
@@ -12,6 +12,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 //Component
 import MenuBtn from "./menuBtn";
 
+//style
+import styles from "@styles/common/top/top.style";
 
 type Props = {
     menuActive: boolean;
@@ -41,24 +43,5 @@ function Top(props: Props): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    body:{
-        height: 70,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: "#fff",
-    },
-    logoBox: {
-        width: "35%",
-        height: "100%",
-    },
-    logo:{
-        width: "100%",
-        height: "100%",
-        resizeMode: "contain",
-    }
-})
 
 export default Top;

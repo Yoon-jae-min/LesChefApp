@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 //Type
 import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
@@ -8,6 +8,9 @@ import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes
 //Redux
 import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
+
+//style
+import styles from "@styles/common/body/selectSubCg.style";
 
 type Props = {
     categoryTotal: CategoryTotalType[];
@@ -44,39 +47,5 @@ function SelectSubCg(props: Props): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        width: "93%",
-        height: 25,
-        flexDirection: "row",
-        marginTop: 5,
-        marginBottom: 10,
-    },
-    element:{
-        width: 70,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 50,
-        marginRight: 5,
-        borderWidth: 1,
-        borderColor: "rgba(67, 67, 67, 1)"
-    },
-    selectE:{
-        backgroundColor: "rgba(67, 67, 67, 1)",
-    },
-    nonSelectE:{
-        backgroundColor: "rgba(255, 255, 255, 1)",
-    },
-    txt:{
-        fontFamily: "Jua-Regular",
-    },
-    selectT:{
-        color: "rgba(255, 255, 255, 1)"
-    },
-    nonSelectT:{
-        color: "rgba(0, 0, 0, 1)"
-    }
-})
 
 export default SelectSubCg;

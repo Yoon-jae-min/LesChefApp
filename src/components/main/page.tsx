@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
 //Component
@@ -17,6 +17,9 @@ import { RootState } from "../../redux/store";
 
 //Context
 import { useCommon } from "../../context/commonContext";
+
+//style
+import styles from "@styles/main/page.style";
 
 function PageMain(): React.JSX.Element{
     const {categoryTotal} = useCommon();
@@ -51,29 +54,5 @@ function PageMain(): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        backgroundColor: "white"
-    },
-    containerAlign:{
-        alignItems: "center"
-    },
-    searchBox:{
-        width: "90%",
-        height: 44,
-        marginLeft: "5%",
-        marginRight: "5%",
-        marginTop: 5,
-        marginBottom: 10,
-        textAlign: "center",
-        borderColor: "rgba(81, 81, 81, 1)",
-        backgroundColor: "white",
-        borderWidth: 1,
-        borderRadius: 10,
-        color: "rgba(160, 160, 160, 1)"
-    }
-})
 
 export default PageMain;

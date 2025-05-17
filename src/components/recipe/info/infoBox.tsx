@@ -1,12 +1,12 @@
 //기타
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, View } from "react-native";
 
 //Component
 import TitleTop from "../../common/body/titleTop";
 import IngreBox from "./ingreBox";
 import StepBox from "./stepBox";
-import CommentBox from "../../common/body/commentBox";
+import CommentBox from "../../common/body/cmtBox";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +18,9 @@ import { useFocusEffect } from "@react-navigation/native";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
-import { useRecipe } from "../../../context/recipeContext";
+
+//style
+import styles from "@styles/recipe/info/infoBox.style";
 
 function InfoContainer(): React.JSX.Element{
     const dispatch = useDispatch();
@@ -65,23 +67,5 @@ function InfoContainer(): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-
-    },
-    topInfoBox:{
-
-    },
-    leftInfo:{
-
-    },
-    rightInfo:{
-
-    },
-    mainImg:{
-
-    }
-});
 
 export default InfoContainer;

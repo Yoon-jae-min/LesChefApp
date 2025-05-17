@@ -1,12 +1,12 @@
 //기타
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
 //Component
-import CommentBox from "../../common/body/commentBox";
+import CommentBox from "../../common/body/cmtBox";
 import TitleTop from "../../common/body/titleTop";
 
 //Context
@@ -17,10 +17,14 @@ import { useCommunity } from "../../../context/communityContext";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { setCategoryValue } from "../../../redux/commonSlice";
+import { ScrollView } from "react-native-gesture-handler";
 
+//style
+import styles from "@styles/community/info/infoBody.style";
 
 function InfoBody(): React.JSX.Element{
     const {categoryTotal} = useCommon();
+    const listType = useCommunity().communityLT;
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
     const dispatch = useDispatch();
@@ -49,73 +53,29 @@ function InfoBody(): React.JSX.Element{
                 selectedTitle={selectedBoard.title} 
                 categoryValue={categoryValue}
                 categoryTotal={categoryTotal}/>
-            <View style={categoryValue.detail === "Board" ? styles.top : styles.topNotice}>
-                {categoryValue.detail === "Board" && 
-                    <View style={styles.profileBox}>
-                        <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
-                        <View style={styles.profileTxt}>
-                            <Text style={styles.userId}>{selectedBoard.userId}</Text>
-                            <Text style={styles.writeTime}>{selectedBoard.time}</Text>
-                        </View>
-                    </View>}
-                <View style={styles.viewBox}>
-                    <Text style={styles.viewTxt}>{`조회수:`}</Text>
+            <ScrollView contentContainerStyle={styles.scrollAlign} showsVerticalScrollIndicator={false}>
+                <View style={[styles.top, listType.current === "Board" ? styles.topBoard : styles.topNotice]}>
+                    {listType.current === "Board" ?
+                        <View style={styles.profileBox}>
+                            <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
+                            <View style={styles.profileTxt}>
+                                <Text style={styles.userId}>{selectedBoard.userId}</Text>
+                                <Text style={styles.writeTime}>{selectedBoard.time}</Text>
+                            </View>
+                        </View> :
+                        <Text style={styles.writeTime}>{selectedBoard.time}</Text>
+                    }
+                    <View style={styles.viewBox}>
+                        <Text style={styles.viewTxt}>{`조회수:  ${selectedBoard.viewCount}`}</Text>
+                    </View>
                 </View>
-            </View>
-            <View style={styles.body}></View>
-            <CommentBox comments={selectedBoard.comments}/>
+                <View style={styles.body}>
+                    <Text style={styles.content}>{selectedBoard.content}</Text>
+                </View>
+                <CommentBox comments={selectedBoard.comments}/>
+            </ScrollView>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        borderBottomWidth: 1,
-        borderColor: "rgba(204, 204, 204, 1)",
-        width: "93%",
-    },
-    top:{
-        flexDirection: "row",
-        marginTop: 5,
-        marginBottom: 7,
-        justifyContent: "space-between",
-        alignItems: "flex-end",
-    },
-    topNotice: {
-        marginTop: 5,
-        marginBottom: 7,
-        flexDirection: "row",
-        justifyContent: "flex-end",
-    },
-    profileBox:{
-        flexDirection: "row",
-    },
-    profileImg:{
-        borderWidth: 1,
-        borderColor: "rgba(204, 204, 204, 1)",
-        borderRadius: 50,
-        width: 40,
-        height: 40,
-        resizeMode: "contain"
-    },
-    profileTxt:{
-        marginLeft: 10,
-    },
-    userId:{
-
-    },
-    writeTime:{
-
-    },
-    viewBox:{
-
-    },
-    viewTxt:{
-
-    },
-    body:{
-
-    }
-})
 
 export default InfoBody;

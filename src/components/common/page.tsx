@@ -1,6 +1,6 @@
 //기타
 import React, { useState } from "react";
-import { StyleSheet, View,  Pressable } from "react-native";
+import { View,  Pressable } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 //Navigation
@@ -10,11 +10,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 //Component
 import Top from "./top/top";
 import MenuBox from "./menu/menuBox"; 
-import PageMain from "../main/pageMain";
-import PageRecipe from "../recipe/pageRecipe";
-import PageMy from "../myPage/pageMy";
-import PageCommunity from "../community/pageCommunity";
-
+import PageMain from "../main/page";
+import PageRecipe from "../recipe/page";
+import PageMy from "../myPage/page";
+import PageCommunity from "../community/page";
 
 //Context
 import { CommonProvider } from "../../context/commonContext";
@@ -22,6 +21,9 @@ import { CommonProvider } from "../../context/commonContext";
 //Redux
 import { Provider } from "react-redux";
 import { store } from "../../redux/store";
+
+//style
+import styles from "@styles/common/page.style";
 
 const RootStack = createNativeStackNavigator();
 
@@ -56,37 +58,5 @@ function Page(): React.JSX.Element{
         </GestureHandlerRootView>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        position: "relative",
-    },
-    body:{
-        flex: 1,
-        backgroundColor: "white",
-    },
-    searchBox:{
-        width: "90%",
-        height: 44,
-        marginLeft: "5%",
-        marginRight: "5%",
-        marginTop: 5,
-        marginBottom: 10,
-        textAlign: "center",
-        borderColor: "white",
-        borderWidth: 1,
-        borderRadius: 10,
-        color: "rgba(160, 160, 160, 1)"
-    },
-    menuBackground:{
-        zIndex: 5,
-        position: "absolute",
-        top: 70,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0)",
-    }
-});
 
 export default Page;

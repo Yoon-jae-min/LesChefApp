@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { Image, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { Image, Pressable, TextInput, View } from "react-native";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
@@ -10,17 +10,17 @@ import TitleTop from "../../common/body/titleTop";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
-import { useCommunity } from "../../../context/communityContext";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { setCategoryValue } from "../../../redux/commonSlice";
 
+//style
+import styles from "@styles/community/write/writeBody.style";
 
 function WriteBody(): React.JSX.Element{
     const {categoryTotal} = useCommon();
-    const listType = useCommunity().communityLT;
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
     const dispatch = useDispatch();
@@ -46,7 +46,6 @@ function WriteBody(): React.JSX.Element{
     return(
         <View style={styles.container}>
             <TitleTop
-                listType={listType}
                 selectedTitle={selectedBoard.title}
                 categoryValue={categoryValue}
                 categoryTotal={categoryTotal}/>
@@ -70,40 +69,5 @@ function WriteBody(): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex: 1,
-        width: "93%",
-        alignItems: "center",
-        marginTop: 7,
-    },
-    iconBox:{
-        flexDirection: "row",
-        width: "97%",
-        height: 30,
-        justifyContent: "space-between",
-        alignItems: "flex-end",
-        marginBottom: 3,
-    },
-    alignBox:{
-        flexDirection: "row",
-        height: 25,
-        width: 85,
-        justifyContent: "space-between"
-    },
-    icon:{
-        width: 25,
-        height: 25,
-        resizeMode: "contain",
-    },
-    textInput:{
-        borderWidth: 1,
-        width: "100%",
-        flex: 1,
-        marginBottom: 7,
-        borderRadius: 5,
-    }
-})
 
 export default WriteBody;

@@ -1,6 +1,9 @@
 //기타
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
+
+//style
+import styles from "@styles/main/foodPrice.style";
 
 function FoodPrice(): React.JSX.Element{
     return(
@@ -10,21 +13,5 @@ function FoodPrice(): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        width: "93%",
-        marginTop: 10,
-    },
-    title:{
-        fontFamily: "Kavoon-Regular",
-        fontSize: 20,
-    },
-    example:{
-        textAlign: "center",
-        textAlignVertical: "center",
-        height: 200,
-    }
-})
 
 export default FoodPrice;

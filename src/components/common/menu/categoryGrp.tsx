@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 //Type
 import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
@@ -13,6 +13,9 @@ import { useNavigation } from "@react-navigation/native";
 //Redux
 import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
+
+//style
+import styles from "@styles/common/menu/categoryGrp.style";
 
 type NavigateProps = NativeStackNavigationProp<NavigateType>;
 
@@ -93,28 +96,5 @@ function CategoryGrp(props: Props): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        width: 220,
-        marginLeft: 15,
-        marginRight: 15,
-        marginBottom: 10,
-    },
-    mainTxt: {
-        fontFamily: "Kavoon-Regular",
-        fontSize: 20,
-        marginBottom: 6,
-    },
-    subTxt: {
-        fontFamily: "Wellfleet-Regular",
-        fontSize: 17,
-        marginLeft: 10,
-        marginBottom: 5,
-    },
-    pressBox:{
-        alignSelf: "flex-start",
-    }
-})
 
 export default CategoryGrp;

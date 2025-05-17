@@ -1,12 +1,15 @@
 //기타
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 //Type
 import { IngreType } from "../../../types/recipeTypes";
 
 //Component
 import IngreUnit from "./ingreUnit";
+
+//style
+import styles from "@styles/recipe/info/ingreBox.style";
 
 type Props = {
     ingres: IngreType[];
@@ -26,14 +29,5 @@ function IngreBox(props: Props): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-
-    },
-    title:{
-
-    }
-});
 
 export default IngreBox;

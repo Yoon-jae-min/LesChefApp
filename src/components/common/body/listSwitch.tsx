@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 //Type
@@ -9,6 +9,9 @@ import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes
 //Redux
 import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
+
+//style
+import {styles, pickerStyles} from "@styles/common/body/listSwitch.style";
 
 type Props = {
     categoryValue: CategoryValueType;
@@ -73,42 +76,5 @@ function ListSwitch(props: Props): React.JSX.Element{
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        width: "100%",
-        backgroundColor: "white",
-    },
-    arrow:{
-        width: 40,
-        height: 40,
-    }
-})
-
-const pickerStyles = StyleSheet.create({
-    inputIOS: {
-        fontFamily: "Jua-Regular",
-        fontSize: 22,
-        padding: 12,
-        width: 250,
-        height: 50,
-        backgroundColor: "white",
-        color: "black",
-        textAlign: "center",
-    },
-    inputAndroid: {
-        fontFamily: "Jua-Regular",
-        fontSize: 22,
-        padding: 12,
-        width: 250,
-        height: 50,
-        backgroundColor: "white",
-        color: "black",
-        textAlign: "center",
-    },
-})
 
 export default ListSwitch;

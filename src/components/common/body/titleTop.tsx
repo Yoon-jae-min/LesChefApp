@@ -1,6 +1,6 @@
 //기타
 import React from "react";
-import { Alert, Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Image, Pressable, Text, TextInput, View } from "react-native";
 import Toast from "react-native-toast-message";
 
 //Type
@@ -14,6 +14,9 @@ import { useNavigation } from "@react-navigation/native";
 //Redux
 import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
+
+//style
+import styles from "@styles/common/body/titleTop.style";
 
 type NavigationProps = NativeStackNavigationProp<NavigateType>;
 
@@ -71,55 +74,20 @@ function TitleTop(props: Props): React.JSX.Element{
     return(
         <View style={styles.container}>
             <Pressable onPress={() => pressBtn("back")}>
-                <Image style={styles.icon} source={require("../../../assets/image/back.png")}/>
+                <Image style={styles.leftIcon} source={require("../../../assets/image/back.png")}/>
             </Pressable>
             {categoryValue.sub === "Info" && <Text style={[styles.center, styles.title]}>{selectedTitle}</Text>}
             {categoryValue.sub === "Write" && <TextInput style={[styles.center, styles.inputTitle]} placeholder="- title -"/>}
             <Pressable onPress={() => pressBtn("like")}>
                 {categoryValue.sub === "Info" && 
                     (categoryValue.main === "Community" ? 
-                        <Image style={styles.icon} source={require("../../../assets/image/thumb.png")}/> :
-                        <Image style={styles.icon} source={require("../../../assets/image/unlike.png")}/>
+                        <Image style={styles.rightIcon} source={require("../../../assets/image/thumb.png")}/> :
+                        <Image style={styles.rightIcon} source={require("../../../assets/image/unlike.png")}/>
                     )}
-                {categoryValue.sub === "Write" && <Image style={styles.icon} source={require("../../../assets/image/upload.png")}/>}
+                {categoryValue.sub === "Write" && <Image style={styles.rightIcon} source={require("../../../assets/image/upload.png")}/>}
             </Pressable>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        width: "100%",
-    },
-    center:{
-        fontFamily: "Jua-Regular",
-        width: 250,
-        height: 50,
-        backgroundColor: "white",
-        textAlign: "center",
-        textAlignVertical: "center",
-    },
-    title:{
-        color: "black",
-        fontSize: 22,
-        lineHeight: 22,
-        padding: 12,
-    },
-    inputTitle:{
-        borderWidth: 1,
-        borderColor: "rgba(160, 160, 160, 1)",
-        color: "rgba(160, 160, 160, 1)",
-        borderRadius: 5,
-        height: 37,
-        fontSize: 15,
-    },
-    icon:{
-        height: 40,
-        width: 40
-    }
-})
 
 export default TitleTop;
