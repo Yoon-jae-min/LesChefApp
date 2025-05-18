@@ -17,13 +17,13 @@ function StepBox(props: Props): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            <Text>Step</Text>
+            <Text style={styles.title}>Step</Text>
             {steps.map((item, index) => (
-                <View key={index}>
-                    <Image source={require("../../../assets/image/noImage.png")}/>
-                    <View>
-                        <Text>{`Step.${item.stepNum}`}</Text>
-                        <Text>{item.content}</Text>
+                <View key={index} style={styles.unitBox}>
+                    <Image source={require("../../../assets/image/noImage.png")} style={styles.img}/>
+                    <View style={styles.descript}>
+                        <Text style={styles.stepNum}>{`Step.${item.stepNum}`}</Text>
+                        <Text style={styles.content}>{item.content}</Text>
                     </View>
                 </View>
             ))}

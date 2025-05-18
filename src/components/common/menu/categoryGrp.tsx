@@ -36,9 +36,6 @@ function CategoryGrp(props: Props): React.JSX.Element{
     const pageTouch = (subValue: string) => {
         setMenuActive(false);
         switch (mainTxt) {
-            case "Main":
-                navigation.navigate("Main");
-                break;
             case "Recipe":
                 const recipeMain = categoryTotal.findIndex(item => item.main === mainTxt);
                 const recipeSub = categoryTotal[recipeMain].sub.findIndex(item => item === "List");
@@ -52,9 +49,14 @@ function CategoryGrp(props: Props): React.JSX.Element{
                     detail_1: categoryTotal[mainIndex].detail_1[recipeSub][recipeDetail][0]
                 }));
 
-                navigation.navigate("Recipe", {
-                    screen: "List",
+                navigation.reset({
+                    index: 1,
+                    routes:[
+                        {name: "Main"},
+                        {name: "Recipe", state: {index: 0, routes: [{name: "List"}]}}
+                    ]
                 });
+
                 break;
             case "MyPage":
                 const myMain = categoryTotal.findIndex(item => item.main === "MyPage");
@@ -69,11 +71,24 @@ function CategoryGrp(props: Props): React.JSX.Element{
                 }));
 
                 navigation.navigate("MyPage");
+
+                navigation.reset({
+                    index: 1,
+                    routes:[
+                        {name: "Main"},
+                        {name: "MyPage"}
+                    ]
+                });
+
                 break;
             case "Community":
-                navigation.navigate("Community", {
-                    screen: "List",
-                });
+                navigation.reset({
+                    index: 1,
+                    routes: [
+                        {name: "Main"},
+                        {name: "Community", state: {index: 0, routes: [{name: "List"}]}}
+                    ]
+                })
                 break;
             default:
                 break;

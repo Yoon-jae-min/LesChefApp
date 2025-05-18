@@ -46,12 +46,12 @@ function TitleTop(props: Props): React.JSX.Element{
 
                 switch(categoryValue.main){
                     case "Recipe":
-                        navigation.navigate("Recipe",{
+                        navigation.replace("Recipe",{
                             screen: "List"
                         })
                         break;
                     case "Community":
-                        navigation.navigate("Community",{
+                        navigation.replace("Community",{
                             screen: "List",
                         })
                         break;

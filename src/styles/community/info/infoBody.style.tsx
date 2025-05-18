@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     },
     scrollAlign:{
         alignItems: "center",
-        paddingBottom: 50
+        paddingBottom: 40,
     },
     top:{
         flexDirection: "row",

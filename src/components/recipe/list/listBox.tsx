@@ -134,29 +134,36 @@ function ListContainer(): React.JSX.Element{
             ...selectedRecipe,
             recipeId: recipeId,
             title: foodName,
-            mainSolt: "",
-            subSolt: "",
-            portion: 0,
-            time: 0,
+            mainSolt: "한식",
+            subSolt: "국/찌개",
+            portion: 2,
+            time: 30,
             imgUrl: "",
             ingres: [{
-                sortName: "",
-                units:[{
-                    name: "",
-                    amount: 0,
-                    unit: "",
-                }]
+                sortName: "기본 재료",
+                units:[
+                    {
+                        name: "양파",
+                        amount: 1,
+                        unit: "망",
+                    },
+                    {
+                        name: "계란",
+                        amount: 2,
+                        unit: "개",
+                    }
+                ]
             }],
             steps: [{
-                stepNum: 0,
+                stepNum: 1,
                 imgUrl: "",
-                content: "",
+                content: "양파 썰기",
             }],
             comments: [{
                 profileImg: "",
-                userId: "",
-                time: "",
-                content: "",
+                userId: "yoon",
+                time: "2025.02.11 03:44:52",
+                content: "와아아아아ㅏㅏㅏㅏ!!!!",
             }]
         }));
 

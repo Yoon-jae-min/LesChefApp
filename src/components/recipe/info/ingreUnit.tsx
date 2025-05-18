@@ -19,15 +19,16 @@ function IngreUnit(props: Props): React.JSX.Element{
         <View style={styles.container}>
             <Text style={styles.title}>{ingre.sortName}</Text>
             {ingre.units.map((item, index) => (
-                <View key={index}>
-                    <Text>{item.name}</Text>
-                    <View>
-                        <Text>{item.amount}</Text>
-                        <Text>{item.unit}</Text>
+                <View key={index} style={styles.unitEach}>
+                    <Text style={styles.ingreName}>{item.name}</Text>
+                    <View style={styles.portionBox}>
+                        <Text style={styles.amount}>{item.amount}</Text>
+                        <Text style={styles.unit}>{item.unit}</Text>
                     </View>
                 </View>
             ))}
         </View>
+        
     )
 }
 

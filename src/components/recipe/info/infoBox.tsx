@@ -21,6 +21,7 @@ import { useCommon } from "../../../context/commonContext";
 
 //style
 import styles from "@styles/recipe/info/infoBox.style";
+import { ScrollView, Text } from "react-native-gesture-handler";
 
 function InfoContainer(): React.JSX.Element{
     const dispatch = useDispatch();
@@ -53,17 +54,31 @@ function InfoContainer(): React.JSX.Element{
                 selectedTitle={selectedRecipe.title}
                 categoryTotal={categoryTotal}
                 categoryValue={categoryValue}/>
-            <View style={styles.topInfoBox}>
-                <View style={styles.leftInfo}></View>
-                <View style={styles.rightInfo}></View>
-            </View>
-            <Image style={styles.mainImg} source={require("../../../assets/image/noImage.png")}/>
-            <IngreBox
-                ingres={selectedRecipe.ingres}/>
-            <StepBox
-                steps={selectedRecipe.steps}/>
-            <CommentBox
-                comments={selectedRecipe.comments}/>
+            <ScrollView contentContainerStyle={styles.scrollAlign}>
+                <View style={styles.topInfoBox}>
+                    <View style={styles.leftInfo}>
+                        <Text style={styles.category}>
+                            {selectedRecipe.mainSolt === "기타" ? selectedRecipe.mainSolt :
+                                `${selectedRecipe.mainSolt} > ${selectedRecipe.subSolt}`}
+                        </Text>
+                    </View>
+                    <View style={styles.rightInfo}>
+                        <Text style={styles.portion}>{`${selectedRecipe.portion}인분`}</Text>
+                        <View style={styles.line}></View>
+                        <View style={styles.timeBox}>
+                            <Image source={require("../../../assets/image/time.png")} style={styles.timeImg}/>
+                            <Text style={styles.timeText}>{`${selectedRecipe.time}분`}</Text>
+                        </View>
+                    </View>
+                </View>
+                <Image style={styles.mainImg} source={require("../../../assets/image/noImage.png")}/>
+                <IngreBox
+                    ingres={selectedRecipe.ingres}/>
+                <StepBox
+                    steps={selectedRecipe.steps}/>
+                <CommentBox
+                    comments={selectedRecipe.comments}/>
+            </ScrollView>
         </View>
     )
 }
