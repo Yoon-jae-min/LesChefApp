@@ -12,7 +12,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 //컴포넌트
 import ListScroll from "./listScroll";
-import ListSwitch from "../../common/body/listSwitch";
+import ListSwitch from "../../common/useElement/listSwitch";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
@@ -76,11 +76,14 @@ function ListBody(): React.JSX.Element{
                     categoryValue={categoryValue} 
                     setListState={setListState}
                     categoryTotal={categoryTotal}/>}
-            <View style={styles.head}>
-                <Pressable style={styles.element} onPress={() => goWrite()}>
-                    <Text style={styles.txt}>글쓰기</Text>
-                </Pressable>
-            </View>
+                {(categoryValue.detail === "Board" 
+                    // || (categoryValue.detail === "Notice" && "")
+                    ) && 
+                    <View style={styles.head}>
+                        <Pressable style={styles.element} onPress={() => goWrite()}>
+                            <Text style={styles.txt}>글쓰기</Text>
+                        </Pressable>
+                    </View>}
             <ListScroll/>
         </View>
     )

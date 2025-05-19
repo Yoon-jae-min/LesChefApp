@@ -3,18 +3,14 @@ import React from "react";
 import { Image, View } from "react-native";
 
 //Component
-import TitleTop from "../../common/body/titleTop";
+import TitleTop from "../../common/useElement/titleTop";
 import IngreBox from "./ingreBox";
 import StepBox from "./stepBox";
-import CommentBox from "../../common/body/cmtBox";
+import CommentBox from "../../common/useElement/cmtBox";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { setCategoryValue } from "../../../redux/commonSlice";
-
-//Navigation
-import { useFocusEffect } from "@react-navigation/native";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
@@ -23,30 +19,31 @@ import { useCommon } from "../../../context/commonContext";
 import styles from "@styles/recipe/info/infoBox.style";
 import { ScrollView, Text } from "react-native-gesture-handler";
 
-function InfoContainer(): React.JSX.Element{
-    const dispatch = useDispatch();
+function InfoBox(): React.JSX.Element{
     const {categoryTotal} = useCommon();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedRecipe = useSelector((state: RootState) => state.recipe.selectedRecipe);
 
-    useFocusEffect(() => {
-        const mainIndex = categoryTotal.findIndex(item => item.main === "Recipe");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
+    // useFocusEffect(() => {
+    //     if(categoryValue.main === "Recipe"){
+    //         const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
+    //         const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
 
-        const nextValue = {
-            main: categoryTotal[mainIndex].main,
-            sub: categoryTotal[mainIndex].sub[subIndex],
-            detail: categoryTotal[mainIndex].detail[subIndex][0],
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
-        };
+    //         const nextValue = {
+    //             main: categoryTotal[mainIndex].main,
+    //             sub: categoryTotal[mainIndex].sub[subIndex],
+    //             detail: categoryTotal[mainIndex].detail[subIndex][0],
+    //             detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+    //         };
 
-        if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
-        }
-    });
+    //         if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
+    //             dispatch(setCategoryValue({
+    //                 ...categoryValue,
+    //                 ...nextValue
+    //             }));
+    //         }
+    //     }
+    // });
 
     return(
         <View style={styles.container}>
@@ -83,4 +80,4 @@ function InfoContainer(): React.JSX.Element{
     )
 }
 
-export default InfoContainer;
+export default InfoBox;

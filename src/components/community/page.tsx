@@ -10,9 +10,6 @@ import ListBody from "./list/listBody";
 import InfoBody from "./info/infoBody";
 import WriteBody from "./write/writeBody";
 
-//Context
-import { CommunityProvider } from "../../context/communityContext";
-
 //style
 import styles from "@styles/community/page.style";
 
@@ -86,13 +83,11 @@ function PageCommunity(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            <CommunityProvider>
-                <CommunityStack.Navigator screenOptions={{headerShown: false}}>
-                    <CommunityStack.Screen name="List" component={ListBody}/>
-                    <CommunityStack.Screen name="Info" component={InfoBody}/>
-                    <CommunityStack.Screen name="Write" component={WriteBody}/>
-                </CommunityStack.Navigator>
-            </CommunityProvider>
+            <CommunityStack.Navigator screenOptions={{headerShown: false}}>
+                <CommunityStack.Screen name="List" component={ListBody}/>
+                <CommunityStack.Screen name="Info" component={InfoBody}/>
+                <CommunityStack.Screen name="Write" component={WriteBody}/>
+            </CommunityStack.Navigator>
         </View>
     )
 }

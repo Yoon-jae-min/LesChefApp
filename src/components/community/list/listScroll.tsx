@@ -13,10 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { setSelectedBoard } from "../../../redux/communitySlice";
-import { useCommunity } from "../../../context/communityContext";
 
 //style
 import styles from "@styles/community/list/listScroll.style";
+
+//Context
+import { useCommon } from "../../../context/commonContext";
 
 //임시 데이터
 const exList = [
@@ -88,7 +90,7 @@ function ListScroll(): React.JSX.Element{
     const [listValue, setListValue] = useState(exList[0]);
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
-    const listType = useCommunity().communityLT;
+    const listType = useCommon().communityLT;
     const dispatch = useDispatch();
 
     const navigation = useNavigation<NavigationProps>();

@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     },
     list:{
         flex: 1,
-        width: "93%"
+        width: "95%"
     },
     listAlign:{
         flexWrap: "wrap",

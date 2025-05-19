@@ -4,7 +4,7 @@ export type NavigateType = {
     Main: undefined;
     Recipe: NavigatorScreenParams<RecipeSubType>;
     Community: NavigatorScreenParams<CommunitySubType>;
-    MyPage: undefined;
+    MyPage: NavigatorScreenParams<MyPageSubType>;
 };
 
 //sub
@@ -17,4 +17,11 @@ export type CommunitySubType = {
     List: undefined;
     Info: undefined;
     Write: undefined;
+}
+
+export type MyPageSubType = {
+    Info: undefined;
+    Foods: undefined;
+    WishList: undefined;
+    MyRecipe: undefined;
 }

@@ -3,14 +3,19 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 //Type
-import { CategoryTotalType, CategoryValueType } from "../../types/commonTypes";
+import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
+import { NavigateType } from "src/types/navigateTypes";
 
 //Redux
 import { useDispatch } from "react-redux";
-import { setCategoryValue } from "../../redux/commonSlice";
+import { setCategoryValue } from "../../../redux/commonSlice";
 
 //style
-import styles from "@styles/myPage/selectMenu.style";
+import styles from "@styles/myPage/top/selectMenu.style";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
+
+type NavigateProps = NativeStackNavigationProp<NavigateType>;
 
 type Props = {
     categoryValue: CategoryValueType;
@@ -21,6 +26,7 @@ type Props = {
 function SelectMenu(props: Props): React.JSX.Element{
     const {categoryValue, categoryTotal, setCategoryTrig} = props;
     const dispatch = useDispatch();
+    const navigation = useNavigation<NavigateProps>();
 
     const selectMenu = (index: number) => {
         dispatch(setCategoryValue({
@@ -30,6 +36,13 @@ function SelectMenu(props: Props): React.JSX.Element{
             detail_1: categoryTotal[2].detail_1[index][0][0]
         }))
         setCategoryTrig((prev) => (!prev));
+
+        navigation.navigate("MyPage", {
+            screen: categoryTotal[2].sub[index] === "Info" ? "Info" :
+                    categoryTotal[2].sub[index] === "Foods" ? "Foods" :
+                    categoryTotal[2].sub[index] === "WishList" ? "WishList" :
+                    "MyRecipe"
+        });
     }
 
     return(

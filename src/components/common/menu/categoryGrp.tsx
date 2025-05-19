@@ -70,13 +70,11 @@ function CategoryGrp(props: Props): React.JSX.Element{
                     detail_1: categoryTotal[myMain].detail_1[mySub][0][0]
                 }));
 
-                navigation.navigate("MyPage");
-
                 navigation.reset({
                     index: 1,
                     routes:[
                         {name: "Main"},
-                        {name: "MyPage"}
+                        {name: "MyPage", state: {index: 0, routes: [{name: subValue}]}}
                     ]
                 });
 

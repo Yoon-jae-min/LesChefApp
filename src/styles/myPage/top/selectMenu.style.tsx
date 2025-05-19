@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
         marginLeft: "5%",
         marginRight: "5%",
         marginTop: 5,
-        marginBottom: 20,
+        marginBottom: 12,
         borderColor: "rgba(81, 81, 81, 1)",
         borderWidth: 1,
         borderRadius: 10,

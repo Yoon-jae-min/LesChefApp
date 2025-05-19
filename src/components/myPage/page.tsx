@@ -1,58 +1,46 @@
 //기타
 import React, { useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 
 //Component
-import SelectMyMenu from "./selectMenu";
-
-//Navigation
-import { useFocusEffect } from "@react-navigation/native";
+import SelectMyMenu from "./top/selectMenu";
+import WishList from "./body/wishList";
+import Info from "./body/info";
+import Foods from "./body/foods";
 
 //Context
 import { useCommon } from "../../context/commonContext";
 
 //Redux
-import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { setCategoryValue } from "../../redux/commonSlice";
+import { useSelector } from "react-redux";
 
 //style
 import styles from "@styles/myPage/page.style";
 
+//Navigate
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MyRecipe from "./body/myRecipe";
+
+const MyPageStack = createNativeStackNavigator();
+
 function PageMy(): React.JSX.Element{
     const {categoryTotal} = useCommon();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
-    const dispatch = useDispatch();
     const [categoryTrig, setCategoryTrig] = useState(false);
-
-    useFocusEffect(() => {
-        const mainIndex = categoryTotal.findIndex(item => item.main === "MyPage");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
-
-        const nextValue = {
-            main: categoryTotal[mainIndex].main,
-            sub: categoryTotal[mainIndex].sub[subIndex],
-            detail: categoryTotal[mainIndex].detail[subIndex][0],
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0],
-        }
-
-        if(nextValue.main !== categoryValue.main){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
-        }
-    });
 
     return(
         <View style={styles.container}>
-            <SelectMyMenu 
-                categoryValue={categoryValue} 
-                categoryTotal={categoryTotal} 
-                setCategoryTrig={setCategoryTrig}/>
-            <ScrollView style={styles.content}>
-
-            </ScrollView>
+                <SelectMyMenu 
+                    categoryValue={categoryValue} 
+                    categoryTotal={categoryTotal} 
+                    setCategoryTrig={setCategoryTrig}/>
+                <MyPageStack.Navigator screenOptions={{headerShown: false}}>
+                    <MyPageStack.Screen name="Info" component={Info}/>
+                    <MyPageStack.Screen name="Foods" component={Foods}/>
+                    <MyPageStack.Screen name="WishList" component={WishList}/>
+                    <MyPageStack.Screen name="MyRecipe" component={MyRecipe}/>
+                </MyPageStack.Navigator>
         </View>
         
     )

@@ -18,6 +18,9 @@ import { setCategoryValue } from "../../../redux/commonSlice";
 //style
 import styles from "@styles/common/body/titleTop.style";
 
+//context
+import { useCommon } from "../../../context/commonContext";
+
 type NavigationProps = NativeStackNavigationProp<NavigateType>;
 
 type Props = {
@@ -28,6 +31,7 @@ type Props = {
 
 function TitleTop(props: Props): React.JSX.Element{
     const { selectedTitle, categoryValue, categoryTotal} = props;
+    const {mySubValue} = useCommon();
     const dispatch = useDispatch();
     const navigation = useNavigation<NavigationProps>();
 
@@ -35,7 +39,9 @@ function TitleTop(props: Props): React.JSX.Element{
         switch (type) {
             case "back":
                 const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
-                const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "List");
+                const subIndex = categoryTotal[mainIndex].sub.
+                    findIndex(item => categoryValue.main === "MyPage" ? 
+                        item === mySubValue.current  : item === "List");
                 
                 dispatch(setCategoryValue({
                     ...categoryValue,

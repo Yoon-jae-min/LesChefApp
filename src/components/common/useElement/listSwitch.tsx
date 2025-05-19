@@ -21,7 +21,11 @@ type Props = {
 
 function ListSwitch(props: Props): React.JSX.Element{
     const { categoryValue, categoryTotal, setListState} = props;
-    const elements = categoryValue.main === "Recipe" ? categoryTotal[1].detail[0] : categoryTotal[3].detail[0];
+    const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
+    const elements = (categoryValue.main === "MyPage" ? 
+                        (categoryValue.sub === "WishList" ? 
+                            categoryTotal[mainIndex].detail[2] : categoryTotal[mainIndex].detail[3])
+                        : categoryTotal[mainIndex].detail[0]);
     const dispatch = useDispatch();
 
     const indexCount = (value: string) => {
@@ -48,9 +52,11 @@ function ListSwitch(props: Props): React.JSX.Element{
         dispatch(setCategoryValue({
             ...categoryValue,
             detail: elements[indexSave],
-            detail_1: categoryValue.main === "Recipe" ?
-                        categoryTotal[1]?.detail_1[0][indexSave][0] : 
-                        categoryTotal[3]?.detail_1[0][indexSave][0]
+            detail_1: categoryValue.main === "MyPage" ?
+                        (categoryValue.sub === "WishList" ?
+                            categoryTotal[mainIndex].detail[2][indexSave][0] : 
+                            categoryTotal[mainIndex].detail[3][indexSave][0]) :
+                            categoryTotal[mainIndex]?.detail_1[0][indexSave][0]
         }))
         setListState((prev) => (!prev));
     }
@@ -67,7 +73,9 @@ function ListSwitch(props: Props): React.JSX.Element{
                 placeholder={{}}
                 items={categoryTotal
                     .find((item) => item.main === categoryValue.main)
-                    ?.detail[0].map((item) => ({label: item, value: item})) ?? []
+                    ?.detail[categoryValue.main === "MyPage" ? 
+                                (categoryValue.sub === "WishList" ? 2 : 3) : 0
+                    ].map((item) => ({label: item, value: item})) ?? []
                 }
                 onValueChange={(value) => switchMenu("center", value)}/>
             <Pressable onPress={() => switchMenu("right", categoryValue.detail)}>

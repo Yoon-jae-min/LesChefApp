@@ -5,6 +5,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "93%",
         margin: "auto",
+        marginTop: 10
     },
     element:{
         width: "100%",

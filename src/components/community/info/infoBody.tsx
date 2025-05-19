@@ -6,12 +6,11 @@ import { Image, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 //Component
-import CommentBox from "../../common/body/cmtBox";
-import TitleTop from "../../common/body/titleTop";
+import CommentBox from "../../common/useElement/cmtBox";
+import TitleTop from "../../common/useElement/titleTop";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
-import { useCommunity } from "../../../context/communityContext";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +23,7 @@ import styles from "@styles/community/info/infoBody.style";
 
 function InfoBody(): React.JSX.Element{
     const {categoryTotal} = useCommon();
-    const listType = useCommunity().communityLT;
+    const listType = useCommon().communityLT;
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
     const dispatch = useDispatch();

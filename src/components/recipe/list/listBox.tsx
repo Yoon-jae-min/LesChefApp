@@ -11,8 +11,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 //Component
-import ListSwitch from "../../common/body/listSwitch";
-import SelectSubCg from "../../common/body/selectSubCg";
+import ListSwitch from "../../common/useElement/listSwitch";
+import SelectSubCg from "../../common/useElement/selectSubCg";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -25,6 +25,7 @@ import { useCommon } from "../../../context/commonContext";
 
 //style
 import styles from "@styles/recipe/list/listBox.style";
+
 
 //임시 데이터
 const exListElements = [
@@ -102,34 +103,40 @@ const exListElements = [
 
 type NavigateProps = NativeStackNavigationProp<NavigateType>;
 
-function ListContainer(): React.JSX.Element{
+function ListBox(): React.JSX.Element{
     const [listState, setListState] = useState(false);
     const dispatch = useDispatch();
-    const {categoryTotal} = useCommon();
+    const {categoryTotal, mySubValue} = useCommon();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedRecipe = useSelector((state: RootState) => state.recipe.selectedRecipe);
 
     const navigation = useNavigation<NavigateProps>();
 
     useFocusEffect(() => {
-        const mainIndex = categoryTotal.findIndex(item => item.main === "Recipe");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "List");
-        const nextValue = {
-            main: categoryTotal[mainIndex].main,
-            sub: categoryTotal[mainIndex].sub[subIndex],
-            detail: categoryTotal[mainIndex].detail[subIndex][0],
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
-        };
+        if(categoryValue.main === "Recipe"){
+            const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
+            const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "List");
+            const nextValue = {
+                main: categoryTotal[mainIndex].main,
+                sub: categoryTotal[mainIndex].sub[subIndex],
+                detail: categoryTotal[mainIndex].detail[subIndex][0],
+                detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+            };
 
-        if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
+            if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    ...nextValue
+                }));
+            }
         }
     });
 
     const touchRecipe = (recipeId: string, foodName: string) => {
+        const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
+        const subIndex = categoryTotal[mainIndex].sub.
+                            findIndex(item => categoryValue.main === "Recipe" ? item === "Info" : item === "RecipeInfo");
+
         dispatch(setSelectedRecipe({
             ...selectedRecipe,
             recipeId: recipeId,
@@ -167,15 +174,46 @@ function ListContainer(): React.JSX.Element{
             }]
         }));
 
-        navigation.navigate("Recipe",{
-            screen: "Info",
-        })
+        // switch(categoryValue.main){
+        //     case "Recipe":
+        //         navigation.navigate("Recipe",{
+        //             screen: "Info",
+        //         });
+        //         break;
+        //     case "MyPage":
+        //         const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
+        //         const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "RecipeInfo");
+
+        //         dispatch(setCategoryValue({
+        //             ...categoryValue,
+        //             sub: categoryTotal[mainIndex].sub[subIndex],
+        //             detail: categoryTotal[mainIndex].detail[subIndex][0],
+        //             detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+        //         }));
+        // }
+
+        if(categoryValue.main === "MyPage"){
+            mySubValue.current === categoryValue.sub;
+        }
+
+        dispatch(setCategoryValue({
+            ...categoryValue,
+            sub: categoryTotal[mainIndex].sub[subIndex],
+            detail: categoryTotal[mainIndex].detail[subIndex][0],
+            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+        }));
+
+        if(categoryValue.main === "Recipe"){
+            navigation.navigate("Recipe",{
+                screen: "Info",
+            });
+        }
     }
 
     return(
         <View style={styles.container}>
-            <TextInput style={styles.searchBox} placeholder="입력하세요..."/>
-            {categoryValue.main === "Recipe" && <ListSwitch categoryValue={categoryValue} categoryTotal={categoryTotal} setListState={setListState}/>}
+            {categoryValue.main === "Recipe" && <TextInput style={styles.searchBox} placeholder="입력하세요..."/>}
+            <ListSwitch categoryValue={categoryValue} categoryTotal={categoryTotal} setListState={setListState}/>
             {(categoryValue.detail !== "Other") && 
                     <SelectSubCg 
                         categoryTotal={categoryTotal} 
@@ -212,4 +250,4 @@ function ListContainer(): React.JSX.Element{
     )
 }
 
-export default ListContainer;
+export default ListBox;
