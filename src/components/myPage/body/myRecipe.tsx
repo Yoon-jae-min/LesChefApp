@@ -1,7 +1,6 @@
 //기타
-import { useFocusEffect } from "@react-navigation/native";
 import React from "react";
-import { View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -10,9 +9,18 @@ import { RootState } from "../../../redux/store";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
+import ListBox from "../../../components/recipe/list/listBox";
+import { useMyPage } from "../../../context/myPageContext";
+
+//style
+import styles from "@styles/myPage/body/myRecipe.style";
+
+//Navigation
+import { useFocusEffect } from "@react-navigation/native";
 
 function MyRecipe(): React.JSX.Element{
-    const {categoryTotal} = useCommon();
+    const {categoryTotal, subPage} = useCommon();
+    const {focus} = useMyPage();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const dispatch = useDispatch();
 
@@ -27,16 +35,37 @@ function MyRecipe(): React.JSX.Element{
             detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0],
         }
 
+        subPage.current = {
+            ...subPage.current,
+            prev: "MyRecipe",
+        }
+
         if(nextValue.main !== categoryValue.main || nextValue.sub !== categoryValue.sub){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
+            if(!focus.current){
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    ...nextValue
+                }));
+                focus.current = !focus.current;
+            }
+        }else{
+            focus.current = !focus.current;
         }
     });
 
+    const recipeWrite = () => {
+
+    }
+
     return(
-        <View></View>
+        <View style={styles.container}>
+            <View style={styles.writeBtnBox}>
+                <Pressable onPress={recipeWrite}>
+                    <Text style={styles.writeBtn}>레시피 작성</Text>
+                </Pressable>
+            </View>
+            <ListBox/>
+        </View>
     )
 }
 

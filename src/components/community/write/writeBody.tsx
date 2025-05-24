@@ -6,10 +6,11 @@ import { Image, Pressable, TextInput, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 //Component
-import TitleTop from "../../common/useElement/titleTop";
+import UploadTop from "../../../components/common/useElement/uploadTop";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
+import { useCommunity } from "../../../context/communityContext";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +22,7 @@ import styles from "@styles/community/write/writeBody.style";
 
 function WriteBody(): React.JSX.Element{
     const {categoryTotal} = useCommon();
+    const {focus} = useCommunity();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
     const dispatch = useDispatch();
@@ -36,16 +38,21 @@ function WriteBody(): React.JSX.Element{
         };
 
         if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
+            if(!focus.current){
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    ...nextValue
+                }));
+                focus.current = !focus.current;
+            }
+        }else{
+            focus.current = !focus.current;
         }
     });
 
     return(
         <View style={styles.container}>
-            <TitleTop
+            <UploadTop
                 selectedTitle={selectedBoard.title}
                 categoryValue={categoryValue}
                 categoryTotal={categoryTotal}/>

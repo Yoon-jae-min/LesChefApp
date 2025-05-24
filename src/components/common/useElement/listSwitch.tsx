@@ -11,7 +11,12 @@ import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
 
 //style
-import {styles, pickerStyles} from "@styles/common/body/listSwitch.style";
+import {styles, pickerStyles} from "@styles/common/useElement/listSwitch.style";
+
+//Context
+import { useRecipe } from "../../../context/recipeContext";
+import { useCommunity } from "../../../context/communityContext";
+import { useMyPage } from "../../../context/myPageContext";
 
 type Props = {
     categoryValue: CategoryValueType;
@@ -21,11 +26,12 @@ type Props = {
 
 function ListSwitch(props: Props): React.JSX.Element{
     const { categoryValue, categoryTotal, setListState} = props;
+    const detailPage = categoryValue.main === "Recipe" ? 
+                        useRecipe().recipeDetail : categoryValue.main === "Community" ?
+                        useCommunity().communityDetail : useMyPage().myPageDetail;
     const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
-    const elements = (categoryValue.main === "MyPage" ? 
-                        (categoryValue.sub === "WishList" ? 
-                            categoryTotal[mainIndex].detail[2] : categoryTotal[mainIndex].detail[3])
-                        : categoryTotal[mainIndex].detail[0]);
+    const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === categoryValue.sub);
+    const elements = categoryTotal[mainIndex].detail[subIndex];
     const dispatch = useDispatch();
 
     const indexCount = (value: string) => {
@@ -34,7 +40,6 @@ function ListSwitch(props: Props): React.JSX.Element{
 
     const switchMenu = (arrow: string, value: string) => {
         let indexSave = indexCount(value);
-
         if(arrow === "left"){
             if(indexSave === 0) {
                 indexSave = elements.length - 1;
@@ -48,15 +53,15 @@ function ListSwitch(props: Props): React.JSX.Element{
                 indexSave += 1;
             }
         }
-
+        const detailIndex = categoryTotal[mainIndex].detail[subIndex].findIndex(item => item === elements[indexSave]);
+        detailPage.current = {
+            ...detailPage.current,
+            now: elements[indexSave]
+        }
         dispatch(setCategoryValue({
             ...categoryValue,
             detail: elements[indexSave],
-            detail_1: categoryValue.main === "MyPage" ?
-                        (categoryValue.sub === "WishList" ?
-                            categoryTotal[mainIndex].detail[2][indexSave][0] : 
-                            categoryTotal[mainIndex].detail[3][indexSave][0]) :
-                            categoryTotal[mainIndex]?.detail_1[0][indexSave][0]
+            detail_1: categoryTotal[mainIndex].detail_1[subIndex][detailIndex][0]
         }))
         setListState((prev) => (!prev));
     }
@@ -71,12 +76,7 @@ function ListSwitch(props: Props): React.JSX.Element{
                 value={categoryValue.detail}
                 useNativeAndroidPickerStyle={false}
                 placeholder={{}}
-                items={categoryTotal
-                    .find((item) => item.main === categoryValue.main)
-                    ?.detail[categoryValue.main === "MyPage" ? 
-                                (categoryValue.sub === "WishList" ? 2 : 3) : 0
-                    ].map((item) => ({label: item, value: item})) ?? []
-                }
+                items={categoryTotal[mainIndex].detail[subIndex].map((item) => ({label: item, value: item})) ?? []}
                 onValueChange={(value) => switchMenu("center", value)}/>
             <Pressable onPress={() => switchMenu("right", categoryValue.detail)}>
                 <Image style={styles.arrow} source={require("../../../assets/image/rightArrow.png")}/>

@@ -10,12 +10,16 @@ import { NavigateType } from "../../../types/navigateTypes";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 
+//style
+import styles from "@styles/common/menu/categoryGrp.style";
+
+//Context
+import { useRecipe } from "../../../context/recipeContext";
+import { useCommon } from "../../../context/commonContext";
+
 //Redux
 import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../redux/commonSlice";
-
-//style
-import styles from "@styles/common/menu/categoryGrp.style";
 
 type NavigateProps = NativeStackNavigationProp<NavigateType>;
 
@@ -30,25 +34,42 @@ type Props = {
 
 function CategoryGrp(props: Props): React.JSX.Element{
     const {mainIndex, mainTxt, subTxts, setMenuActive, categoryValue, categoryTotal} = props;
+    const {mainPage, subPage} = useCommon();
+    const {recipeDetail} = useRecipe();
     const dispatch = useDispatch();
     const navigation = useNavigation<NavigateProps>();
 
     const pageTouch = (subValue: string) => {
         setMenuActive(false);
+        const mainIndex = categoryTotal.findIndex(item => item.main === mainTxt);
+        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => mainTxt === "MyPage" ?
+                            item === subValue : item === "List");
+        const detailIndex = mainTxt === "Recipe" ? 
+                        categoryTotal[mainIndex].detail[subIndex].findIndex(item => item === subValue) : 0;
+
+        dispatch(setCategoryValue({
+            ...categoryValue,
+            main: categoryTotal[mainIndex].main,
+            sub: categoryTotal[mainIndex].sub[subIndex],
+            detail: categoryTotal[mainIndex].detail[subIndex][detailIndex],
+            detail_1: categoryTotal[mainIndex].detail_1[subIndex][detailIndex][0]
+        }));
+
+        mainPage.current = {
+            ...mainPage.current,
+            now: mainTxt
+        }
+
+        subPage.current = {
+            ...subPage.current,
+            now: mainTxt === "MyPage" ? subValue : "List"
+        }
+        
         switch (mainTxt) {
             case "Recipe":
-                const recipeMain = categoryTotal.findIndex(item => item.main === mainTxt);
-                const recipeSub = categoryTotal[recipeMain].sub.findIndex(item => item === "List");
-                const recipeDetail = categoryTotal[recipeMain].detail[recipeSub].findIndex(item => item === subValue);
-
-                dispatch(setCategoryValue({
-                    ...categoryValue,
-                    main: categoryTotal[mainIndex].main,
-                    sub: categoryTotal[mainIndex].sub[recipeSub],
-                    detail: categoryTotal[mainIndex].detail[recipeSub][recipeDetail],
-                    detail_1: categoryTotal[mainIndex].detail_1[recipeSub][recipeDetail][0]
-                }));
-
+                recipeDetail.current = {
+                    ...recipeDetail.current,
+                    now: subValue}
                 navigation.reset({
                     index: 1,
                     routes:[
@@ -56,20 +77,8 @@ function CategoryGrp(props: Props): React.JSX.Element{
                         {name: "Recipe", state: {index: 0, routes: [{name: "List"}]}}
                     ]
                 });
-
                 break;
             case "MyPage":
-                const myMain = categoryTotal.findIndex(item => item.main === "MyPage");
-                const mySub = categoryTotal[myMain].sub.findIndex(item => item === subValue);
-
-                dispatch(setCategoryValue({
-                    ...categoryValue,
-                    main: categoryTotal[myMain].main,
-                    sub: categoryTotal[myMain].sub[mySub],
-                    detail: categoryTotal[myMain].detail[mySub][0],
-                    detail_1: categoryTotal[myMain].detail_1[mySub][0][0]
-                }));
-
                 navigation.reset({
                     index: 1,
                     routes:[
@@ -77,7 +86,6 @@ function CategoryGrp(props: Props): React.JSX.Element{
                         {name: "MyPage", state: {index: 0, routes: [{name: subValue}]}}
                     ]
                 });
-
                 break;
             case "Community":
                 navigation.reset({

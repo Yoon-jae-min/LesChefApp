@@ -11,3 +11,8 @@ export type CategoryTotalType = {
     detail: string[][];
     detail_1: string[][][];
 }
+
+export type pageValueType = {
+    prev: string;
+    now: string;
+}

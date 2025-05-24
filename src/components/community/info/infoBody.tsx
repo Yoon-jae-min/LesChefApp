@@ -7,10 +7,11 @@ import { useFocusEffect } from "@react-navigation/native";
 
 //Component
 import CommentBox from "../../common/useElement/cmtBox";
-import TitleTop from "../../common/useElement/titleTop";
+import LikeTop from "../../../components/common/useElement/likeTop";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
+import { useCommunity } from "../../../context/communityContext";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -21,9 +22,10 @@ import { ScrollView } from "react-native-gesture-handler";
 //style
 import styles from "@styles/community/info/infoBody.style";
 
+
 function InfoBody(): React.JSX.Element{
     const {categoryTotal} = useCommon();
-    const listType = useCommon().communityLT;
+    const {communityDetail, focus} = useCommunity();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
     const dispatch = useDispatch();
@@ -39,22 +41,27 @@ function InfoBody(): React.JSX.Element{
         };
 
         if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
+            if(!focus.current){
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    ...nextValue
+                }));
+                focus.current = !focus.current;
+            }
+        }else{
+            focus.current = !focus.current;
         }
     });
 
     return(
         <View style={styles.container}>
-            <TitleTop
+            <LikeTop
                 selectedTitle={selectedBoard.title} 
                 categoryValue={categoryValue}
                 categoryTotal={categoryTotal}/>
             <ScrollView contentContainerStyle={styles.scrollAlign} showsVerticalScrollIndicator={false}>
-                <View style={[styles.top, listType.current === "Board" ? styles.topBoard : styles.topNotice]}>
-                    {listType.current === "Board" ?
+                <View style={[styles.top, communityDetail.current.prev === "Board" ? styles.topBoard : styles.topNotice]}>
+                    {communityDetail.current.prev === "Board" ?
                         <View style={styles.profileBox}>
                             <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
                             <View style={styles.profileTxt}>

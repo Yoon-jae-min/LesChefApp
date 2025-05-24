@@ -3,13 +3,14 @@ import React from "react";
 import { Image, View } from "react-native";
 
 //Component
-import TitleTop from "../../common/useElement/titleTop";
+import LikeTop from "../../../components/common/useElement/likeTop";
 import IngreBox from "./ingreBox";
 import StepBox from "./stepBox";
 import CommentBox from "../../common/useElement/cmtBox";
+import EditTop from "../../../components/common/useElement/editTop";
 
 //Redux
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 
 //Context
@@ -20,37 +21,21 @@ import styles from "@styles/recipe/info/infoBox.style";
 import { ScrollView, Text } from "react-native-gesture-handler";
 
 function InfoBox(): React.JSX.Element{
-    const {categoryTotal} = useCommon();
+    const {categoryTotal, subPage} = useCommon();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedRecipe = useSelector((state: RootState) => state.recipe.selectedRecipe);
 
-    // useFocusEffect(() => {
-    //     if(categoryValue.main === "Recipe"){
-    //         const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
-    //         const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
-
-    //         const nextValue = {
-    //             main: categoryTotal[mainIndex].main,
-    //             sub: categoryTotal[mainIndex].sub[subIndex],
-    //             detail: categoryTotal[mainIndex].detail[subIndex][0],
-    //             detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
-    //         };
-
-    //         if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-    //             dispatch(setCategoryValue({
-    //                 ...categoryValue,
-    //                 ...nextValue
-    //             }));
-    //         }
-    //     }
-    // });
-
     return(
         <View style={styles.container}>
-            <TitleTop
-                selectedTitle={selectedRecipe.title}
-                categoryTotal={categoryTotal}
-                categoryValue={categoryValue}/>
+            {subPage.current.prev === "MyRecipe" ? 
+                <EditTop
+                    selectedTitle={selectedRecipe.title}
+                    categoryTotal={categoryTotal}
+                    categoryValue={categoryValue}/> :
+                <LikeTop
+                    selectedTitle={selectedRecipe.title}
+                    categoryTotal={categoryTotal}
+                    categoryValue={categoryValue}/>}
             <ScrollView contentContainerStyle={styles.scrollAlign}>
                 <View style={styles.topInfoBox}>
                     <View style={styles.leftInfo}>

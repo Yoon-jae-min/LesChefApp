@@ -1,11 +1,12 @@
 //기타
 import React from "react";
 import { View } from "react-native";
+
+//Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
 //component
 import ListBox from "../../recipe/list/listBox";
-import InfoBox from "../../recipe/info/infoBox";
 
 //style
 import styles from "@styles/myPage/body/wishList.style";
@@ -17,9 +18,11 @@ import { setCategoryValue } from "../../../redux/commonSlice";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
+import { useMyPage } from "../../../context/myPageContext";
 
 function WishList(): React.JSX.Element{
     const {categoryTotal} = useCommon();
+    const {focus} = useMyPage();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const dispatch = useDispatch();
 
@@ -35,16 +38,21 @@ function WishList(): React.JSX.Element{
         }
 
         if(nextValue.main !== categoryValue.main || nextValue.sub !== categoryValue.sub){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
+            if(!focus.current){
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    ...nextValue
+                }));
+                focus.current = !focus.current;
+            }
+        }else{
+            focus.current = !focus.current;
         }
     });
 
     return(
         <View style={styles.container}>
-            {categoryValue.sub === "RecipeInfo" ? <InfoBox/> : <ListBox/>}
+            <ListBox/>
         </View>
     )
 }

@@ -6,8 +6,8 @@ import { View } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 //Component
-import ListBox from "./list/listBox";
-import InfoBox from "./info/infoBox";
+import ListPage from "./list/page";
+import InfoPage from "./info/page";
 
 //style
 import styles from "@styles/recipe/page.style";
@@ -19,8 +19,8 @@ function PageRecipe(): React.JSX.Element{
     return(
         <View style={styles.container}>
             <RecipeStack.Navigator screenOptions={{headerShown: false}}>
-                <RecipeStack.Screen name="List" component={ListBox}/>
-                <RecipeStack.Screen name="Info" component={InfoBox}/>
+                <RecipeStack.Screen name="List" component={ListPage}/>
+                <RecipeStack.Screen name="Info" component={InfoPage}/>
             </RecipeStack.Navigator>
         </View>
     )

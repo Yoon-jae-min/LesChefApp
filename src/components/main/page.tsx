@@ -17,6 +17,7 @@ import { RootState } from "../../redux/store";
 
 //Context
 import { useCommon } from "../../context/commonContext";
+import { useMain } from "../../context/mainContext";
 
 //style
 import styles from "@styles/main/page.style";
@@ -24,11 +25,11 @@ import styles from "@styles/main/page.style";
 function PageMain(): React.JSX.Element{
     const {categoryTotal} = useCommon();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
+    const {focus} = useMain();
     const dispatch = useDispatch();
 
     useFocusEffect(() => {
         const mainIndex = categoryTotal.findIndex(item => item.main === "Main");
-
         const nextValue = {
             main: categoryTotal[mainIndex].main,
             sub: categoryTotal[mainIndex].sub[0],
@@ -36,11 +37,16 @@ function PageMain(): React.JSX.Element{
             detail_1: categoryTotal[mainIndex].detail_1[0][0][0]
         };
 
-        if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
+        if(nextValue.main !== categoryValue.main){
+            if(!focus.current){
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    ...nextValue
+                }));
+                focus.current = !focus.current;
+            }else{
+                focus.current = !focus.current;
+            }
         }
     });
 

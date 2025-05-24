@@ -16,11 +16,12 @@ import ListSwitch from "../../common/useElement/listSwitch";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
+import { useCommunity } from "../../../context/communityContext";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { setCategoryValue } from "../../../redux/commonSlice";
 import { RootState } from "../../../redux/store";
+import { setCategoryValue } from "../../../redux/commonSlice";
 
 //style
 import styles from "@styles/community/list/listBody.style";
@@ -29,7 +30,8 @@ type NavigationProps = NativeStackNavigationProp<NavigateType>;
 
 function ListBody(): React.JSX.Element{
     const [listState, setListState] = useState(false);
-    const {categoryTotal} = useCommon();
+    const {categoryTotal, subPage, mainPage} = useCommon();
+    const {communityDetail, focus} = useCommunity();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const dispatch = useDispatch();
 
@@ -44,25 +46,29 @@ function ListBody(): React.JSX.Element{
             detail: categoryTotal[mainIndex].detail[subIndex][0],
             detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
         };
-
         if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-            dispatch(setCategoryValue({
-                ...categoryValue,
-                ...nextValue
-            }));
+            if(!focus.current){
+                dispatch(setCategoryValue({
+                    ...categoryValue,
+                    ...nextValue
+                }));
+                focus.current = !focus.current;
+            }
+        }else{
+            focus.current = !focus.current;
         }
     });
 
     const goWrite = () => {
-        const mainIndex = categoryTotal.findIndex(item => item.main === "Community");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Write");
-
-        dispatch(setCategoryValue({
-            ...categoryValue,
-            detail: categoryTotal[mainIndex].main,
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
-        }));
-        
+        subPage.current = {
+            ...subPage.current,
+            prev: "List",
+            now: "Write"
+        }
+        communityDetail.current = {
+            ...communityDetail.current,
+            prev: categoryValue.detail
+        }
         navigation.navigate("Community", {
             screen: "Write",
         });
@@ -71,7 +77,7 @@ function ListBody(): React.JSX.Element{
     return(
         <View style={styles.container}>
             <TextInput style={styles.searchBox} placeholder="입력하세요..."/>
-            {categoryValue.main === "Community" &&
+            {mainPage.current.now === "Community" &&
                 <ListSwitch
                     categoryValue={categoryValue} 
                     setListState={setListState}

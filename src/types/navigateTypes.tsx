@@ -24,4 +24,6 @@ export type MyPageSubType = {
     Foods: undefined;
     WishList: undefined;
     MyRecipe: undefined;
+    RecipeInfo: undefined;
+    RecipeWrite: undefined;
 }
