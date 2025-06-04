@@ -1,43 +1,37 @@
 //기타
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { setCategoryValue } from "../../../redux/commonSlice";
-import { RootState } from "../../../redux/store";
+import { setCategoryValue } from "../../../../redux/commonSlice";
+import { RootState } from "../../../../redux/store";
 
 //Context
-import { useCommon } from "../../../context/commonContext";
-import ListBox from "../../../components/recipe/list/listBox";
-import { useMyPage } from "../../../context/myPageContext";
+import { useCommon } from "../../../../context/commonContext";
+import { useMyPage } from "../../../../context/myPageContext";
 
 //style
-import styles from "@styles/myPage/body/myRecipe.style";
+import styles from "@styles/myPage/body/foods/foods.style";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
-function MyRecipe(): React.JSX.Element{
-    const {categoryTotal, subPage} = useCommon();
+function Foods(): React.JSX.Element{
+    const {categoryTotal, mainPage, subPage} = useCommon();
     const {focus} = useMyPage();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const dispatch = useDispatch();
 
     useFocusEffect(() => {
         const mainIndex = categoryTotal.findIndex(item => item.main === "MyPage");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "MyRecipe");
+        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Foods");
 
         const nextValue = {
             main: categoryTotal[mainIndex].main,
             sub: categoryTotal[mainIndex].sub[subIndex],
             detail: categoryTotal[mainIndex].detail[subIndex][0],
             detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0],
-        }
-
-        subPage.current = {
-            ...subPage.current,
-            prev: "MyRecipe",
         }
 
         if(nextValue.main !== categoryValue.main || nextValue.sub !== categoryValue.sub){
@@ -53,20 +47,11 @@ function MyRecipe(): React.JSX.Element{
         }
     });
 
-    const recipeWrite = () => {
-
-    }
-
     return(
         <View style={styles.container}>
-            <View style={styles.writeBtnBox}>
-                <Pressable onPress={recipeWrite}>
-                    <Text style={styles.writeBtn}>레시피 작성</Text>
-                </Pressable>
-            </View>
-            <ListBox/>
+            <Text>Foods</Text>
         </View>
     )
 }
 
-export default MyRecipe;
+export default Foods;

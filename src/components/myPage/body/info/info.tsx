@@ -1,26 +1,23 @@
 //기타
 import React from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
+
+//Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
+import { setCategoryValue } from "../../../../redux/commonSlice";
+
+//Context
+import { useCommon } from "../../../../context/commonContext";
+import { useMyPage } from "../../../../context/myPageContext";
+
+//style
+import styles from "@styles/myPage/body/info/info.style";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
-//component
-import ListBox from "../../recipe/list/listBox";
-
-//style
-import styles from "@styles/myPage/body/wishList.style";
-
-//Redux
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { setCategoryValue } from "../../../redux/commonSlice";
-
-//Context
-import { useCommon } from "../../../context/commonContext";
-import { useMyPage } from "../../../context/myPageContext";
-
-function WishList(): React.JSX.Element{
+function Info(): React.JSX.Element{
     const {categoryTotal} = useCommon();
     const {focus} = useMyPage();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
@@ -28,7 +25,7 @@ function WishList(): React.JSX.Element{
 
     useFocusEffect(() => {
         const mainIndex = categoryTotal.findIndex(item => item.main === "MyPage");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "WishList");
+        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
 
         const nextValue = {
             main: categoryTotal[mainIndex].main,
@@ -52,9 +49,9 @@ function WishList(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            <ListBox/>
+            <Text>info</Text>
         </View>
     )
 }
 
-export default WishList;
+export default Info;

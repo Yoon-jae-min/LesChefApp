@@ -4,12 +4,12 @@ import { View } from "react-native";
 
 //Component
 import SelectMyMenu from "./top/selectMenu";
-import WishList from "./body/wishList";
-import Info from "./body/info";
-import Foods from "./body/foods";
-import MyRecipe from "./body/myRecipe";
-import RecipeInfo from "./body/recipeInfo";
-import RecipeWrite from "./body/recipeWrite";
+import WishList from "./body/wishList/wishList";
+import Info from "./body/info/info";
+import Foods from "./body/foods/foods";
+import MyRecipe from "./body/myRecipe/myRecipe";
+import RecipeInfo from "./body/recipeInfo/recipeInfo";
+import RecipeWrite from "./body/recipeWrite/recipeWrite";
 
 //Context
 import { useCommon } from "../../context/commonContext";

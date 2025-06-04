@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         width: "93%",
     },
     center:{
-        fontFamily: "Jua-Regular",
+        fontFamily: "SourceSerif4-Bold",
         width: 250,
         height: 50,
         backgroundColor: "white",

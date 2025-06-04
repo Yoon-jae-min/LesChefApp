@@ -73,7 +73,7 @@ function UploadTop(props: Props): React.JSX.Element{
             <Pressable onPress={() => pressBtn("back")}>
                 <Image style={styles.leftIcon} source={require("../../../assets/image/back.png")}/>
             </Pressable>
-            <TextInput style={[styles.center, styles.inputTitle]} placeholder="- title -"/>
+            <TextInput style={[styles.center, styles.inputTitle]} placeholder="Title"/>
             <Pressable onPress={() => pressBtn("upload")}>
                 <Image style={styles.rightIcon} source={require("../../../assets/image/upload.png")}/>
             </Pressable>

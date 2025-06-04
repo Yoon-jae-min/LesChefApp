@@ -1,4 +1,4 @@
-type UnitType = {
+export type UnitType = {
     name: string,
     amount: number,
     unit: string,

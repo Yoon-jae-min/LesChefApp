@@ -28,10 +28,12 @@ const styles = StyleSheet.create({
     },
     img:{
         borderWidth: 1,
-        height: 100,
-        width: 100,
+        height: 106,
+        width: 106,
         resizeMode: "contain",
-        margin: 10,
+        marginTop: 6,
+        marginLeft: 6,
+        marginRight: 6,
         borderRadius: 3,
         borderColor: "rgb(160, 160, 160)"
     },
@@ -41,7 +43,7 @@ const styles = StyleSheet.create({
     stepNum:{
         marginTop: 5,
         marginBottom: 3,
-        fontSize: 17,
+        fontSize: 15,
         fontFamily: "SourceSerif4-Bold"
     },
     content:{

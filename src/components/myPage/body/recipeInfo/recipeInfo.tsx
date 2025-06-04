@@ -1,31 +1,34 @@
 //기타
 import React from "react";
-import { Text, View } from "react-native";
-
-//Redux
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { setCategoryValue } from "../../../redux/commonSlice";
-
-//Context
-import { useCommon } from "../../../context/commonContext";
-import { useMyPage } from "../../../context/myPageContext";
+import { View } from "react-native";
 
 //style
-import styles from "@styles/myPage/body/info.style";
+import styles from "@styles/myPage/body/recipeInfo/recipeInfo.style";
+
+//Component
+import InfoBox from "../../../../components/recipe/info/infoBox";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
-function Info(): React.JSX.Element{
+//Context
+import { useCommon } from "../../../../context/commonContext";
+import { useMyPage } from "../../../../context/myPageContext";
+
+//Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
+import { setCategoryValue } from "../../../../redux/commonSlice";
+
+function RecipeInfo(): React.JSX.Element{
     const {categoryTotal} = useCommon();
     const {focus} = useMyPage();
-    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const dispatch = useDispatch();
+    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
 
     useFocusEffect(() => {
         const mainIndex = categoryTotal.findIndex(item => item.main === "MyPage");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
+        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "RecipeInfo");
 
         const nextValue = {
             main: categoryTotal[mainIndex].main,
@@ -48,10 +51,10 @@ function Info(): React.JSX.Element{
     });
 
     return(
-        <View style={styles.container}>
-            <Text>info</Text>
+        <View style = {styles.containter}>
+            <InfoBox/>
         </View>
     )
 }
 
-export default Info;
+export default RecipeInfo;

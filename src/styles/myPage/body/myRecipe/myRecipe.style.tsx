@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
     },
     writeBtn:{
-        borderWidth: 1,
+        borderWidth: 0.7,
         borderRadius: 5,
         width: "93%",
         margin: "auto",
