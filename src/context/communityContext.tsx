@@ -1,24 +1,13 @@
-import React, { createContext, ReactNode, useContext, useRef } from "react";
-import { pageValueType } from "../types/commonTypes";
+import React, { createContext, ReactNode, useContext } from "react";
 
 type CommunityContextProp = {
-    communityLT: React.RefObject<string>;
-    communityDetail: React.RefObject<pageValueType>;
-    focus: React.RefObject<boolean>;
 }
 
 const CommunityContext = createContext<CommunityContextProp | undefined>(undefined);
 
 export const CommunityProvider = ({children}: {children: ReactNode}) => {
-    const communityLT = useRef("");
-    const communityDetail = useRef({
-        prev: "",
-        now: ""
-    });
-    const focus = useRef(false);
-
     return(
-        <CommunityContext.Provider value={{communityLT, communityDetail, focus}}>
+        <CommunityContext.Provider value={{}}>
             {children}
         </CommunityContext.Provider>
     )

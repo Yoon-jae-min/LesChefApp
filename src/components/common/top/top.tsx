@@ -32,13 +32,13 @@ function Top(props: Props): React.JSX.Element{
 
     const goHome = () => {
         setMenuActive(false);
-        mainPage.current = {
-            ...mainPage.current,
-            now: "Main"}
-        subPage.current = {
-            ...subPage.current,
-            now: "Default"
-        }
+        // mainPage.current = {
+        //     ...mainPage.current,
+        //     now: "Main"}
+        // subPage.current = {
+        //     ...subPage.current,
+        //     now: "Default"
+        // }
         navigation.reset({
             index: 0,
             routes: [{ name: "Main" }],

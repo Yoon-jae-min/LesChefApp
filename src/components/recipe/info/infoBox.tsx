@@ -3,11 +3,11 @@ import React from "react";
 import { Image, View } from "react-native";
 
 //Component
-import LikeTop from "../../../components/common/useElement/likeTop";
+import LikeTop from "../../common/useElement/top/likeTop";
 import IngreBox from "./ingreBox";
 import StepBox from "./stepBox";
-import CommentBox from "../../common/useElement/cmtBox";
-import EditTop from "../../../components/common/useElement/editTop";
+import CommentBox from "../../common/useElement/body/cmtBox";
+import EditTop from "../../common/useElement/top/editTop";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -21,13 +21,13 @@ import styles from "@styles/recipe/info/infoBox.style";
 import { ScrollView, Text } from "react-native-gesture-handler";
 
 function InfoBox(): React.JSX.Element{
-    const {categoryTotal, subPage} = useCommon();
+    const {categoryTotal, prev} = useCommon();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedRecipe = useSelector((state: RootState) => state.recipe.selectedRecipe);
 
     return(
         <View style={styles.container}>
-            {subPage.current.prev === "MyRecipe" ? 
+            {prev.current[prev.current.length - 1].sub === "MyRecipe" ? 
                 <EditTop
                     selectedTitle={selectedRecipe.title}
                     categoryTotal={categoryTotal}

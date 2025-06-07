@@ -20,7 +20,6 @@ import styles from "@styles/community/list/listScroll.style";
 //Context
 import { useCommon } from "../../../context/commonContext";
 import { useDummy } from "../../../context/dummyContext";
-import { useCommunity } from "../../../context/communityContext";
 
 type NavigationProps = NativeStackNavigationProp<NavigateType>;
 
@@ -29,8 +28,7 @@ function ListScroll(): React.JSX.Element{
     const [listValue, setListValue] = useState(exList[0]);
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
-    const {subPage} = useCommon();
-    const {communityDetail} = useCommunity();
+    const {prev} = useCommon();
     const dispatch = useDispatch();
 
     const navigation = useNavigation<NavigationProps>();
@@ -42,15 +40,7 @@ function ListScroll(): React.JSX.Element{
     }, [categoryValue.detail]);
 
     const pressBoard = (boardId: string, title: string, userId: string) => {
-        subPage.current = {
-            ...subPage.current,
-            prev: "List",
-            now: "Info"
-        }
-        communityDetail.current = {
-            ...communityDetail.current,
-            prev: categoryValue.detail
-        }
+        prev.current = [categoryValue];
         dispatch(setSelectedBoard({
             ...selectedBoard,
             boardId: boardId,

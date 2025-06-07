@@ -4,8 +4,8 @@ import { TextInput } from "react-native-gesture-handler";
 import { View } from "react-native";
 
 //Component
-import ListSwitch from "../../common/useElement/listSwitch";
-import SelectSubCg from "../../common/useElement/selectSubCg";
+import ListSwitch from "../../common/useElement/top/listSwitch";
+import SelectSubCg from "../../common/useElement/top/selectSubCg";
 import ListScroll from "./listScroll";
 
 //Redux
@@ -25,8 +25,13 @@ function ListBox(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            {categoryValue.main === "Recipe" && <TextInput style={styles.searchBox} placeholder="입력하세요..."/>}
-            <ListSwitch categoryValue={categoryValue} categoryTotal={categoryTotal} setListState={setListState}/>
+            {categoryValue.main === "Recipe" && 
+                <TextInput style={styles.searchBox} placeholder="입력하세요..."/>}
+            {(categoryValue.sub === "List" || categoryValue.sub === "WishList" || categoryValue.sub === "MyRecipe") && 
+                <ListSwitch 
+                    categoryValue={categoryValue} 
+                    categoryTotal={categoryTotal} 
+                    setListState={setListState}/>}
             {(categoryValue.detail !== "Other") && 
                     <SelectSubCg 
                         categoryTotal={categoryTotal} 

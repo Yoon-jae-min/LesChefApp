@@ -3,7 +3,7 @@ import React from "react";
 import { Image, Text, TextInput, View } from "react-native";
 
 //Type
-import { CommentType } from "../../../types/recipeTypes";
+import { CommentType } from "../../../../types/recipeTypes";
 
 //style
 import styles from "@styles/common/useElement/cmtBox.style";
@@ -23,11 +23,11 @@ function CommentBox(props: Prop): React.JSX.Element{
                 <View key={index} style={styles.comment}>
                     <View style={styles.commentTop}>
                         <View style={styles.profileBox}>
-                            <Image source={require("../../../assets/image/profile.png")} style={styles.profileImg}/>
+                            <Image source={require("../../../../assets/image/profile.png")} style={styles.profileImg}/>
                             <Text style={styles.userId}>{item.userId}</Text>
                             <Text style={styles.time}>{item.time}</Text>
                         </View>
-                        <Image source={require("../../../assets/image/delete.png")} style={styles.deleteBtn}/>
+                        <Image source={require("../../../../assets/image/delete.png")} style={styles.deleteBtn}/>
                     </View>
                     <Text style={styles.content}>{item.content}</Text>
                 </View>

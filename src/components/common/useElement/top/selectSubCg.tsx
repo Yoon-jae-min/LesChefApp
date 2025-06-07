@@ -3,11 +3,11 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 //Type
-import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
+import { CategoryTotalType, CategoryValueType } from "../../../../types/commonTypes";
 
 //Redux
 import { useDispatch } from "react-redux";
-import { setCategoryValue } from "../../../redux/commonSlice";
+import { setCategoryValue } from "../../../../redux/commonSlice";
 
 //style
 import styles from "@styles/common/useElement/selectSubCg.style";

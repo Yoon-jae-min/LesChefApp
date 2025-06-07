@@ -1,5 +1,5 @@
 //기타
-import React from "react";
+import React, { useCallback } from "react";
 import { View, ScrollView } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
@@ -10,11 +10,6 @@ import FoodPrice from "./foodPrice";
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
-//Redux
-import { useDispatch, useSelector } from "react-redux";
-import { setCategoryValue } from "../../redux/commonSlice";
-import { RootState } from "../../redux/store";
-
 //Context
 import { useCommon } from "../../context/commonContext";
 import { useMain } from "../../context/mainContext";
@@ -22,33 +17,27 @@ import { useMain } from "../../context/mainContext";
 //style
 import styles from "@styles/main/page.style";
 
+//hooks
+import { useCategory } from "../../hooks/useCategory";
+
 function PageMain(): React.JSX.Element{
-    const {categoryTotal} = useCommon();
-    const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
-    const {focus} = useMain();
-    const dispatch = useDispatch();
+    const {categoryTotal, prev, success} = useCommon();
+    const {categoryChange} = useCategory();
+    // const {success} = useMain();
 
-    useFocusEffect(() => {
-        const mainIndex = categoryTotal.findIndex(item => item.main === "Main");
-        const nextValue = {
-            main: categoryTotal[mainIndex].main,
-            sub: categoryTotal[mainIndex].sub[0],
-            detail: categoryTotal[mainIndex].detail[0][0],
-            detail_1: categoryTotal[mainIndex].detail_1[0][0][0]
-        };
-
-        if(nextValue.main !== categoryValue.main){
-            if(!focus.current){
-                dispatch(setCategoryValue({
-                    ...categoryValue,
-                    ...nextValue
-                }));
-                focus.current = !focus.current;
-            }else{
-                focus.current = !focus.current;
+    useFocusEffect(
+        useCallback(() => {
+            if(!success.current){
+                const mainIndex = categoryTotal.findIndex(item => item.main === "Main");
+                categoryChange(mainIndex, 0, 0, 0);
+                prev.current = [];
+                success.current = true;
             }
-        }
-    });
+            return () => {
+                success.current = false;
+            }
+        }, [])
+    );
 
     return(
         <View style={styles.container}>

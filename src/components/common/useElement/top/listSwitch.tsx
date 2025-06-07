@@ -1,22 +1,16 @@
 //기타
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 //Type
-import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
-
-//Redux
-import { useDispatch } from "react-redux";
-import { setCategoryValue } from "../../../redux/commonSlice";
+import { CategoryTotalType, CategoryValueType } from "../../../../types/commonTypes";
 
 //style
 import {styles, pickerStyles} from "@styles/common/useElement/listSwitch.style";
 
-//Context
-import { useRecipe } from "../../../context/recipeContext";
-import { useCommunity } from "../../../context/communityContext";
-import { useMyPage } from "../../../context/myPageContext";
+//hooks
+import { useCategory } from "../../../../hooks/useCategory";
 
 type Props = {
     categoryValue: CategoryValueType;
@@ -25,14 +19,15 @@ type Props = {
 }
 
 function ListSwitch(props: Props): React.JSX.Element{
-    const { categoryValue, categoryTotal, setListState} = props;
-    const detailPage = categoryValue.main === "Recipe" ? 
-                        useRecipe().recipeDetail : categoryValue.main === "Community" ?
-                        useCommunity().communityDetail : useMyPage().myPageDetail;
+    const { categoryValue, categoryTotal, setListState } = props;
+    const { categoryChange } = useCategory();
     const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
     const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === categoryValue.sub);
-    const elements = categoryTotal[mainIndex].detail[subIndex];
-    const dispatch = useDispatch();
+    const [elements, setElements] = useState<string[]>([]);
+
+    useEffect(() => {
+        setElements(categoryTotal[mainIndex].detail[subIndex]);
+    }, []);
 
     const indexCount = (value: string) => {
         return elements?.findIndex((item) => item === value);
@@ -54,22 +49,15 @@ function ListSwitch(props: Props): React.JSX.Element{
             }
         }
         const detailIndex = categoryTotal[mainIndex].detail[subIndex].findIndex(item => item === elements[indexSave]);
-        detailPage.current = {
-            ...detailPage.current,
-            now: elements[indexSave]
-        }
-        dispatch(setCategoryValue({
-            ...categoryValue,
-            detail: elements[indexSave],
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][detailIndex][0]
-        }))
+
+        categoryChange(mainIndex, subIndex, detailIndex, 0);
         setListState((prev) => (!prev));
     }
 
     return(
         <View style={styles.container}>
             <Pressable onPress={() => switchMenu("left", categoryValue.detail)}>
-                <Image style={styles.arrow} source={require("../../../assets/image/leftArrow.png")}/>
+                <Image style={styles.arrow} source={require("../../../../assets/image/leftArrow.png")}/>
             </Pressable>
             <RNPickerSelect
                 style={pickerStyles}
@@ -79,7 +67,7 @@ function ListSwitch(props: Props): React.JSX.Element{
                 items={categoryTotal[mainIndex].detail[subIndex].map((item) => ({label: item, value: item})) ?? []}
                 onValueChange={(value) => switchMenu("center", value)}/>
             <Pressable onPress={() => switchMenu("right", categoryValue.detail)}>
-                <Image style={styles.arrow} source={require("../../../assets/image/rightArrow.png")}/>
+                <Image style={styles.arrow} source={require("../../../../assets/image/rightArrow.png")}/>
             </Pressable>
         </View>
     )

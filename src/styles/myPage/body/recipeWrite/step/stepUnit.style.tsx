@@ -26,9 +26,17 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 5,
     },
+    numImgBox:{
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
     numText:{
         fontFamily: "SourceSerif4-Bold",
         fontSize: 15,
+    },
+    removeImg:{
+        height: 25,
+        width: 25,
     },
     contentInput:{
         borderWidth: 1,

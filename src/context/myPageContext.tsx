@@ -1,22 +1,13 @@
-import React, { createContext, ReactNode, useContext, useRef } from "react"
-import { pageValueType } from "src/types/commonTypes";
+import React, { createContext, ReactNode, useContext } from "react"
 
 type MyPageContextProp = {
-    myPageDetail: React.RefObject<pageValueType>;
-    focus: React.RefObject<boolean>;
 }
 
 const MyPageContext = createContext<MyPageContextProp | undefined>(undefined);
 
 export const MyPageProvider = ({children}: {children: ReactNode}) => {
-    const myPageDetail = useRef({
-        prev: "",
-        now: ""
-    });
-    const focus = useRef(false);
-
     return(
-        <MyPageContext.Provider value={{myPageDetail, focus}}>
+        <MyPageContext.Provider value={{}}>
             {children}
         </MyPageContext.Provider>
     )

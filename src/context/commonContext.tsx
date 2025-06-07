@@ -1,10 +1,15 @@
+//기타
 import React, { createContext, ReactNode, useContext, useRef } from "react";
-import { CategoryTotalType, pageValueType } from "../types/commonTypes";
+
+//type
+import { CategoryTotalType, CategoryValueType, pageValueType } from "../types/commonTypes";
 
 type CommonContextType = {
     categoryTotal: CategoryTotalType[];
     mainPage: React.RefObject<pageValueType>;
     subPage: React.RefObject<pageValueType>;
+    prev: React.RefObject<CategoryValueType[]>;
+    success: React.RefObject<boolean>;
 }
 
 const CommonContext = createContext<CommonContextType | undefined>(undefined);
@@ -61,9 +66,11 @@ export const CommonProvider = ({children}: {children: ReactNode}) => {
         prev: "",
         now: ""
     });
+    const prev = useRef<CategoryValueType[]>([]);
+    const success = useRef<boolean>(false);
 
     return(
-        <CommonContext.Provider value={{categoryTotal, mainPage, subPage}}>
+        <CommonContext.Provider value={{categoryTotal, mainPage, subPage, prev, success}}>
             {children}
         </CommonContext.Provider>
     )

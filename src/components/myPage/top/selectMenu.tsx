@@ -6,43 +6,51 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { CategoryTotalType, CategoryValueType } from "../../../types/commonTypes";
 import { NavigateType } from "src/types/navigateTypes";
 
-//Redux
-import { useDispatch } from "react-redux";
-import { setCategoryValue } from "../../../redux/commonSlice";
-
 //style
 import styles from "@styles/myPage/top/selectMenu.style";
+
+//Navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+
+//hooks
+import { useCategory } from "../../../hooks/useCategory";
+
+//Context
+import { useCommon } from "../../../context/commonContext";
 
 type NavigateProps = NativeStackNavigationProp<NavigateType>;
 
 type Props = {
     categoryValue: CategoryValueType;
     categoryTotal: CategoryTotalType[];
-    setCategoryTrig: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function SelectMenu(props: Props): React.JSX.Element{
-    const {categoryValue, categoryTotal, setCategoryTrig} = props;
-    const dispatch = useDispatch();
+    const {categoryValue, categoryTotal} = props;
+    const {prev} = useCommon();
+    const {categoryChange} = useCategory();
     const navigation = useNavigation<NavigateProps>();
 
     const selectMenu = (index: number) => {
-        dispatch(setCategoryValue({
-            ...categoryValue,
-            sub: categoryTotal[2].sub[index],
-            detail: categoryTotal[2].detail[index][0],
-            detail_1: categoryTotal[2].detail_1[index][0][0]
-        }))
-        setCategoryTrig((prev) => (!prev));
+        const mainIndex = categoryTotal.findIndex(item => item.main === "MyPage");
+        const subIndex = index;
+        categoryChange(mainIndex, subIndex, 0, 0);
 
-        navigation.navigate("MyPage", {
-            screen: categoryTotal[2].sub[index] === "Info" ? "Info" :
-                    categoryTotal[2].sub[index] === "Foods" ? "Foods" :
-                    categoryTotal[2].sub[index] === "WishList" ? "WishList" :
-                    "MyRecipe"
-        });
+        prev.current = [{
+            main: categoryTotal[mainIndex].main,
+            sub: categoryTotal[mainIndex].sub[subIndex],
+            detail: categoryTotal[mainIndex].detail[subIndex][0],
+            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
+        }]
+
+        navigation.reset({
+            index: 1,
+            routes: [
+                {name: "Main"},
+                {name: "MyPage", state: {index: 0, routes: [{name: categoryTotal[mainIndex].sub[index]}]}}
+            ]
+        })
     }
 
     return(

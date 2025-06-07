@@ -1,57 +1,49 @@
 //기타
-import React from "react";
+import React, { useCallback } from "react";
 import { Image, Text, View } from "react-native";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
 //Component
-import CommentBox from "../../common/useElement/cmtBox";
-import LikeTop from "../../../components/common/useElement/likeTop";
+import CommentBox from "../../common/useElement/body/cmtBox";
+import LikeTop from "../../common/useElement/top/likeTop";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
-import { useCommunity } from "../../../context/communityContext";
 
 //Redux
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { setCategoryValue } from "../../../redux/commonSlice";
 import { ScrollView } from "react-native-gesture-handler";
 
 //style
 import styles from "@styles/community/info/infoBody.style";
 
+//hooks
+import { useCategory } from "../../../hooks/useCategory";
+
 
 function InfoBody(): React.JSX.Element{
-    const {categoryTotal} = useCommon();
-    const {communityDetail, focus} = useCommunity();
+    const {categoryTotal, prev, success} = useCommon();
+    const {categoryChange} = useCategory();
+    const boardType = prev.current.find((item) => item.main === "Community" && item.sub === "List")?.detail;
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
-    const dispatch = useDispatch();
 
-    useFocusEffect(() => {
-        const mainIndex = categoryTotal.findIndex(item => item.main === "Community");
-        const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
-        const nextValue = {
-            main: categoryTotal[mainIndex].main,
-            sub: categoryTotal[mainIndex].sub[subIndex],
-            detail: categoryTotal[mainIndex].detail[subIndex][0],
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
-        };
-
-        if((nextValue.main !== categoryValue.main) || (nextValue.sub !== categoryValue.sub)){
-            if(!focus.current){
-                dispatch(setCategoryValue({
-                    ...categoryValue,
-                    ...nextValue
-                }));
-                focus.current = !focus.current;
+    useFocusEffect(
+        useCallback(() => {
+            if(!success.current){
+                const mainIndex = categoryTotal.findIndex(item => item.main === "Community");
+                const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === "Info");
+                categoryChange(mainIndex, subIndex, 0, 0);
+                success.current = true;
             }
-        }else{
-            focus.current = !focus.current;
-        }
-    });
+            return () => {
+                success.current = false;
+            }
+        }, [])
+    );
 
     return(
         <View style={styles.container}>
@@ -60,8 +52,8 @@ function InfoBody(): React.JSX.Element{
                 categoryValue={categoryValue}
                 categoryTotal={categoryTotal}/>
             <ScrollView contentContainerStyle={styles.scrollAlign} showsVerticalScrollIndicator={false}>
-                <View style={[styles.top, communityDetail.current.prev === "Board" ? styles.topBoard : styles.topNotice]}>
-                    {communityDetail.current.prev === "Board" ?
+                <View style={[styles.top, boardType === "Board" ? styles.topBoard : styles.topNotice]}>
+                    {boardType === "Board" ?
                         <View style={styles.profileBox}>
                             <Image style={styles.profileImg} source={require("../../../assets/image/profile.png")}/>
                             <View style={styles.profileTxt}>

@@ -1,16 +1,14 @@
 import React, { createContext, ReactNode, useContext, useRef } from "react"
 
 type MainContextProp = {
-    focus: React.RefObject<boolean>;
 }
 
 const MainContext = createContext<MainContextProp | undefined>(undefined);
 
 export const MainProvider = ({children}: {children: ReactNode}) => {
-    const focus = useRef(false);
 
     return(
-        <MainContext.Provider value={{focus}}>
+        <MainContext.Provider value={{}}>
             {children}
         </MainContext.Provider>
     )

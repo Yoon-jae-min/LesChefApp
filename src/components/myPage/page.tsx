@@ -1,5 +1,5 @@
 //기타
-import React, { useState } from "react";
+import React from "react";
 import { View } from "react-native";
 
 //Component
@@ -27,17 +27,15 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const MyPageStack = createNativeStackNavigator();
 
 function PageMy(): React.JSX.Element{
-    const {categoryTotal, subPage} = useCommon();
+    const {categoryTotal} = useCommon();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
-    const [categoryTrig, setCategoryTrig] = useState(false);
 
     return(
         <View style={styles.container}>
-                {(subPage.current.now !== "RecipeInfo" && subPage.current.now !== "RecipeWrite") &&
+                {categoryValue.main === "MyPage" &&
                     <SelectMyMenu 
                         categoryValue={categoryValue} 
-                        categoryTotal={categoryTotal} 
-                        setCategoryTrig={setCategoryTrig}/>}
+                        categoryTotal={categoryTotal}/>}
                 <MyPageStack.Navigator screenOptions={{headerShown: false}}>
                     <MyPageStack.Screen name="Info" component={Info}/>
                     <MyPageStack.Screen name="Foods" component={Foods}/>

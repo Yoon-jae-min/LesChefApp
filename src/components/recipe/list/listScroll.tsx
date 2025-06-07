@@ -9,15 +9,12 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 //Redux
 import { useDispatch, useSelector } from "react-redux";
-import { setCategoryValue } from "../../../redux/commonSlice";
 import { setSelectedRecipe } from "../../../redux/recipeSlice";
 import { RootState } from "../../../redux/store";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
 import { useDummy } from "../../../context/dummyContext";
-import { useMyPage } from "../../../context/myPageContext";
-import { useRecipe } from "../../../context/recipeContext";
 
 //Type
 import { NavigateType } from "../../../types/navigateTypes";
@@ -31,16 +28,11 @@ function ListScroll(): React.JSX.Element{
     const exListElements = useDummy().recipeListData;
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedRecipe = useSelector((state: RootState) => state.recipe.selectedRecipe);
-    const {categoryTotal, mainPage, subPage} = useCommon();
-    const detailPage = categoryValue.main === "Recipe" ? useRecipe().recipeDetail : useMyPage().myPageDetail;
+    const {prev} = useCommon();
     const dispatch = useDispatch();
     const navigation = useNavigation<NavigateProps>();
 
     const touchRecipe = (recipeId: string, foodName: string) => {
-        const mainIndex = categoryTotal.findIndex(item => item.main === mainPage.current.now);
-        const subIndex = categoryTotal[mainIndex].sub.
-                            findIndex(item => mainPage.current.now === "Recipe" ? item === "Info" : item === "RecipeInfo");
-
         dispatch(setSelectedRecipe({
             ...selectedRecipe,
             recipeId: recipeId,
@@ -77,17 +69,7 @@ function ListScroll(): React.JSX.Element{
                 content: "와아아아아ㅏㅏㅏㅏ!!!!",
             }]
         }));
-
-        subPage.current = {
-            ...subPage.current,
-            now: mainPage.current.now === "Recipe" ? "Info" : "ReciepInfo"
-        };
-        
-        detailPage.current = {
-            ...detailPage.current,
-            prev: categoryValue.detail
-        };
-
+        prev.current = [categoryValue]
         if(categoryValue.main === "Recipe"){
             navigation.navigate("Recipe",{
                 screen: "Info",
@@ -97,12 +79,6 @@ function ListScroll(): React.JSX.Element{
                 screen: "RecipeInfo",
             });
         }
-        dispatch(setCategoryValue({
-            ...categoryValue,
-            sub: categoryTotal[mainIndex].sub[subIndex],
-            detail: categoryTotal[mainIndex].detail[subIndex][0],
-            detail_1: categoryTotal[mainIndex].detail_1[subIndex][0][0]
-        }));
     }
 
     return(
