@@ -25,15 +25,11 @@ function MenuBox(props: Props): React.JSX.Element{
     const translateX = useRef(new Animated.Value(-250)).current;
 
     useEffect(() => {
-        Animated.sequence([
-            Animated.parallel([
-                Animated.timing(translateX,{
-                    toValue: menuActive ? 0 : -250,
-                    duration: 600,
-                    useNativeDriver: true
-                })
-            ])
-        ]).start();
+        Animated.timing(translateX,{
+            toValue: menuActive ? 0 : -250,
+            duration: 600,
+            useNativeDriver: true
+        }).start();
     }, [menuActive]);
 
     return(

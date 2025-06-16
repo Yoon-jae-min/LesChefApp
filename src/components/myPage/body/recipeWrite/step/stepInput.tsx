@@ -9,7 +9,13 @@ import StepUnit from "./stepUnit";
 //type
 import { StepType } from "../../../../../types/recipeTypes";
 
-function StepInput(): React.JSX.Element{
+type Props = {
+    setImgSelectOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    imgInputType: React.RefObject<{type: string; index: number;}>;
+}
+
+function StepInput(props: Props): React.JSX.Element{
+    const {setImgSelectOpen, imgInputType} = props;
     const [stepUnits, setStepUnits] = useState<StepType[]>([]);
 
     const addElement = () => {
@@ -32,7 +38,14 @@ function StepInput(): React.JSX.Element{
         <View style={styles.container}>
             <Text style={styles.title}>Step</Text>
             {stepUnits.map((item, index) => (
-                <StepUnit key={index} unitIndex={index} stepUnit={item} removeElement={removeElement} inputElement={inputElement}/>
+                <StepUnit 
+                    key={index} 
+                    unitIndex={index} 
+                    stepUnit={item} 
+                    removeElement={removeElement} 
+                    inputElement={inputElement}
+                    setImgSelectOpen={setImgSelectOpen}
+                    imgInputType={imgInputType}/>
             ))}
             <Pressable style={styles.addBtnBox} onPress={addElement}>
                 <Image style={styles.addBtn} source={require("../../../../../assets/image/addUnit.png")}/>

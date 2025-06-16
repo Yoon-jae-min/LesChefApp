@@ -7,7 +7,7 @@ import { useFocusEffect } from "@react-navigation/native";
 
 //Component
 import CommentBox from "../../common/useElement/body/cmtBox";
-import LikeTop from "../../common/useElement/top/likeTop";
+import LikeTop from "../../common/useElement/btnAndTitle/likeTop";
 
 //Context
 import { useCommon } from "../../../context/commonContext";

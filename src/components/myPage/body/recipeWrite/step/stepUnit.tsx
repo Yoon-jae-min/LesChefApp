@@ -13,16 +13,20 @@ type Props = {
     unitIndex: number;
     removeElement: (index: number) => void;
     inputElement: (index: number, value: StepType) => void;
+    setImgSelectOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    imgInputType: React.RefObject<{type: string; index: number;}>;
 }
 
 function StepUnit(props: Props): React.JSX.Element{
-    const {stepUnit, unitIndex, removeElement, inputElement} = props;
+    const {stepUnit, unitIndex, removeElement, inputElement, setImgSelectOpen, imgInputType} = props;
 
     return(
         <View style={styles.container}>
-            <View style={styles.leftBox}>
+            <Pressable 
+                style={styles.leftBox} 
+                onPress={() => {setImgSelectOpen(true); imgInputType.current = {type: "step", index: unitIndex};}}>
                 <Image style={styles.imgInput}/>
-            </View>
+            </Pressable>
             <View style={styles.rightBox}>
                 <View style={styles.numImgBox}>
                     <Text style={styles.numText}>{`Step.${stepUnit.stepNum}`}</Text>

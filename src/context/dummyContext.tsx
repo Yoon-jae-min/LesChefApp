@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext } from "react";
 
+//Board
 type BoardListType = {
     boardId: string;
     title: string;
@@ -9,6 +10,7 @@ type BoardListType = {
     viewCount: number;
 }
 
+//Recipe
 type RecipeListType = {
     recipeId: string;
     foodName: string;
@@ -20,9 +22,22 @@ type RecipeListType = {
     time: number;
 }
 
+//Storage
+type StorageItem = {
+    name: string,
+    amount: string,
+    expire: string,
+}
+
+type StorageListType = {
+    place: string,
+    items: StorageItem[]
+}
+
 type DummyType = {
     boardListData: BoardListType[][];
     recipeListData: RecipeListType[];
+    storageListData: StorageListType[];
 }
 
 const DummyContext = createContext<DummyType | undefined>(undefined);
@@ -204,8 +219,56 @@ export const DummyProvider = ({children}: {children: ReactNode}) => {
         }
     ]
 
+    const storageListData = [
+        {
+            place: "냉장고",
+            items: [
+                {
+                    name: "양파",
+                    amount: "2망",
+                    expire: "2025.07.10" 
+                },
+                {
+                    name: "닭",
+                    amount: "1마리",
+                    expire: "2025.06.26" 
+                }
+            ]
+        },
+        {
+            place: "서랍",
+            items: [
+                {
+                    name: "고무장갑",
+                    amount: "5개",
+                    expire: "-" 
+                },
+                {
+                    name: "물티슈",
+                    amount: "5개",
+                    expire: "-" 
+                }
+            ]
+        },
+        {
+            place: "김치냉장고",
+            items: [
+                {
+                    name: "김치",
+                    amount: "2통",
+                    expire: "2026.01.02" 
+                },
+                {
+                    name: "사과",
+                    amount: "11개",
+                    expire: "2025.08.20" 
+                }
+            ]
+        }
+    ];
+
     return(
-        <DummyContext.Provider value={{boardListData, recipeListData}}>
+        <DummyContext.Provider value={{boardListData, recipeListData, storageListData}}>
             {children}
         </DummyContext.Provider>
     )

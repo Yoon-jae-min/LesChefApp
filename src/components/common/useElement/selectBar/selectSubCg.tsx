@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { setCategoryValue } from "../../../../redux/commonSlice";
 
 //style
-import styles from "@styles/common/useElement/selectSubCg.style";
+import styles from "@styles/common/useElement/selectBar/selectSubCg.style";
 
 type Props = {
     categoryTotal: CategoryTotalType[];

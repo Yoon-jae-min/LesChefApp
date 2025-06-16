@@ -6,8 +6,6 @@ import { CategoryTotalType, CategoryValueType, pageValueType } from "../types/co
 
 type CommonContextType = {
     categoryTotal: CategoryTotalType[];
-    mainPage: React.RefObject<pageValueType>;
-    subPage: React.RefObject<pageValueType>;
     prev: React.RefObject<CategoryValueType[]>;
     success: React.RefObject<boolean>;
 }
@@ -34,7 +32,7 @@ export const CommonProvider = ({children}: {children: ReactNode}) => {
         },
         {
             main: "MyPage",
-            sub: ["Info", "Foods", "WishList", "MyRecipe", "RecipeInfo", "RecipeWrite"],
+            sub: ["Info", "Storage", "WishList", "MyRecipe", "RecipeInfo", "RecipeWrite"],
             detail: [["Default"], 
                     ["Default"], 
                     ["Korean", "Japanese", "Chinese", "Western", "Other"], 
@@ -58,19 +56,11 @@ export const CommonProvider = ({children}: {children: ReactNode}) => {
             detail_1: [[["Default"], ["Default"]], [["Default"]], [["Default"]]]
         }
     ];
-    const mainPage = useRef({
-        prev: "",
-        now: "",
-    });
-    const subPage = useRef({
-        prev: "",
-        now: ""
-    });
     const prev = useRef<CategoryValueType[]>([]);
     const success = useRef<boolean>(false);
 
     return(
-        <CommonContext.Provider value={{categoryTotal, mainPage, subPage, prev, success}}>
+        <CommonContext.Provider value={{categoryTotal, prev, success}}>
             {children}
         </CommonContext.Provider>
     )

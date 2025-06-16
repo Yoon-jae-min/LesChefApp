@@ -10,9 +10,10 @@ import { NavigateType } from "../../../types/navigateTypes";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-//컴포넌트
+//Component
 import ListScroll from "./listScroll";
-import ListSwitch from "../../common/useElement/top/listSwitch";
+import ListSwitch from "../../common/useElement/switchBar/listSwitch";
+import MainSearch from "../../../components/common/useElement/searchBar/mainSearch";
 
 //Context
 import { useCommon } from "../../../context/commonContext";
@@ -69,12 +70,9 @@ function ListBody(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            <TextInput style={styles.searchBox} placeholder="입력하세요..."/>
+            <MainSearch/>
             {isList &&
-                <ListSwitch
-                    categoryValue={categoryValue} 
-                    setListState={setListState}
-                    categoryTotal={categoryTotal}/>}
+                <ListSwitch categoryValue={categoryValue} categoryTotal={categoryTotal}/>}
                 {(categoryValue.detail === "Board" 
                     // || (categoryValue.detail === "Notice" && "")
                     ) && 

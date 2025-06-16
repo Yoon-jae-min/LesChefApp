@@ -1,18 +1,17 @@
 //기타
 import React, { useCallback } from "react";
 import { View, ScrollView } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
 
 //Component
 import Issue from "./issue";
 import FoodPrice from "./foodPrice";
+import MainSearch from "../common/useElement/searchBar/mainSearch";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
 
 //Context
 import { useCommon } from "../../context/commonContext";
-import { useMain } from "../../context/mainContext";
 
 //style
 import styles from "@styles/main/page.style";
@@ -23,7 +22,6 @@ import { useCategory } from "../../hooks/useCategory";
 function PageMain(): React.JSX.Element{
     const {categoryTotal, prev, success} = useCommon();
     const {categoryChange} = useCategory();
-    // const {success} = useMain();
 
     useFocusEffect(
         useCallback(() => {
@@ -41,7 +39,7 @@ function PageMain(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            <TextInput style={styles.searchBox} placeholder="입력하세요..."/>
+            <MainSearch/>
             <ScrollView style={styles.container} contentContainerStyle={styles.containerAlign}>
                 <Issue/>
                 <FoodPrice/>

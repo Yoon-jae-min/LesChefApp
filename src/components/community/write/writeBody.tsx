@@ -6,7 +6,7 @@ import { Image, Pressable, TextInput, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 //Component
-import UploadTop from "../../common/useElement/top/uploadTop";
+import UploadTop from "../../common/useElement/btnAndTitle/uploadTop";
 
 //Context
 import { useCommon } from "../../../context/commonContext";

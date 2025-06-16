@@ -1,12 +1,12 @@
 //기타
 import React, { useState } from "react";
-import { TextInput } from "react-native-gesture-handler";
 import { View } from "react-native";
 
 //Component
-import ListSwitch from "../../common/useElement/top/listSwitch";
-import SelectSubCg from "../../common/useElement/top/selectSubCg";
+import ListSwitch from "../../common/useElement/switchBar/listSwitch";
+import SelectSubCg from "../../common/useElement/selectBar/selectSubCg";
 import ListScroll from "./listScroll";
+import MainSearch from "../../../components/common/useElement/searchBar/mainSearch";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -25,13 +25,9 @@ function ListBox(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            {categoryValue.main === "Recipe" && 
-                <TextInput style={styles.searchBox} placeholder="입력하세요..."/>}
+            <MainSearch/>
             {(categoryValue.sub === "List" || categoryValue.sub === "WishList" || categoryValue.sub === "MyRecipe") && 
-                <ListSwitch 
-                    categoryValue={categoryValue} 
-                    categoryTotal={categoryTotal} 
-                    setListState={setListState}/>}
+                <ListSwitch categoryValue={categoryValue} categoryTotal={categoryTotal}/>}
             {(categoryValue.detail !== "Other") && 
                     <SelectSubCg 
                         categoryTotal={categoryTotal} 

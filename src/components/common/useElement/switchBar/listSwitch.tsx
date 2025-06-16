@@ -7,26 +7,37 @@ import RNPickerSelect from "react-native-picker-select";
 import { CategoryTotalType, CategoryValueType } from "../../../../types/commonTypes";
 
 //style
-import {styles, pickerStyles} from "@styles/common/useElement/listSwitch.style";
+import {styles, pickerStyles} from "@styles/common/useElement/switchBar/listSwitch.style";
 
 //hooks
 import { useCategory } from "../../../../hooks/useCategory";
 
+//Redux
+import { useDispatch } from "react-redux";
+import { setCurrentList } from "../../../../redux/storageSlice";
+import { useDummy } from "../../../../context/dummyContext";
+
 type Props = {
     categoryValue: CategoryValueType;
     categoryTotal: CategoryTotalType[];
-    setListState: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function ListSwitch(props: Props): React.JSX.Element{
-    const { categoryValue, categoryTotal, setListState } = props;
+    const { categoryValue, categoryTotal } = props;
     const { categoryChange } = useCategory();
     const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
     const subIndex = categoryTotal[mainIndex].sub.findIndex(item => item === categoryValue.sub);
     const [elements, setElements] = useState<string[]>([]);
+    const [element, setElement] = useState(categoryValue.sub === "Storage" ? elements[0] : categoryValue.detail);
+    const dispatch = useDispatch();
+    const storageListAll = useDummy().storageListData;
 
     useEffect(() => {
-        setElements(categoryTotal[mainIndex].detail[subIndex]);
+        if(categoryValue.sub === "Storage"){
+            setElements(["냉장고", "서랍", "김치냉장고"]);
+        }else{
+            setElements(categoryTotal[mainIndex].detail[subIndex]);
+        }
     }, []);
 
     const indexCount = (value: string) => {
@@ -48,25 +59,30 @@ function ListSwitch(props: Props): React.JSX.Element{
                 indexSave += 1;
             }
         }
-        const detailIndex = categoryTotal[mainIndex].detail[subIndex].findIndex(item => item === elements[indexSave]);
+        const detailIndex = categoryValue.sub === "Storage" ? 0 :
+            categoryTotal[mainIndex].detail[subIndex].findIndex(item => item === elements[indexSave]);
+
+        if(categoryValue.sub === "Storage"){
+            dispatch(setCurrentList(storageListAll[indexSave]));
+        }
 
         categoryChange(mainIndex, subIndex, detailIndex, 0);
-        setListState((prev) => (!prev));
+        setElement(elements[indexSave]);
     }
 
     return(
         <View style={styles.container}>
-            <Pressable onPress={() => switchMenu("left", categoryValue.detail)}>
+            <Pressable onPress={() => switchMenu("left", element)}>
                 <Image style={styles.arrow} source={require("../../../../assets/image/leftArrow.png")}/>
             </Pressable>
             <RNPickerSelect
                 style={pickerStyles}
-                value={categoryValue.detail}
+                value={element}
                 useNativeAndroidPickerStyle={false}
                 placeholder={{}}
-                items={categoryTotal[mainIndex].detail[subIndex].map((item) => ({label: item, value: item})) ?? []}
+                items={elements.map(item => ({label: item, value: item}))}
                 onValueChange={(value) => switchMenu("center", value)}/>
-            <Pressable onPress={() => switchMenu("right", categoryValue.detail)}>
+            <Pressable onPress={() => switchMenu("right", element)}>
                 <Image style={styles.arrow} source={require("../../../../assets/image/rightArrow.png")}/>
             </Pressable>
         </View>

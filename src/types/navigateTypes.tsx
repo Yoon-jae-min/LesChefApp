@@ -21,7 +21,7 @@ export type CommunitySubType = {
 
 export type MyPageSubType = {
     Info: undefined;
-    Foods: undefined;
+    Storage: undefined;
     WishList: undefined;
     MyRecipe: undefined;
     RecipeInfo: undefined;

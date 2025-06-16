@@ -1,22 +1,20 @@
 //기타
 import React from "react";
-import { Image, Pressable, TextInput, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
-//Style
-import styles from "@styles/common/useElement/titleTop.style";
+//style
+import styles from "@styles/common/useElement/btnAndTitle/titleTop.style";
 
-//Navigation
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+//Context
+import { useCommon } from "../../../../context/commonContext";
 
 //Type
 import { CategoryTotalType, CategoryValueType } from "../../../../types/commonTypes";
 import { NavigateType } from "../../../../types/navigateTypes";
 
 //Navigation
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-
-//Context
-import { useCommon } from "../../../../context/commonContext";
 
 //hooks
 import { useCategory } from "../../../../hooks/useCategory";
@@ -29,7 +27,7 @@ type Props = {
     categoryTotal: CategoryTotalType[];
 }
 
-function UploadTop(props: Props): React.JSX.Element{
+function LikeTop(props: Props): React.JSX.Element{
     const {selectedTitle, categoryValue, categoryTotal} = props;
     const {prev} = useCommon();
     const {categoryChange} = useCategory();
@@ -39,15 +37,16 @@ function UploadTop(props: Props): React.JSX.Element{
         switch (type) {
             case "back":
                 const mainIndex = categoryTotal.findIndex(item => item.main === categoryValue.main);
-                const subIndex = categoryTotal[mainIndex].sub
-                        .findIndex(item => item === prev.current[prev.current.length - 1].sub);
-                const detailIndex = categoryTotal[mainIndex].detail[subIndex].findIndex((item) => 
-                    item === prev.current[prev.current.length - 1].detail);   
+                const subIndex = categoryTotal[mainIndex].sub.findIndex(item => 
+                    categoryValue.main === "MyPage" ? item === "WishList" : item === "List");
+                const detailIndex = categoryTotal[mainIndex].detail[subIndex].findIndex(item => 
+                    item === prev.current.find((item) => 
+                        item.main === "MyPage" ? item.sub === "WishList" : item.sub === "List")?.detail);
                 categoryChange(mainIndex, subIndex, detailIndex, 0);
                 navigation.goBack();
                 break;
-            case "upload":
-                console.log("업로드");
+            case "like":
+                console.log("좋아요");
                 break;
             default:
                 break;
@@ -59,12 +58,14 @@ function UploadTop(props: Props): React.JSX.Element{
             <Pressable onPress={() => pressBtn("back")}>
                 <Image style={styles.leftIcon} source={require("../../../../assets/image/back.png")}/>
             </Pressable>
-            <TextInput style={[styles.center, styles.inputTitle]} placeholder="Title"/>
-            <Pressable onPress={() => pressBtn("upload")}>
-                <Image style={styles.rightIcon} source={require("../../../../assets/image/upload.png")}/>
+            <Text style={[styles.center, styles.title]}>{selectedTitle}</Text>
+            <Pressable onPress={() => pressBtn("like")}>
+                {categoryValue.main === "Community" ? 
+                    <Image style={styles.rightIcon} source={require("../../../../assets/image/thumb.png")}/>:
+                    <Image style={styles.rightIcon} source={require("../../../../assets/image/unlike.png")}/>}
             </Pressable>
         </View>
     )
 }
 
-export default UploadTop;
+export default LikeTop;

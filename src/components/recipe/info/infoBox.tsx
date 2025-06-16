@@ -3,11 +3,11 @@ import React from "react";
 import { Image, View } from "react-native";
 
 //Component
-import LikeTop from "../../common/useElement/top/likeTop";
+import LikeTop from "../../common/useElement/btnAndTitle/likeTop";
 import IngreBox from "./ingreBox";
 import StepBox from "./stepBox";
 import CommentBox from "../../common/useElement/body/cmtBox";
-import EditTop from "../../common/useElement/top/editTop";
+import EditTop from "../../common/useElement/btnAndTitle/editTop";
 
 //Redux
 import { useSelector } from "react-redux";

@@ -34,3 +34,7 @@ export type SelectedRecipeType = {
     steps: StepType[],
     comments: CommentType[]
 }
+
+export type SelectedListType = {
+    
+}

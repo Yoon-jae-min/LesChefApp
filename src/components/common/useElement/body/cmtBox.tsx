@@ -6,7 +6,7 @@ import { Image, Text, TextInput, View } from "react-native";
 import { CommentType } from "../../../../types/recipeTypes";
 
 //style
-import styles from "@styles/common/useElement/cmtBox.style";
+import styles from "@styles/common/useElement/body/cmtBox.style";
 
 type Prop = {
     comments: CommentType[]

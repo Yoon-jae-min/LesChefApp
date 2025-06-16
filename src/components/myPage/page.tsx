@@ -6,7 +6,7 @@ import { View } from "react-native";
 import SelectMyMenu from "./top/selectMenu";
 import WishList from "./body/wishList/wishList";
 import Info from "./body/info/info";
-import Foods from "./body/foods/foods";
+import Storage from "./body/storage/storage";
 import MyRecipe from "./body/myRecipe/myRecipe";
 import RecipeInfo from "./body/recipeInfo/recipeInfo";
 import RecipeWrite from "./body/recipeWrite/recipeWrite";
@@ -32,13 +32,10 @@ function PageMy(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-                {categoryValue.main === "MyPage" &&
-                    <SelectMyMenu 
-                        categoryValue={categoryValue} 
-                        categoryTotal={categoryTotal}/>}
+                <SelectMyMenu categoryValue={categoryValue} categoryTotal={categoryTotal}/>
                 <MyPageStack.Navigator screenOptions={{headerShown: false}}>
                     <MyPageStack.Screen name="Info" component={Info}/>
-                    <MyPageStack.Screen name="Foods" component={Foods}/>
+                    <MyPageStack.Screen name="Storage" component={Storage}/>
                     <MyPageStack.Screen name="WishList" component={WishList}/>
                     <MyPageStack.Screen name="MyRecipe" component={MyRecipe}/>
                     <MyPageStack.Screen name="RecipeInfo" component={RecipeInfo}/>

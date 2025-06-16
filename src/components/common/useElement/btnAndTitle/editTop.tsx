@@ -10,7 +10,7 @@ import { CategoryTotalType, CategoryValueType } from "../../../../types/commonTy
 import { NavigateType } from "../../../../types/navigateTypes";
 
 //style
-import styles from "@styles/common/useElement/titleTop.style";
+import styles from "@styles/common/useElement/btnAndTitle/titleTop.style";
 
 //Context
 import { useCommon } from "../../../../context/commonContext";
