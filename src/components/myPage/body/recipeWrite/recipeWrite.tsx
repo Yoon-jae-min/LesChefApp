@@ -1,7 +1,8 @@
 //기타
 import React, { useCallback, useRef, useState } from "react";
-import { FlatList, Image, Modal, Pressable, Text, View } from "react-native";
+import { FlatList, Image, Modal, Pressable, Text, View, Alert } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { validateImage } from "../../../utils/imageValidation";
 
 
 //style
@@ -12,7 +13,7 @@ import UploadTop from "../../../common/useElement/btnAndTitle/uploadTop";
 import IngredientInput from "./ingredient/ingredientInput";
 import StepInput from "./step/stepInput";
 import InfoInput from "./info/infoInput";
-import ImgSelect from "./imgSelect";
+import ImgSelect from "../../modal/imgSelect";
 
 //Redux
 import { useSelector } from "react-redux";
@@ -55,19 +56,34 @@ function RecipeWrite(): React.JSX.Element{
         if(type === "cancel"){
             return;
         }
-        const result = type === "camera" ? 
-            await launchCamera({mediaType: "photo"}) : 
-            await launchImageLibrary({mediaType: "photo"});
-        if (!result.didCancel && result.assets?.[0]?.uri) {
-            switch (imgInputType.current.type){
-                case "main":
-                    setImgDate(result.assets[0].uri);
-                    break;
-                case "step":
-                    break;
-                default:
-                    break;
+        
+        try {
+            const result = type === "camera" ? 
+                await launchCamera({mediaType: "photo"}) : 
+                await launchImageLibrary({mediaType: "photo"});
+            
+            // 이미지 검증
+            const validation = validateImage(result);
+            
+            if (!validation.isValid) {
+                Alert.alert("이미지 오류", validation.error || "이미지를 선택할 수 없습니다.");
+                return;
             }
+            
+            if (validation.asset?.uri) {
+                switch (imgInputType.current.type){
+                    case "main":
+                        setImgDate(validation.asset.uri);
+                        break;
+                    case "step":
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (error: any) {
+            console.error("Image selection error:", error);
+            Alert.alert("오류", "이미지를 선택하는 중 오류가 발생했습니다.");
         }
     }
 

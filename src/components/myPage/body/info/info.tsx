@@ -14,6 +14,10 @@ import { useFocusEffect } from "@react-navigation/native";
 //hooks
 import { useCategory } from "../../../../hooks/useCategory";
 
+//Component
+import Profile from "./profile";
+import BtnBox from "./btnBox";
+
 function Info(): React.JSX.Element{
     const {categoryTotal, success} = useCommon();
     const {categoryChange} = useCategory();
@@ -34,7 +38,8 @@ function Info(): React.JSX.Element{
 
     return(
         <View style={styles.container}>
-            <Text>info</Text>
+            <Profile/>
+            <BtnBox/>
         </View>
     )
 }

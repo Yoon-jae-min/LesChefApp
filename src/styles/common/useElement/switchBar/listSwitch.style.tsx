@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { colors, borderRadius, shadows, spacing } from "../../theme";
 
 export const styles = StyleSheet.create({
     container:{
@@ -6,8 +7,11 @@ export const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         width: "97%",
-        backgroundColor: "white",
-        marginTop: 10,
+        backgroundColor: colors.white,
+        marginTop: spacing.md,
+        borderRadius: borderRadius.md,
+        ...shadows.default,
+        padding: spacing.sm,
     },
     arrow:{
         width: 40,
@@ -17,24 +21,30 @@ export const styles = StyleSheet.create({
 
 export const pickerStyles = StyleSheet.create({
     inputIOS: {
-        fontFamily: "Jua-Regular",
-        fontSize: 22,
+        fontWeight: "600",
+        fontSize: 18,
         padding: 12,
         width: 250,
         height: 50,
-        backgroundColor: "white",
-        color: "black",
+        backgroundColor: colors.white,
+        color: colors.black,
         textAlign: "center",
+        borderRadius: borderRadius.sm,
+        borderWidth: 1,
+        borderColor: colors.gray[300],
     },
     inputAndroid: {
-        fontFamily: "Jua-Regular",
-        fontSize: 22,
+        fontWeight: "600",
+        fontSize: 18,
         padding: 12,
         width: 250,
         height: 50,
-        backgroundColor: "white",
-        color: "black",
+        backgroundColor: colors.white,
+        color: colors.black,
         textAlign: "center",
+        borderRadius: borderRadius.sm,
+        borderWidth: 1,
+        borderColor: colors.gray[300],
     },
 })
 

@@ -1,6 +1,7 @@
 //기타
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Image, Pressable, TextInput, View } from "react-native";
+import { validateText, sanitizeText } from "../../../utils/validation";
 
 //Navigation
 import { useFocusEffect } from "@react-navigation/native";
@@ -27,6 +28,7 @@ function WriteBody(): React.JSX.Element{
     const {categoryChange} = useCategory();
     const categoryValue = useSelector((state: RootState) => state.category.categoryValue);
     const selectedBoard = useSelector((state: RootState) => state.board.selectedBoard);
+    const [content, setContent] = useState("");
 
     useFocusEffect(
         useCallback(() => {
@@ -64,7 +66,17 @@ function WriteBody(): React.JSX.Element{
                     </Pressable>
                 </View>
             </View>
-            <TextInput style={styles.textInput}/>
+            <TextInput 
+                style={styles.textInput}
+                value={content}
+                onChangeText={(text) => {
+                    // XSS 방지를 위한 기본 Sanitization (필요시)
+                    setContent(text);
+                }}
+                maxLength={5000}
+                multiline
+                placeholder="내용을 입력하세요..."
+            />
         </View>
     )
 }

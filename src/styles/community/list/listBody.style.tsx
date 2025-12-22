@@ -1,10 +1,11 @@
 import { StyleSheet } from "react-native";
+import { colors, borderRadius, shadows, spacing } from "../../common/theme";
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: "100%",
-        backgroundColor: "white",
+        backgroundColor: colors.gradient.orange, // 웹의 그라데이션 배경
         alignItems: "center",
     },
     searchBox:{
@@ -12,32 +13,36 @@ const styles = StyleSheet.create({
         height: 44,
         marginLeft: "5%",
         marginRight: "5%",
-        marginTop: 5,
-        marginBottom: 10,
+        marginTop: spacing.sm,
+        marginBottom: spacing.md,
         textAlign: "center",
-        borderColor: "rgba(81, 81, 81, 1)",
-        backgroundColor: "white",
+        borderColor: colors.gray[300],
+        backgroundColor: colors.white,
         borderWidth: 1,
-        borderRadius: 10,
-        color: "rgba(160, 160, 160, 1)"
+        borderRadius: borderRadius.md,
+        color: colors.gray[500],
+        ...shadows.default,
     },
     head: {
         width: "100%",
         height: 25,
         flexDirection: "row",
-        marginTop: 5,
+        marginTop: spacing.sm,
     },
     element:{
         width: 70,
         marginLeft: "4%",
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 50,
+        borderRadius: borderRadius.full,
         borderWidth: 1,
-        borderColor: "rgba(67, 67, 67, 1)"
+        borderColor: colors.gray[300],
+        backgroundColor: colors.white,
+        ...shadows.default,
     },
     txt:{
-        fontFamily: "Jua-Regular",
+        fontWeight: "600",
+        color: colors.black,
     }
 });
 

@@ -1,7 +1,8 @@
 //기타
 import React, { useState } from "react";
-import { TextInput, View } from "react-native";
+import { TextInput, View, Text } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
+import { validateText } from "../../../../utils/validation";
 
 //style
 import styles from "@styles/myPage/body/recipeWrite/info/infoInput.style";
@@ -27,10 +28,32 @@ function InfoInput(): React.JSX.Element{
     const [subArray, setSubArray] = useState([{ label: "", value: "" }]);
     const [mainSelect, setMainSelect] = useState("");
     const [subSelect, setSubSelect] = useState("");
+    const [portion, setPortion] = useState("");
+    const [time, setTime] = useState("");
+    const [portionError, setPortionError] = useState<string | null>(null);
+    const [timeError, setTimeError] = useState<string | null>(null);
     
 
     const subSwitch = (index: number) => {
         setSubArray(subCg[index].map(item => ({label: item, value: item})));
+    }
+
+    const validatePortion = (value: string) => {
+        if (value === "") {
+            setPortionError(null);
+            return;
+        }
+        const error = validateText.numberRange(value, 1, 100, "인분");
+        setPortionError(error);
+    }
+
+    const validateTime = (value: string) => {
+        if (value === "") {
+            setTimeError(null);
+            return;
+        }
+        const error = validateText.numberRange(value, 1, 1440, "시간");
+        setTimeError(error);
     }
 
     return(
@@ -71,10 +94,32 @@ function InfoInput(): React.JSX.Element{
             </View>
             <View style={styles.eachBox}>
                 <View style={styles.each}>
-                    <TextInput keyboardType="numeric" style={styles.eachText} placeholder="양(인분)"/>
+                    <TextInput 
+                        keyboardType="numeric" 
+                        style={styles.eachText} 
+                        placeholder="양(인분)"
+                        value={portion}
+                        onChangeText={(text) => {
+                            setPortion(text);
+                            validatePortion(text);
+                        }}
+                        maxLength={3}
+                    />
+                    {portionError && <Text style={{color: 'red', fontSize: 12}}>{portionError}</Text>}
                 </View>
                 <View style={styles.each}>
-                    <TextInput keyboardType="numeric" style={styles.eachText} placeholder="시간"/>
+                    <TextInput 
+                        keyboardType="numeric" 
+                        style={styles.eachText} 
+                        placeholder="시간(분)"
+                        value={time}
+                        onChangeText={(text) => {
+                            setTime(text);
+                            validateTime(text);
+                        }}
+                        maxLength={4}
+                    />
+                    {timeError && <Text style={{color: 'red', fontSize: 12}}>{timeError}</Text>}
                 </View>
             </View>
         </View>

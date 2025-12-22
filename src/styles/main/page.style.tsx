@@ -1,26 +1,29 @@
 import { StyleSheet } from "react-native";
+import { colors, borderRadius, shadows, spacing } from "../common/theme";
 
 const styles = StyleSheet.create({
     container:{
         flex: 1,
-        backgroundColor: "white"
+        backgroundColor: colors.gradient.orange, // 웹의 그라데이션 배경
     },
     containerAlign:{
-        alignItems: "center"
+        alignItems: "center",
+        paddingVertical: spacing.md,
     },
     searchBox:{
         width: "90%",
         height: 44,
         marginLeft: "5%",
         marginRight: "5%",
-        marginTop: 5,
-        marginBottom: 10,
+        marginTop: spacing.sm,
+        marginBottom: spacing.md,
         textAlign: "center",
-        borderColor: "rgba(81, 81, 81, 1)",
-        backgroundColor: "white",
+        borderColor: colors.gray[300],
+        backgroundColor: colors.white,
         borderWidth: 1,
-        borderRadius: 10,
-        color: "rgba(160, 160, 160, 1)"
+        borderRadius: borderRadius.md,
+        color: colors.gray[500],
+        ...shadows.default,
     }
 });
 

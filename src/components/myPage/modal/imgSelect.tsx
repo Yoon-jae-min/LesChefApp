@@ -1,6 +1,6 @@
 //기타
 import React, { useEffect, useRef } from "react";
-import { Animated, Image, Pressable, Text, View } from "react-native";
+import { Animated, Image, Pressable, Text } from "react-native";
 
 //style
 import styles from "@styles/myPage/modal/imgSelect.style";
@@ -34,15 +34,15 @@ function ImgSelect(props: Props){
     return(
         <Animated.View style={[styles.container, {transform: [{translateX}]}]}>
             <Pressable style={styles.boxCommon} onPress={() => addImg("camera")}>
-                <Image style={styles.btnImg} source={require("../../../../assets/image/camera.png")}/>
+                <Image style={styles.btnImg} source={require("../../../assets/image/camera.png")}/>
                 <Text style={styles.btnText}>카메라</Text>
             </Pressable>
             <Pressable style={styles.boxCommon} onPress={() => addImg("gallery")}>
-                <Image style={styles.btnImg} source={require("../../../../assets/image/gallery.png")}/>
+                <Image style={styles.btnImg} source={require("../../../assets/image/gallery.png")}/>
                 <Text style={styles.btnText}>갤러리</Text>
             </Pressable>
             <Pressable style={styles.boxCommon} onPress={() => addImg("cancel")}>
-                <Image style={styles.btnImg} source={require("../../../../assets/image/cancel_DG.png")}/>
+                <Image style={styles.btnImg} source={require("../../../assets/image/cancel_DG.png")}/>
                 <Text style={styles.btnText}>취소</Text>
             </Pressable>
         </Animated.View>

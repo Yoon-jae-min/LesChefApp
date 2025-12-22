@@ -1,8 +1,11 @@
 import { StyleSheet } from "react-native";
+import { colors } from "../../../common/theme";
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: colors.gradient.orange, // 웹의 그라데이션 배경
+        alignItems: "center",
     }
 });
 
