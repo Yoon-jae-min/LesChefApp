@@ -1,4 +1,42 @@
 {
-  "name": "LesChefApp",
-  "displayName": "LesChefApp"
+  "expo": {
+    "name": "LesChefApp",
+    "slug": "leschef-app",
+    "version": "0.0.1",
+    "sdkVersion": "52.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/image/LesChef_Logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/image/LesChef_Logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.leschef.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/image/LesChef_Logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.leschef.app"
+    },
+    "web": {
+      "favicon": "./src/assets/image/LesChef_Logo.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "앱이 사진에 접근할 수 있도록 허용해주세요.",
+          "cameraPermission": "앱이 카메라에 접근할 수 있도록 허용해주세요."
+        }
+      ]
+    ]
+  }
 }
