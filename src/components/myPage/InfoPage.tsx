@@ -1,6 +1,6 @@
 // 웹의 내 정보 페이지를 React Native로 변환
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Modal, TextInput } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Modal, TextInput, Alert } from 'react-native';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
 
@@ -278,7 +278,7 @@ function InfoPage(): React.JSX.Element {
                     style={[styles.modalButton, styles.finalDeleteButton]}
                     onPress={() => {
                       // TODO: API 호출
-                      alert('회원 탈퇴 API 연동 후 처리됩니다.');
+                      Alert.alert('안내', '회원 탈퇴 API 연동 후 처리됩니다.');
                       setShowDeleteConfirm(false);
                     }}
                   >
@@ -492,18 +492,18 @@ const styles = StyleSheet.create({
   warningTitle: {
     fontSize: fontSize.sm,
     fontWeight: '500',
-    color: colors.red800,
+    color: colors.red600,
     marginBottom: spacing.xs,
   },
   warningItem: {
     fontSize: fontSize.xs,
-    color: colors.red700,
+    color: colors.red600,
     marginBottom: spacing.xs,
   },
   warningFinal: {
     fontSize: fontSize.xs,
     fontWeight: '500',
-    color: colors.red800,
+    color: colors.red600,
     marginTop: spacing.md,
   },
   modalButtons: {

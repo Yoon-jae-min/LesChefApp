@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
+import { signup } from '../../api/auth/signup';
 
 function SignUpPage(): React.JSX.Element {
   const navigation = useNavigation();
@@ -40,14 +41,12 @@ function SignUpPage(): React.JSX.Element {
     }
 
     try {
-      // TODO: API 연동
-      // const response = await signup({
-      //   id: email,
-      //   pwd: password,
-      //   nickName: nickname,
-      // });
-
-      // 임시: 회원가입 성공 시뮬레이션
+      await signup({
+        id: email.trim(),
+        email: email.trim(),
+        pwd: password,
+        nickName: nickname.trim(),
+      });
       Alert.alert('회원가입 완료', '회원가입이 완료되었습니다!', [
         {
           text: '확인',

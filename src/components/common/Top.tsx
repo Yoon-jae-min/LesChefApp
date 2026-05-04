@@ -4,9 +4,11 @@ import { View, Text, Pressable, TextInput, StyleSheet, Platform } from 'react-na
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Svg, { Path, Circle, Rect } from 'react-native-svg';
-import { colors, borderRadius, shadows } from '../../styles/theme';
-import { Images } from '../../assets/images';
+import Svg, { Path, Circle } from 'react-native-svg';
+import { colors, borderRadius } from '../../styles/theme';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
+import { logout as apiLogout } from '../../api/auth/logout';
+import { clearUserSession } from '../../lib/session';
 
 function Top(): React.JSX.Element {
   const navigation = useNavigation();
@@ -17,7 +19,7 @@ function Top(): React.JSX.Element {
     React.useCallback(() => {
       const checkLogin = async () => {
         try {
-          const loggedIn = await AsyncStorage.getItem('leschef_is_logged_in') === 'true';
+          const loggedIn = await AsyncStorage.getItem(STORAGE_KEYS.IS_LOGGED_IN) === 'true';
           setIsLoggedIn(loggedIn);
         } catch (error) {
           console.error('로그인 상태 확인 실패:', error);
@@ -30,12 +32,15 @@ function Top(): React.JSX.Element {
 
   const handleAuthAction = async () => {
     if (isLoggedIn) {
-      // 로그아웃
       try {
-        await AsyncStorage.removeItem('leschef_is_logged_in');
+        try {
+          await apiLogout();
+        } catch {
+          /* 네트워크 실패 시에도 로컬 세션은 정리 */
+        }
+        await clearUserSession();
         setIsLoggedIn(false);
-        // 홈으로 이동
-        (navigation as any).navigate('Home');
+        (navigation as any).navigate('Main', { screen: 'Home' });
       } catch (error) {
         console.error('로그아웃 실패:', error);
       }
@@ -55,68 +60,18 @@ function Top(): React.JSX.Element {
               onPress={async () => {
                 // 로고 클릭 플래그 설정
                 await AsyncStorage.setItem('fromLogoClick', 'true');
-                (navigation as any).navigate('Home', { fromLogoClick: true });
+                (navigation as any).navigate('Main', {
+                  screen: 'Home',
+                  params: { fromLogoClick: true },
+                });
               }}
               style={styles.logoContainer}
             >
               <Text style={styles.logoText}>LesChef</Text>
             </Pressable>
 
-            {/* 아이콘들 */}
+            {/* 주요 섹션 이동은 하단 탭에서 처리 — 헤더는 검색·계정만 */}
             <View style={styles.iconsContainer}>
-              {/* 요리 아이콘 */}
-              <Pressable 
-                onPress={() => navigation.navigate('Recipe' as never)}
-                style={styles.iconButton}
-              >
-                <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray600} strokeWidth="1.5">
-                  {/* 네모 몸체 - 아래 두 모서리만 라운드 처리 */}
-                  <Path d="M4 13h14v6c0 1-1 2-2 2H6c-1 0-2-1-2-2v-6z" strokeLinecap="round"/>
-                  {/* 오른쪽 선분 위로 연장 후 오른쪽 위로 늘림 */}
-                  <Path d="M18 13v-2l2-4" strokeLinecap="round" strokeLinejoin="round"/>
-                  {/* 수증기 - 물결표를 90도로 돌린 모양, 거리 띄움 */}
-                  <Path d="M6 9c1-1 1-2 1-3c1-1 1-2 1-3" strokeLinecap="round"/>
-                  <Path d="M10 9c1-1 1-2 1-3c1-1 1-2 1-3" strokeLinecap="round"/>
-                  <Path d="M14 9c1-1 1-2 1-3c1-1 1-2 1-3" strokeLinecap="round"/>
-                </Svg>
-              </Pressable>
-
-              {/* 마이페이지 아이콘 */}
-              <Pressable 
-                onPress={async () => {
-                  const loggedIn = await AsyncStorage.getItem('leschef_is_logged_in') === 'true';
-                  if (loggedIn) {
-                    (navigation as any).navigate('MyPage');
-                  } else {
-                    (navigation as any).navigate('Login');
-                  }
-                }}
-                style={styles.iconButton}
-              >
-                <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray600} strokeWidth="1.5">
-                  {/* 외부 원 */}
-                  <Circle cx="12" cy="12" r="10"/>
-                  {/* 내부 원 (머리) */}
-                  <Circle cx="12" cy="9" r="3"/>
-                  {/* 어깨선 */}
-                  <Path d="M7 20c2.5-2.5 7.5-2.5 10 0" strokeLinecap="round"/>
-                </Svg>
-              </Pressable>
-
-              {/* 게시판 아이콘 */}
-              <Pressable 
-                onPress={() => navigation.navigate('Board' as never)}
-                style={styles.iconButton}
-              >
-                <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray600} strokeWidth="1.5">
-                  {/* 문서 외곽선 */}
-                  <Rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  {/* 텍스트 라인들 */}
-                  <Path d="M7 8h10M7 12h8M7 16h6" strokeLinecap="round"/>
-                </Svg>
-              </Pressable>
-
-              {/* 로그인/로그아웃 아이콘 */}
               <Pressable 
                 onPress={handleAuthAction}
                 style={styles.iconButton}

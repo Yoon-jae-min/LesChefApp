@@ -64,6 +64,20 @@ function MyPage(): React.JSX.Element {
               <Text style={styles.menuEmoji}>❤️</Text>
               <Text style={styles.menuText}>찜한 레시피</Text>
             </Pressable>
+            <Pressable 
+              style={[styles.menuCard, shadows.card]}
+              onPress={() => navigation.navigate('NotificationSettings' as never)}
+            >
+              <Text style={styles.menuEmoji}>🔔</Text>
+              <Text style={styles.menuText}>알림 설정</Text>
+            </Pressable>
+            <Pressable 
+              style={[styles.menuCard, shadows.card]}
+              onPress={() => navigation.navigate('ExpiryInbox' as never)}
+            >
+              <Text style={styles.menuEmoji}>📥</Text>
+              <Text style={styles.menuText}>알림 기록</Text>
+            </Pressable>
           </View>
         </View>
       </ScrollView>

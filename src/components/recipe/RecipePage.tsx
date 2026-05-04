@@ -6,6 +6,7 @@ import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/t
 import Top from '../common/Top';
 import TabNavigation from '../common/TabNavigation';
 import FilterTabs from '../common/FilterTabs';
+import { fetchRecipeList } from '../../api/recipe/queries';
 
 const CUISINE_TABS = ['한식', '일식', '중식', '양식', '기타'] as const;
 const CATEGORY_TO_DISPLAY: Record<string, string> = {
@@ -13,6 +14,7 @@ const CATEGORY_TO_DISPLAY: Record<string, string> = {
   japanese: '일식',
   chinese: '중식',
   western: '양식',
+  other: '기타',
   etc: '기타',
 };
 
@@ -21,7 +23,7 @@ const DISPLAY_TO_CATEGORY: Record<string, string> = {
   일식: 'japanese',
   중식: 'chinese',
   양식: 'western',
-  기타: 'etc',
+  기타: 'other',
 };
 
 const CUISINE_TO_SUBFILTERS: Record<string, readonly string[]> = {
@@ -74,12 +76,15 @@ function RecipePage(): React.JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        // TODO: API 호출
-        // const data = await fetchRecipeList({ category });
-        // setRecipes(data.list || []);
-        
-        // 임시 데이터
-        setRecipes([]);
+        const apiCategory =
+          category === 'etc' ? 'other' : (category as 'korean' | 'japanese' | 'chinese' | 'western' | 'other');
+        const data = await fetchRecipeList({
+          category: apiCategory,
+          subCategory: activeSub !== '전체' ? activeSub : undefined,
+          page: 1,
+          limit: 40,
+        });
+        setRecipes(data.list || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : '레시피를 불러오지 못했습니다.');
       } finally {
@@ -87,7 +92,7 @@ function RecipePage(): React.JSX.Element {
       }
     };
     loadRecipes();
-  }, [category]);
+  }, [category, activeSub]);
 
   const handleTabChange = (tab: string) => {
     const newCategory = DISPLAY_TO_CATEGORY[tab];
@@ -121,6 +126,13 @@ function RecipePage(): React.JSX.Element {
               onTabChange={handleTabChange}
             />
           </View>
+
+          <Pressable
+            style={styles.writeShortcut}
+            onPress={() => (navigation as any).navigate('Recipe', { screen: 'RecipeWrite' })}
+          >
+            <Text style={styles.writeShortcutText}>✏️ 레시피 작성</Text>
+          </Pressable>
 
           {/* 서브 필터 */}
           {subFiltersForActive.length > 0 && (
@@ -318,6 +330,19 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     marginBottom: spacing.lg,
+  },
+  writeShortcut: {
+    alignSelf: 'flex-end',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.gray900,
+    marginBottom: spacing.sm,
+  },
+  writeShortcutText: {
+    color: colors.white,
+    fontSize: fontSize.sm,
+    fontWeight: '600',
   },
   filterContainer: {
     marginBottom: spacing.lg,

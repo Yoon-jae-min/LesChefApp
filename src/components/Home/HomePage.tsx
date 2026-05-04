@@ -7,12 +7,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
 import { Images } from '../../assets/images';
+import { useAppInitialized } from '../../context/AppInitContext';
 
 interface HomePageProps {
   isAppInitialized?: boolean;
 }
 
-function HomePage({ isAppInitialized = false }: HomePageProps): React.JSX.Element {
+function HomePage({ isAppInitialized: isAppInitializedProp }: HomePageProps): React.JSX.Element {
+  const isAppInitializedFromContext = useAppInitialized();
+  const isAppInitialized = isAppInitializedProp ?? isAppInitializedFromContext;
   const navigation = useNavigation();
   const route = useRoute();
   const [isLoading, setIsLoading] = useState(false);
@@ -296,11 +299,14 @@ function HomePage({ isAppInitialized = false }: HomePageProps): React.JSX.Elemen
           </View>
 
           {/* 식재료 물가 관련 영역 */}
-          <View style={[styles.section, shadows.card]}>
+          <Pressable
+            onPress={() => (navigation as any).navigate('IngredientPrice')}
+            style={[styles.section, shadows.card]}
+          >
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>식재료 물가 정보</Text>
               <Text style={styles.sectionSubtitle}>
-                최신 식재료 가격 정보를 확인하세요
+                최신 식재료 가격 정보를 확인하세요 · 탭하면 상세
               </Text>
             </View>
             <View style={styles.priceGrid}>
@@ -312,7 +318,7 @@ function HomePage({ isAppInitialized = false }: HomePageProps): React.JSX.Elemen
                 </View>
               ))}
             </View>
-          </View>
+          </Pressable>
 
           {/* 빠른 링크 */}
           <View style={[styles.section, shadows.card]}>

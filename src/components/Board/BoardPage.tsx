@@ -17,10 +17,12 @@ const KEY_TO_CATEGORY: Record<string, string> = {
   free: '자유',
 };
 
+import { fetchBoardList } from '../../api/board/queries';
+
 type Post = {
   _id: string;
   title: string;
-  content: string;
+  content?: string;
   nickName?: string;
   createdAt?: string;
 };
@@ -39,12 +41,12 @@ function BoardPage(): React.JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        // TODO: API 호출
-        // const data = await fetchBoardList({ page: 1, limit: 20 });
-        // setPosts(data.list || []);
-        
-        // 임시 데이터
-        setPosts([]);
+        const data = await fetchBoardList({
+          page: 1,
+          limit: 30,
+          type: category as 'notice' | 'free',
+        });
+        setPosts(data.list || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : '게시글을 불러오지 못했습니다.');
       } finally {
@@ -81,6 +83,15 @@ function BoardPage(): React.JSX.Element {
             />
           </View>
 
+          <Pressable
+            style={styles.writeShortcut}
+            onPress={() =>
+              (navigation as any).navigate('BoardWrite', { boardType: category as 'notice' | 'free' })
+            }
+          >
+            <Text style={styles.writeShortcutText}>✏️ 새 글 작성</Text>
+          </Pressable>
+
           {/* 게시글 리스트 */}
           {loading && (
             <View style={styles.centerContainer}>
@@ -107,10 +118,9 @@ function BoardPage(): React.JSX.Element {
                 <Pressable
                   key={post._id}
                   style={[styles.postCard, shadows.card]}
-                  onPress={() => navigation.navigate('BoardDetail' as never, { 
-                    id: post._id,
-                    type: category,
-                  } as never)}
+                  onPress={() =>
+                    (navigation as any).navigate('BoardDetail', { id: post._id, type: category })
+                  }
                 >
                   <View style={styles.postHeader}>
                     <View style={styles.postHeaderContent}>
@@ -124,7 +134,7 @@ function BoardPage(): React.JSX.Element {
                     {post.title}
                   </Text>
                   <Text style={styles.postContent} numberOfLines={2}>
-                    {post.content}
+                    {post.content ?? ''}
                   </Text>
                   <View style={styles.postFooter}>
                     <Text style={styles.postAuthor}>{post.nickName || '익명'}</Text>
@@ -137,10 +147,10 @@ function BoardPage(): React.JSX.Element {
                       style={styles.editButton}
                       onPress={(e) => {
                         e.stopPropagation();
-                        navigation.navigate('BoardEdit' as never, { 
+                        (navigation as any).navigate('BoardEdit', {
                           id: post._id,
                           type: category,
-                        } as never);
+                        });
                       }}
                     >
                       <Text style={styles.editButtonText}>편집</Text>
@@ -179,6 +189,18 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     marginBottom: spacing.lg,
+  },
+  writeShortcut: {
+    alignSelf: 'flex-end',
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.gray900,
+  },
+  writeShortcutText: {
+    color: colors.white,
+    fontSize: fontSize.sm,
+    fontWeight: '600',
   },
   centerContainer: {
     alignItems: 'center',

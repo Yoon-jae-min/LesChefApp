@@ -2,8 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Image, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
+import { fetchRecipeDetailById } from '../../api/recipe/queries';
+import { toggleRecipeWish } from '../../api/recipe/wish';
+import { STORAGE_KEYS } from '../../constants/storageKeys';
+import { API_CONFIG } from '../../config/apiConfig';
 
 type Comment = {
   id: number;
@@ -16,8 +21,9 @@ type IngredientGroup = {
   sortType: string;
   ingredientUnit: Array<{
     ingredientName: string;
-    volume: string;
+    volume: string | number;
     unit: string;
+    amountText?: string;
   }>;
 };
 
@@ -26,6 +32,12 @@ type Step = {
   stepImg?: string;
   stepWay: string;
 };
+
+function resolveAssetUrl(u?: string | null): string | undefined {
+  if (!u) return undefined;
+  if (u.startsWith('http')) return u;
+  return `${API_CONFIG.BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`;
+}
 
 function RecipeDetailPage(): React.JSX.Element {
   const navigation = useNavigation();
@@ -41,34 +53,36 @@ function RecipeDetailPage(): React.JSX.Element {
   const [recipeMeta, setRecipeMeta] = useState<any>(null);
   const [ingredients, setIngredients] = useState<IngredientGroup[]>([]);
   const [steps, setSteps] = useState<Step[]>([]);
-  const [comments, setComments] = useState<Comment[]>([
-    { id: 1, username: '아이디', time: '시간', content: '댓글 내용' },
-    { id: 2, username: '아이디', time: '시간', content: '댓글 내용' },
-  ]);
+  const [comments, setComments] = useState<Comment[]>([]);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       setError(null);
       try {
-        // TODO: API 호출
-        // const data = await fetchRecipeDetail(recipeName);
-        // setRecipeMeta(data.selectedRecipe);
-        // setIngredients(data.recipeIngres || []);
-        // setSteps(data.recipeSteps || []);
-        
-        // 임시 데이터
-        setRecipeMeta({
-          recipeName: recipeName || '레시피',
-          majorCategory: '한식',
-          subCategory: '국, 찌개',
-          portion: 2,
-          portionUnit: '인분',
-          cookTime: 30,
-          recipeImg: null,
-        });
-        setIngredients([]);
-        setSteps([]);
+        if (!id) {
+          throw new Error('레시피 정보가 없습니다.');
+        }
+        const data = await fetchRecipeDetailById(String(id));
+        setRecipeMeta(data.selectedRecipe);
+        setIngredients(data.recipeIngres || []);
+        setSteps(data.recipeSteps || []);
+        setIsLiked(!!data.recipeWish);
+        setComments([]);
+
+        const loggedIn = (await AsyncStorage.getItem(STORAGE_KEYS.IS_LOGGED_IN)) === 'true';
+        setIsLoggedIn(loggedIn);
+        const raw = await AsyncStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+        if (raw && data.selectedRecipe?.userId) {
+          try {
+            const u = JSON.parse(raw) as { id?: string };
+            setIsAuthor(u.id === data.selectedRecipe.userId);
+          } catch {
+            setIsAuthor(false);
+          }
+        } else {
+          setIsAuthor(false);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : '레시피를 불러오지 못했습니다.');
       } finally {
@@ -76,7 +90,7 @@ function RecipeDetailPage(): React.JSX.Element {
       }
     };
     load();
-  }, [recipeName]);
+  }, [id, recipeName]);
 
   const handleAddComment = () => {
     if (comment.trim()) {
@@ -96,8 +110,13 @@ function RecipeDetailPage(): React.JSX.Element {
   };
 
   const handleToggleWish = async () => {
-    // TODO: API 호출
-    setIsLiked(!isLiked);
+    if (!id) return;
+    try {
+      const res = await toggleRecipeWish(String(id));
+      setIsLiked(!!res.recipeWish);
+    } catch {
+      /* Toast 생략 — 필요 시 react-native-toast-message */
+    }
   };
 
   const canEdit = isLoggedIn && isAuthor;
@@ -141,7 +160,7 @@ function RecipeDetailPage(): React.JSX.Element {
               {canEdit && (
                 <Pressable 
                   style={styles.editButton}
-                  onPress={() => navigation.navigate('RecipeEdit' as never)}
+                  onPress={() => (navigation as any).navigate('RecipeEdit', { recipeId: String(id) })}
                 >
                   <Text style={styles.editButtonText}>편집</Text>
                 </Pressable>
@@ -157,9 +176,9 @@ function RecipeDetailPage(): React.JSX.Element {
 
           {/* 레시피 이미지 */}
           <View style={[styles.imageContainer, shadows.card]}>
-            {recipeMeta?.recipeImg ? (
+            {resolveAssetUrl(recipeMeta?.recipeImg) ? (
               <Image 
-                source={{ uri: recipeMeta.recipeImg }} 
+                source={{ uri: resolveAssetUrl(recipeMeta.recipeImg)! }} 
                 style={styles.image}
                 resizeMode="cover"
               />
@@ -209,8 +228,11 @@ function RecipeDetailPage(): React.JSX.Element {
                       <View key={`${item.ingredientName}-${i}`} style={styles.ingredientItem}>
                         <Text style={styles.ingredientName}>{item.ingredientName}</Text>
                         <View style={styles.ingredientAmount}>
-                          <Text style={styles.ingredientValue}>{item.volume}</Text>
-                          <Text style={styles.ingredientValue}>{item.unit}</Text>
+                          <Text style={styles.ingredientValue}>
+                            {item.amountText?.trim()
+                              ? item.amountText.trim()
+                              : `${item.volume} ${item.unit}`.trim()}
+                          </Text>
                         </View>
                       </View>
                     ))}
@@ -232,9 +254,9 @@ function RecipeDetailPage(): React.JSX.Element {
                 <View key={step.stepNum} style={styles.stepCard}>
                   <View style={styles.stepContent}>
                     <View style={styles.stepImageContainer}>
-                      {step.stepImg ? (
+                      {resolveAssetUrl(step.stepImg) ? (
                         <Image 
-                          source={{ uri: step.stepImg }} 
+                          source={{ uri: resolveAssetUrl(step.stepImg)! }} 
                           style={styles.stepImage}
                           resizeMode="cover"
                         />

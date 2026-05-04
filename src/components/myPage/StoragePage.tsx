@@ -90,8 +90,8 @@ const getDday = (dateStr: string) => {
 const getPriority = (dday: number | null) => {
   if (dday === null) return { label: '정보 없음', tone: { backgroundColor: colors.gray100, borderColor: colors.gray200, textColor: colors.gray500 } };
   if (dday < 0) return { label: '폐기 필요', tone: { backgroundColor: colors.red50, borderColor: colors.red200, textColor: colors.red600 } };
-  if (dday <= 2) return { label: '긴급', tone: { backgroundColor: colors.orange50, borderColor: colors.orange200, textColor: colors.orange600 } };
-  if (dday <= 5) return { label: '주의', tone: { backgroundColor: colors.yellow50, borderColor: colors.yellow200, textColor: colors.yellow600 } };
+  if (dday <= 2) return { label: '긴급', tone: { backgroundColor: colors.orange50, borderColor: colors.orange200, textColor: colors.orange500 } };
+  if (dday <= 5) return { label: '주의', tone: { backgroundColor: colors.yellow50, borderColor: colors.yellow200, textColor: colors.gray700 } };
   return { label: '안정', tone: { backgroundColor: colors.green50, borderColor: colors.green100, textColor: colors.green600 } };
 };
 
@@ -244,7 +244,7 @@ function StoragePage(): React.JSX.Element {
                       </View>
                       <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>유통기한</Text>
-                        <Text style={[styles.infoValue, dday !== null && dday < 3 && { color: colors.orange600 }]}>
+                        <Text style={[styles.infoValue, dday !== null && dday < 3 && { color: colors.orange500 }]}> 
                           {item.expiryDate || '-'}
                         </Text>
                       </View>

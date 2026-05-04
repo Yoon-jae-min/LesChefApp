@@ -1,11 +1,14 @@
 // 웹의 로그인 페이지를 React Native로 변환
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
+import { View, Text, ScrollView, TextInput, Pressable, StyleSheet, Alert, Linking } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
+import { login } from '../../api/auth/login';
+import { persistUserSession } from '../../lib/session';
+import { getGoogleLoginUrl, getKakaoLoginUrl, getNaverLoginUrl } from '../../config/apiConfig';
 
 function LoginPage(): React.JSX.Element {
   const navigation = useNavigation();
@@ -24,16 +27,13 @@ function LoginPage(): React.JSX.Element {
     }
 
     try {
-      // TODO: API 연동
-      // const result = await login({
-      //   customerId: email,
-      //   customerPwd: password,
-      // });
+      const result = await login({
+        customerId: email.trim(),
+        customerPwd: password,
+      });
 
-      // 임시: 로그인 성공 시뮬레이션
-      if (email && password) {
-        // AsyncStorage에 로그인 상태 저장
-        await AsyncStorage.setItem('leschef_is_logged_in', 'true');
+      if (result.text === 'login Success') {
+        await persistUserSession(result);
         Alert.alert('로그인 성공', '로그인되었습니다.');
         (navigation as any).goBack();
       } else {
@@ -161,15 +161,55 @@ function LoginPage(): React.JSX.Element {
 
               {/* SNS 로그인 버튼 */}
               <View style={styles.snsButtons}>
-                {['카카오', '네이버', '구글'].map((provider) => (
-                  <Pressable
-                    key={provider}
-                    style={styles.snsButton}
-                    onPress={() => Alert.alert(`${provider} 로그인`, '기능 구현 예정')}
-                  >
-                    <Text style={styles.snsButtonText}>{provider}</Text>
-                  </Pressable>
-                ))}
+                <Pressable
+                  style={styles.snsButton}
+                  onPress={async () => {
+                    try {
+                      await Linking.openURL(getKakaoLoginUrl());
+                    } catch (e) {
+                      Alert.alert('카카오 로그인', (e as Error).message);
+                    }
+                  }}
+                >
+                  <Text style={styles.snsButtonText}>카카오</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.snsButton}
+                  onPress={async () => {
+                    try {
+                      await Linking.openURL(getNaverLoginUrl());
+                    } catch (e) {
+                      Alert.alert('네이버 로그인', (e as Error).message);
+                    }
+                  }}
+                >
+                  <Text style={styles.snsButtonText}>네이버</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.snsButton}
+                  onPress={async () => {
+                    try {
+                      await Linking.openURL(getGoogleLoginUrl());
+                    } catch (e) {
+                      Alert.alert('구글 로그인', (e as Error).message);
+                    }
+                  }}
+                >
+                  <Text style={styles.snsButtonText}>구글</Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.findRow}>
+                <Text style={styles.findLink} onPress={() => (navigation as any).navigate('FindId')}>
+                  아이디 찾기
+                </Text>
+                <Text style={styles.findSep}>|</Text>
+                <Text
+                  style={styles.findLink}
+                  onPress={() => (navigation as any).navigate('FindPassword')}
+                >
+                  비밀번호 찾기
+                </Text>
               </View>
 
               {/* 회원가입 링크 */}
@@ -410,6 +450,23 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '500',
     color: colors.gray700,
+  },
+  findRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  findLink: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.gray800,
+    textDecorationLine: 'underline',
+  },
+  findSep: {
+    fontSize: fontSize.sm,
+    color: colors.gray400,
   },
   signupPrompt: {
     marginTop: spacing.lg,
