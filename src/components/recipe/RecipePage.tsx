@@ -2,11 +2,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Svg, { Path } from 'react-native-svg';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
 import TabNavigation from '../common/TabNavigation';
 import FilterTabs from '../common/FilterTabs';
 import { fetchRecipeList } from '../../api/recipe/queries';
+import { requireLogin } from '../../lib/authGuard';
 
 const CUISINE_TABS = ['한식', '일식', '중식', '양식', '기타'] as const;
 const CATEGORY_TO_DISPLAY: Record<string, string> = {
@@ -52,8 +54,7 @@ function RecipePage(): React.JSX.Element {
   
   const [activeSub, setActiveSub] = useState<string>('전체');
   const [matchMode, setMatchMode] = useState<'bestMatch' | 'needFew'>('bestMatch');
-  const [includeMyInventory, setIncludeMyInventory] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn] = useState(false);
   const [recipes, setRecipes] = useState<RecipeListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -126,13 +127,6 @@ function RecipePage(): React.JSX.Element {
               onTabChange={handleTabChange}
             />
           </View>
-
-          <Pressable
-            style={styles.writeShortcut}
-            onPress={() => (navigation as any).navigate('Recipe', { screen: 'RecipeWrite' })}
-          >
-            <Text style={styles.writeShortcutText}>✏️ 레시피 작성</Text>
-          </Pressable>
 
           {/* 서브 필터 */}
           {subFiltersForActive.length > 0 && (
@@ -305,6 +299,20 @@ function RecipePage(): React.JSX.Element {
           )}
         </View>
       </ScrollView>
+      <Pressable
+        style={[styles.floatingWriteButton, shadows.orangeButton]}
+        onPress={async () => {
+          const target = { name: 'Main', params: { screen: 'Recipe', params: { screen: 'RecipeWrite' } } };
+          if (await requireLogin(navigation, target)) {
+            (navigation as any).navigate('Recipe', { screen: 'RecipeWrite' });
+          }
+        }}
+      >
+        <Svg width={24} height={24} viewBox="0 0 24 24">
+          <Path d="M12 5v14" stroke={colors.white} strokeWidth={2.4} strokeLinecap="round" />
+          <Path d="M5 12h14" stroke={colors.white} strokeWidth={2.4} strokeLinecap="round" />
+        </Svg>
+      </Pressable>
     </View>
   );
 }
@@ -329,33 +337,31 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   tabContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xs,
   },
-  writeShortcut: {
-    alignSelf: 'flex-end',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.gray900,
-    marginBottom: spacing.sm,
-  },
-  writeShortcutText: {
-    color: colors.white,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
+  floatingWriteButton: {
+    position: 'absolute',
+    right: spacing.lg,
+    bottom: spacing['2xl'],
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.orange600,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   filterContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xs,
     borderRadius: borderRadius.xl + 8,
     borderWidth: 1,
-    borderColor: colors.gray200,
-    backgroundColor: colors.gray50,
+    borderColor: colors.orange100,
+    backgroundColor: colors.orange50,
     padding: spacing.md,
   },
   section: {
     borderRadius: borderRadius.xl + 8,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     backgroundColor: colors.white,
     padding: spacing.lg,
   },
@@ -364,7 +370,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textTransform: 'uppercase',
     letterSpacing: 1.6,
-    color: colors.gray400,
+    color: colors.orange600,
   },
   sectionHeader: {
     marginTop: spacing.xs,
@@ -376,7 +382,7 @@ const styles = StyleSheet.create({
   },
   sectionSubtitle: {
     fontSize: fontSize.xs,
-    color: colors.gray500,
+    color: colors.stone500,
     marginTop: spacing.xs,
   },
   toolbar: {
@@ -390,13 +396,13 @@ const styles = StyleSheet.create({
   filterButton: {
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     paddingHorizontal: spacing.md,
     paddingVertical: 8,
   },
   filterButtonActive: {
-    borderColor: colors.gray300,
-    backgroundColor: colors.gray700,
+    borderColor: colors.orange500,
+    backgroundColor: colors.orange500,
   },
   filterButtonDisabled: {
     opacity: 0.5,
@@ -404,14 +410,14 @@ const styles = StyleSheet.create({
   filterButtonText: {
     fontSize: fontSize.xs,
     fontWeight: '600',
-    color: colors.gray600,
+    color: colors.stone700,
   },
   filterButtonTextActive: {
     color: colors.white,
   },
   modeLabel: {
     fontSize: fontSize.xs,
-    color: colors.gray500,
+    color: colors.stone500,
   },
   modeLabelBold: {
     fontWeight: '600',
@@ -449,19 +455,19 @@ const styles = StyleSheet.create({
   },
   recipeCard: {
     flex: 1,
-    minWidth: '45%',
-    maxWidth: '48%',
+    minWidth: '100%',
+    maxWidth: '100%',
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     backgroundColor: colors.white,
     padding: spacing.md,
   },
   recipeImageContainer: {
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: colors.gray200,
-    backgroundColor: colors.gray50,
+    borderColor: colors.stone200,
+    backgroundColor: colors.stone50,
     overflow: 'hidden',
     aspectRatio: 5 / 3,
   },
@@ -490,8 +496,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: colors.gray200,
-    backgroundColor: colors.gray50,
+    borderColor: colors.orange100,
+    backgroundColor: colors.orange50,
     padding: spacing.md,
   },
   matchEmoji: {
@@ -504,24 +510,24 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     textTransform: 'uppercase',
     letterSpacing: 1.6,
-    color: colors.gray600,
+    color: colors.orange700,
   },
   matchValue: {
     fontSize: fontSize['3xl'],
     fontWeight: '600',
-    color: colors.black,
+    color: colors.orange600,
   },
   matchSubLabel: {
     fontSize: fontSize.xs,
-    color: colors.gray700,
+    color: colors.orange700,
   },
   loginPrompt: {
     marginTop: spacing.md,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: colors.gray200,
-    backgroundColor: colors.gray50,
+    borderColor: colors.stone200,
+    backgroundColor: colors.stone50,
     padding: spacing.md,
   },
   loginPromptText: {
@@ -536,14 +542,14 @@ const styles = StyleSheet.create({
   },
   levelBadge: {
     borderRadius: borderRadius.xl,
-    backgroundColor: colors.gray100,
+    backgroundColor: colors.orange100,
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
   levelText: {
     fontSize: fontSize.xs,
     fontWeight: '500',
-    color: colors.gray600,
+    color: colors.orange700,
   },
   cookTime: {
     fontSize: fontSize.xs,
@@ -565,13 +571,14 @@ const styles = StyleSheet.create({
   tag: {
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.orange100,
+    backgroundColor: colors.orange50,
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
   tagText: {
     fontSize: fontSize.xs,
-    color: colors.gray600,
+    color: colors.orange700,
   },
   recipeFooter: {
     flexDirection: 'row',
@@ -581,12 +588,12 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 11,
-    color: colors.gray500,
+    color: colors.stone500,
   },
   footerArrow: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.gray800,
+    color: colors.orange600,
   },
 });
 

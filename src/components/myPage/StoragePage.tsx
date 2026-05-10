@@ -1,9 +1,9 @@
 // 웹의 보관함 페이지를 React Native로 변환
 import React, { useState, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Modal, TextInput } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Modal, TextInput } from 'react-native';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
-import Top from '../common/Top';
 import FilterTabs from '../common/FilterTabs';
+import MyPageLayout from './MyPageLayout';
 
 type StorageZone = '냉장실' | '냉동실' | '야채칸' | '실온' | '기타';
 
@@ -72,8 +72,6 @@ const SAMPLE_INVENTORY: InventoryMap = {
   ],
   기타: [],
 };
-
-const UNITS = ['개', '팩', '봉지', '모', '컵', '병', '기타'];
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -172,16 +170,9 @@ function StoragePage(): React.JSX.Element {
   };
 
   return (
-    <View style={styles.container}>
-      <Top />
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.content}>
+    <MyPageLayout activeTab="보관함">
           {/* 헤더 */}
-          <View style={styles.header}>
+          <View style={[styles.header, shadows.card]}>
             <View>
               <Text style={styles.headerLabel}>My Fridge</Text>
               <Text style={styles.headerTitle}>보관 재료 인벤토리</Text>
@@ -284,8 +275,6 @@ function StoragePage(): React.JSX.Element {
               })}
             </View>
           )}
-        </View>
-      </ScrollView>
 
       {/* 모달 */}
       <Modal
@@ -391,66 +380,53 @@ function StoragePage(): React.JSX.Element {
           </View>
         </View>
       </Modal>
-    </View>
+    </MyPageLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: spacing.xl,
-  },
-  content: {
-    maxWidth: 1152,
-    width: '100%',
-    alignSelf: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    gap: spacing.lg,
-  },
   header: {
     gap: spacing.md,
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: colors.stone200,
+    backgroundColor: colors.white,
+    padding: spacing.lg,
   },
   headerLabel: {
     fontSize: fontSize.sm,
     fontWeight: '500',
     textTransform: 'uppercase',
     letterSpacing: 1.6,
-    color: colors.gray400,
+    color: colors.stone500,
   },
   headerTitle: {
     fontSize: fontSize['3xl'],
     fontWeight: '600',
-    color: colors.gray900,
+    color: colors.stone800,
   },
   headerSubtitle: {
     fontSize: fontSize.sm,
-    color: colors.gray500,
+    color: colors.stone500,
   },
   addButton: {
     alignSelf: 'flex-start',
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     paddingHorizontal: spacing.lg,
     paddingVertical: 12,
   },
   addButtonText: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: colors.gray900,
+    color: colors.stone800,
   },
   filterContainer: {
     borderRadius: borderRadius.xl + 8,
     borderWidth: 1,
-    borderColor: colors.gray200,
-    backgroundColor: colors.gray50,
+    borderColor: colors.stone200,
+    backgroundColor: colors.stone50,
     padding: spacing.md,
   },
   emptyBox: {

@@ -19,20 +19,19 @@ function FilterTabs({
   const getActiveStyle = (isActive: boolean) => {
     if (variant === 'gray') {
       return isActive
-        ? { backgroundColor: colors.gray700, borderColor: colors.gray700 }
-        : { backgroundColor: colors.white, borderColor: colors.gray300 };
+        ? { backgroundColor: colors.stone800, borderColor: colors.stone700 }
+        : { backgroundColor: colors.white, borderColor: colors.stone200 };
     }
-    // default variant (black)
     return isActive
-      ? { backgroundColor: colors.black, borderColor: colors.black }
-      : { backgroundColor: colors.white, borderColor: colors.gray300 };
+      ? { backgroundColor: colors.orange500, borderColor: colors.orange500 }
+      : { backgroundColor: colors.white, borderColor: colors.stone200 };
   };
 
   const getTextStyle = (isActive: boolean) => {
     if (variant === 'gray') {
       return isActive ? colors.white : colors.gray700;
     }
-    return isActive ? colors.white : colors.gray700;
+    return isActive ? colors.white : colors.stone700;
   };
 
   return (
@@ -64,17 +63,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 10,
   },
   tab: {
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
   },
   tabText: {
     fontSize: fontSize.sm,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });
 

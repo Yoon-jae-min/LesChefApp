@@ -1,14 +1,15 @@
 // 웹의 Top 컴포넌트를 React Native로 변환
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, TextInput, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Pressable, TextInput, StyleSheet, Platform, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Path, Circle } from 'react-native-svg';
-import { colors, borderRadius } from '../../styles/theme';
+import { colors, borderRadius, shadows } from '../../styles/theme';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
 import { logout as apiLogout } from '../../api/auth/logout';
 import { clearUserSession } from '../../lib/session';
+import { Images } from '../../assets/images';
 
 function Top(): React.JSX.Element {
   const navigation = useNavigation();
@@ -30,24 +31,32 @@ function Top(): React.JSX.Element {
     }, [])
   );
 
-  const handleAuthAction = async () => {
-    if (isLoggedIn) {
+  const performLogout = async () => {
+    try {
       try {
-        try {
-          await apiLogout();
-        } catch {
-          /* 네트워크 실패 시에도 로컬 세션은 정리 */
-        }
-        await clearUserSession();
-        setIsLoggedIn(false);
-        (navigation as any).navigate('Main', { screen: 'Home' });
-      } catch (error) {
-        console.error('로그아웃 실패:', error);
+        await apiLogout();
+      } catch {
+        /* 네트워크 실패 시에도 로컬 세션은 정리 */
       }
-    } else {
+      await clearUserSession();
+      setIsLoggedIn(false);
+      (navigation as any).navigate('Main', { screen: 'Home' });
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+    }
+  };
+
+  const handleAuthAction = async () => {
+    if (!isLoggedIn) {
       // 로그인 페이지로 이동
       (navigation as any).navigate('Login');
+      return;
     }
+
+    Alert.alert('로그아웃', '로그아웃하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      { text: '로그아웃', style: 'destructive', onPress: performLogout },
+    ]);
   };
 
   return (
@@ -67,43 +76,43 @@ function Top(): React.JSX.Element {
               }}
               style={styles.logoContainer}
             >
-              <Text style={styles.logoText}>LesChef</Text>
+              <Image source={Images.LesChef_AppIconMark} style={styles.logoMark} resizeMode="contain" />
             </Pressable>
 
             {/* 주요 섹션 이동은 하단 탭에서 처리 — 헤더는 검색·계정만 */}
-            <View style={styles.iconsContainer}>
+            <View style={styles.actionsContainer}>
               <Pressable 
                 onPress={handleAuthAction}
                 style={styles.iconButton}
               >
                 {isLoggedIn ? (
-                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray600} strokeWidth="1.5">
+                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray700} strokeWidth="1.5">
                     <Path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3" strokeLinecap="round"/>
                     <Path d="M14 17l5-5-5-5" strokeLinecap="round" strokeLinejoin="round"/>
                     <Path d="M19 12H9" strokeLinecap="round"/>
                   </Svg>
                 ) : (
-                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray600} strokeWidth="1.5">
+                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray700} strokeWidth="1.5">
                     <Path d="M15 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" strokeLinecap="round"/>
                     <Path d="M10 17l5-5-5-5" strokeLinecap="round" strokeLinejoin="round"/>
                     <Path d="M5 12h10" strokeLinecap="round"/>
                   </Svg>
                 )}
               </Pressable>
-            </View>
 
-            {/* 검색 아이콘 - 모바일에서만 표시 (별도로 분리) */}
-            {Platform.OS !== 'web' && (
-              <Pressable 
-                onPress={() => setIsSearchExpanded(!isSearchExpanded)}
-                style={styles.searchIconButton}
-              >
-                <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray600} strokeWidth="1.5">
-                  <Circle cx="11" cy="11" r="8"/>
-                  <Path d="m21 21-4.35-4.35"/>
-                </Svg>
-              </Pressable>
-            )}
+              {/* 검색 아이콘 - 모바일에서만 표시 */}
+              {Platform.OS !== 'web' && (
+                <Pressable 
+                  onPress={() => setIsSearchExpanded(!isSearchExpanded)}
+                  style={styles.searchIconButton}
+                >
+                  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={colors.gray700} strokeWidth="1.5">
+                    <Circle cx="11" cy="11" r="8"/>
+                    <Path d="m21 21-4.35-4.35"/>
+                  </Svg>
+                </Pressable>
+              )}
+            </View>
 
             {/* 검색바 - 데스크톱에서만 표시 (웹에서만) */}
             {Platform.OS === 'web' && (
@@ -155,30 +164,21 @@ function Top(): React.JSX.Element {
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: colors.white,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
+    ...shadows.header,
   },
   container: {
     width: '100%',
     backgroundColor: colors.white,
     borderBottomWidth: 1,
     borderBottomColor: colors.gray200,
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 56,
-    paddingHorizontal: 12,
+    height: 58,
+    paddingLeft: 0,
+    paddingRight: 16,
     maxWidth: 1152, // max-w-6xl = 1152px
     alignSelf: 'center',
     width: '100%',
@@ -189,19 +189,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: '100%',
   },
-  logoText: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.gray900,
-    marginLeft: 8,
-    marginRight: 8,
+  logoMark: {
+    width: 96,
+    height: 56,
+    marginLeft: 16,
   },
-  iconsContainer: {
+  actionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 12,
-    gap: 12,
-    flexShrink: 1,
+    justifyContent: 'flex-end',
+    marginLeft: 'auto',
+    gap: 10,
   },
   iconButton: {
     width: 32,
@@ -216,7 +214,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 12,
-    marginLeft: 12,
   },
   searchContainerDesktop: {
     flex: 1,
@@ -234,7 +231,7 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft: 40,
     paddingRight: 16,
-    backgroundColor: colors.gray100,
+    backgroundColor: colors.stone100,
     borderRadius: borderRadius.xl,
     borderWidth: 0,
     fontSize: 14,
@@ -254,7 +251,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.gray200,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    ...shadows.header,
   },
   expandedSearchWrapper: {
     maxWidth: 1152,
@@ -270,7 +268,7 @@ const styles = StyleSheet.create({
     height: 48,
     paddingLeft: 48,
     paddingRight: 16,
-    backgroundColor: colors.gray100,
+    backgroundColor: colors.stone100,
     borderRadius: borderRadius.xl,
     borderWidth: 0,
     fontSize: 14,

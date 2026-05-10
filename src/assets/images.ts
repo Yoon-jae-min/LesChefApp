@@ -40,6 +40,7 @@ export const Images = {
   time: require('./image/time.png'),
   viewCount: require('./image/viewCount.png'),
   LesChef_Logo: require('./image/LesChef_Logo.png'),
+  LesChef_AppIconMark: require('./image/LesChef_AppIconMark.png'),
   
   // 레시피 이미지
   참치김치찌개: require('./image/참치김치찌개.jpg'),

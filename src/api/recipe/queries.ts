@@ -1,6 +1,7 @@
 import { API_CONFIG } from '../../config/apiConfig';
 import { authFetch } from '../authFetch';
 import { handleApiError } from '../error/apiErrorTypes';
+import { toQueryString } from '../../utils/queryString';
 import type {
   RecipeListParams,
   RecipeListResponse,
@@ -13,17 +14,18 @@ import type {
 const API_BASE_URL = API_CONFIG.RECIPE_API;
 
 export const fetchRecipeList = async (params: RecipeListParams = {}): Promise<RecipeListResponse> => {
-  const query = new URLSearchParams();
-  if (params.category) query.set('category', params.category);
-  if (params.subCategory) query.set('subCategory', params.subCategory);
-  if (typeof params.isShare !== 'undefined') query.set('isShare', String(params.isShare));
-  if (params.page) query.set('page', String(params.page));
-  if (params.limit) query.set('limit', String(params.limit));
-  if (params.sort) query.set('sort', params.sort);
-  if (params.keyword) query.set('keyword', params.keyword);
-  if (params.tag) query.set('tag', params.tag);
+  const query = toQueryString({
+    category: params.category,
+    subCategory: params.subCategory,
+    isShare: params.isShare,
+    page: params.page,
+    limit: params.limit,
+    sort: params.sort,
+    keyword: params.keyword,
+    tag: params.tag,
+  });
 
-  const response = await fetch(`${API_BASE_URL}/list?${query.toString()}`, { method: 'GET' });
+  const response = await fetch(`${API_BASE_URL}/list?${query}`, { method: 'GET' });
   if (!response.ok) {
     throw await handleApiError(response);
   }

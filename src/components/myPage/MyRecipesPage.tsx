@@ -1,11 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, ScrollView, Pressable, Image, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
+import { ActivityIndicator, Image, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import Top from '../common/Top';
-import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
+import { borderRadius, colors, fontSize, shadows, spacing } from '../../styles/theme';
 import { fetchMyRecipeList } from '../../api/recipe/queries';
 import type { RecipeListItem } from '../../types/apiRecipe';
 import { API_CONFIG } from '../../config/apiConfig';
+import { requireLogin } from '../../lib/authGuard';
+import MyPageLayout from './MyPageLayout';
 
 function resolveUrl(u?: string) {
   if (!u) return undefined;
@@ -39,70 +40,179 @@ function MyRecipesPage(): React.JSX.Element {
   );
 
   return (
-    <View style={styles.container}>
-      <Top />
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={load} />}
-      >
-        <Text style={styles.title}>내 레시피</Text>
-        {loading && list.length === 0 ? (
-          <ActivityIndicator style={{ marginTop: spacing.lg }} />
-        ) : null}
+    <MyPageLayout
+      activeTab="나의 레시피"
+      scrollProps={{ refreshControl: <RefreshControl refreshing={loading} onRefresh={load} /> }}
+    >
+      <View style={[styles.sectionCard, shadows.card]}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.eyebrow}>My Recipes</Text>
+            <Text style={styles.title}>나의 레시피</Text>
+            <Text style={styles.subtitle}>내가 작성한 레시피를 웹처럼 카드 목록으로 관리해요.</Text>
+          </View>
+          <View style={styles.countPill}>
+            <Text style={styles.countPillText}>{list.length} items</Text>
+          </View>
+        </View>
+
+        {loading && list.length === 0 ? <ActivityIndicator color={colors.orange600} /> : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        {list.map((r) => {
-          const id = r._id || r.recipeName;
-          const uri = resolveUrl(r.recipeImg);
-          return (
-            <Pressable
-              key={id}
-              style={[styles.card, shadows.card]}
-              onPress={() =>
-                (navigation as any).navigate('Recipe', {
-                  screen: 'RecipeDetail',
-                  params: { id, recipeName: r.recipeName },
-                })
-              }
-            >
-              {uri ? <Image source={{ uri }} style={styles.thumb} /> : <View style={[styles.thumb, styles.ph]} />}
-              <View style={{ flex: 1 }}>
-                <Text style={styles.name}>{r.recipeName}</Text>
-                <Text style={styles.meta}>{r.subCategory || r.majorCategory || ''}</Text>
-              </View>
-            </Pressable>
-          );
-        })}
+
+        <View style={styles.list}>
+          {list.map((r) => {
+            const id = r._id || r.recipeName;
+            const uri = resolveUrl(r.recipeImg);
+            return (
+              <Pressable
+                key={id}
+                style={styles.recipeCard}
+                onPress={() =>
+                  (navigation as any).navigate('Recipe', {
+                    screen: 'RecipeDetail',
+                    params: { id, recipeName: r.recipeName },
+                  })
+                }
+              >
+                {uri ? <Image source={{ uri }} style={styles.thumb} /> : <View style={[styles.thumb, styles.ph]} />}
+                <View style={styles.recipeInfo}>
+                  <Text style={styles.recipeName}>{r.recipeName}</Text>
+                  <Text style={styles.meta}>{r.subCategory || r.majorCategory || '카테고리 없음'}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+
         {!loading && list.length === 0 && !error ? (
-          <Text style={styles.muted}>등록한 레시피가 없습니다.</Text>
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyText}>등록한 레시피가 없습니다.</Text>
+          </View>
         ) : null}
-        <Pressable style={styles.write} onPress={() => (navigation as any).navigate('Recipe', { screen: 'RecipeWrite' })}>
-          <Text style={styles.writeText}>+ 레시피 작성</Text>
+
+        <Pressable
+          style={[styles.writeButton, shadows.orangeButton]}
+          onPress={async () => {
+            const target = { name: 'Main', params: { screen: 'Recipe', params: { screen: 'RecipeWrite' } } };
+            if (await requireLogin(navigation, target, { fromSource: 'mypage' })) {
+              (navigation as any).navigate('Recipe', { screen: 'RecipeWrite' });
+            }
+          }}
+        >
+          <Text style={styles.writeButtonText}>레시피 작성하기</Text>
         </Pressable>
-      </ScrollView>
-    </View>
+      </View>
+    </MyPageLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white },
-  scroll: { padding: spacing.lg, gap: spacing.md, paddingBottom: spacing['2xl'] },
-  title: { fontSize: fontSize['2xl'], fontWeight: '800' },
-  card: { flexDirection: 'row', gap: spacing.md, borderRadius: borderRadius.xl, borderWidth: 1, borderColor: colors.gray200, padding: spacing.md },
-  thumb: { width: 72, height: 72, borderRadius: borderRadius.md },
-  ph: { backgroundColor: colors.gray100, alignItems: 'center', justifyContent: 'center' },
-  name: { fontSize: fontSize.base, fontWeight: '800', color: colors.gray900 },
-  meta: { marginTop: 4, color: colors.gray600, fontSize: fontSize.sm },
-  error: { color: colors.red600 },
-  muted: { color: colors.gray500 },
-  write: {
-    marginTop: spacing.md,
-    alignSelf: 'flex-start',
-    backgroundColor: colors.gray900,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.lg,
+  sectionCard: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: colors.stone200,
+    backgroundColor: colors.white,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
-  writeText: { color: colors.white, fontWeight: '800' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  eyebrow: {
+    fontSize: fontSize.xs,
+    fontWeight: '700',
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+    color: colors.stone500,
+  },
+  title: {
+    marginTop: spacing.xs,
+    fontSize: fontSize.xl,
+    fontWeight: '800',
+    color: colors.stone800,
+  },
+  subtitle: {
+    marginTop: spacing.xs,
+    fontSize: fontSize.sm,
+    lineHeight: 20,
+    color: colors.stone500,
+  },
+  countPill: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: colors.stone200,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  countPillText: {
+    fontSize: fontSize.xs,
+    fontWeight: '700',
+    color: colors.stone500,
+  },
+  list: {
+    gap: spacing.md,
+  },
+  recipeCard: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.stone200,
+    backgroundColor: colors.stone50,
+    padding: spacing.md,
+  },
+  thumb: {
+    width: 72,
+    height: 72,
+    borderRadius: borderRadius.md,
+  },
+  ph: {
+    backgroundColor: colors.stone100,
+  },
+  recipeInfo: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  recipeName: {
+    fontSize: fontSize.base,
+    fontWeight: '800',
+    color: colors.stone800,
+  },
+  meta: {
+    marginTop: spacing.xs,
+    color: colors.stone500,
+    fontSize: fontSize.sm,
+  },
+  emptyBox: {
+    borderRadius: 22,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.stone200,
+    backgroundColor: colors.stone50,
+    padding: spacing.xl,
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: colors.stone500,
+    fontSize: fontSize.sm,
+  },
+  error: {
+    color: colors.red600,
+  },
+  writeButton: {
+    alignSelf: 'flex-start',
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.orange600,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+  },
+  writeButtonText: {
+    color: colors.white,
+    fontWeight: '800',
+  },
 });
 
 export default MyRecipesPage;

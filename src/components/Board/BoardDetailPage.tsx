@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import { fetchBoardDetail } from '../../api/board/queries';
 import { toggleBoardLike } from '../../api/board/like';
 import { createBoardComment } from '../../api/board/comment';
 import type { BoardDetailResponse } from '../../api/board/types';
+import { requireLogin } from '../../lib/authGuard';
 
 function BoardDetailPage(): React.JSX.Element {
   const navigation = useNavigation();
@@ -27,7 +28,7 @@ function BoardDetailPage(): React.JSX.Element {
   const [data, setData] = useState<BoardDetailResponse | null>(null);
   const [comment, setComment] = useState('');
 
-  const reload = async () => {
+  const reload = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     setError(null);
@@ -39,14 +40,18 @@ function BoardDetailPage(): React.JSX.Element {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     reload();
-  }, [id]);
+  }, [reload]);
 
   const onLike = async () => {
     if (!id) return;
+    const target = { name: 'Main', params: { screen: 'Board', params: { screen: 'BoardDetail', params: { id } } } };
+    if (!(await requireLogin(navigation, target))) {
+      return;
+    }
     try {
       const res = await toggleBoardLike(String(id));
       setData((prev) =>
@@ -61,6 +66,10 @@ function BoardDetailPage(): React.JSX.Element {
 
   const onComment = async () => {
     if (!id || !comment.trim()) return;
+    const target = { name: 'Main', params: { screen: 'Board', params: { screen: 'BoardDetail', params: { id } } } };
+    if (!(await requireLogin(navigation, target))) {
+      return;
+    }
     try {
       await createBoardComment({ boardId: String(id), content: comment.trim() });
       setComment('');
@@ -113,14 +122,32 @@ function BoardDetailPage(): React.JSX.Element {
           </Pressable>
           <Pressable
             style={styles.editBtn}
-            onPress={() =>
+            onPress={async () => {
+              const target = {
+                name: 'Main',
+                params: {
+                  screen: 'Board',
+                  params: {
+                    screen: 'BoardEdit',
+                    params: {
+                      id: c._id,
+                      title: c.title,
+                      content: c.content,
+                      boardType: c.boardType,
+                    },
+                  },
+                },
+              };
+              if (!(await requireLogin(navigation, target))) {
+                return;
+              }
               (navigation as any).navigate('BoardEdit', {
                 id: c._id,
                 title: c.title,
                 content: c.content,
                 boardType: c.boardType,
-              })
-            }
+              });
+            }}
           >
             <Text style={styles.editText}>수정</Text>
           </Pressable>

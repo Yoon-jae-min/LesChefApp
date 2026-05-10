@@ -1,14 +1,14 @@
 // 웹의 로그인 페이지를 React Native로 변환
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, Pressable, StyleSheet, Alert, Linking } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, ScrollView, TextInput, Pressable, StyleSheet, Alert, Linking, BackHandler, Platform } from 'react-native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
 import { login } from '../../api/auth/login';
 import { persistUserSession } from '../../lib/session';
 import { getGoogleLoginUrl, getKakaoLoginUrl, getNaverLoginUrl } from '../../config/apiConfig';
+import { consumeLoginReturnTarget, type LoginReturnTarget } from '../../lib/authGuard';
 
 function LoginPage(): React.JSX.Element {
   const navigation = useNavigation();
@@ -17,6 +17,23 @@ function LoginPage(): React.JSX.Element {
   const [password, setPassword] = useState('');
   const [saveSession, setSaveSession] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== 'android') {
+        return undefined;
+      }
+
+      const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+        consumeLoginReturnTarget().finally(() => {
+          (navigation as any).navigate('Main', { screen: 'Home' });
+        });
+        return true;
+      });
+
+      return () => subscription.remove();
+    }, [navigation]),
+  );
 
   const handleLogin = async () => {
     setError(null);
@@ -34,8 +51,15 @@ function LoginPage(): React.JSX.Element {
 
       if (result.text === 'login Success') {
         await persistUserSession(result);
+        const routeReturnTo = (route.params as { returnTo?: LoginReturnTarget } | undefined)?.returnTo;
+        const storedReturnTo = await consumeLoginReturnTarget();
+        const returnTo = routeReturnTo || storedReturnTo;
         Alert.alert('로그인 성공', '로그인되었습니다.');
-        (navigation as any).goBack();
+        if (returnTo) {
+          (navigation as any).navigate(returnTo.name, returnTo.params);
+        } else {
+          (navigation as any).goBack();
+        }
       } else {
         throw new Error('로그인에 실패했습니다.');
       }

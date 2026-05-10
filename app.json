@@ -5,7 +5,7 @@
     "version": "0.0.1",
     "sdkVersion": "52.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/image/LesChef_Logo.png",
+    "icon": "./assets/leschef_app_icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./src/assets/image/LesChef_Logo.png",
@@ -21,8 +21,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/image/LesChef_Logo.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/leschef_app_icon.png",
+        "backgroundColor": "#FFF3DE"
       },
       "package": "com.leschef.app"
     },

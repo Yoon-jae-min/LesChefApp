@@ -16,6 +16,15 @@ export const colors = {
   gray700: '#374151',
   gray800: '#1f2937',
   gray900: '#111827',
+
+  // Stone 색상 (웹의 stone 계열 탭/카드 톤)
+  stone50: '#fafaf9',
+  stone100: '#f5f5f4',
+  stone200: '#e7e5e4',
+  stone300: '#d6d3d1',
+  stone500: '#78716c',
+  stone700: '#44403c',
+  stone800: '#292524',
   
   // Orange/Yellow/Red (그라데이션용)
   orange50: '#fff7ed',
@@ -23,6 +32,11 @@ export const colors = {
   orange200: '#fed7aa',
   orange400: '#fb923c',
   orange500: '#f97316',
+  orange600: '#ea580c',
+  orange700: '#c2410c',
+
+  amber50: '#fffbeb',
+  amber100: '#fef3c7',
   
   yellow50: '#fefce8',
   yellow100: '#fef9c3',
@@ -52,20 +66,34 @@ export const borderRadius = {
   xl: 32, // rounded-[32px]
 };
 
-// 웹의 shadow-[6px_6px_0_rgba(0,0,0,0.05)]
+// 웹의 shadow-sm / shadow-lg 감각을 모바일 카드에 맞춘 값
 export const shadows = {
   card: {
     shadowColor: '#000',
-    shadowOffset: { width: 6, height: 6 },
-    shadowOpacity: 0.05,
-    shadowRadius: 0,
-    elevation: 3, // Android
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
   cardHover: {
     shadowColor: '#000',
-    shadowOffset: { width: 8, height: 8 },
-    shadowOpacity: 0.05,
-    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+    elevation: 4,
+  },
+  header: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  orangeButton: {
+    shadowColor: '#f97316',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
     elevation: 4,
   },
 };

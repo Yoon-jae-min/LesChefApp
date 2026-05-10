@@ -79,7 +79,9 @@ function BoardEditPage(): React.JSX.Element {
       <Top />
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={[styles.card, shadows.card]}>
+          <Text style={styles.eyebrow}>Board</Text>
           <Text style={styles.title}>글 수정</Text>
+          <Text style={styles.meta}>게시글 내용을 수정하고 저장해주세요.</Text>
           <Text style={styles.label}>제목</Text>
           <TextInput style={styles.input} value={title} onChangeText={setTitle} />
           <Text style={styles.label}>내용</Text>
@@ -89,10 +91,10 @@ function BoardEditPage(): React.JSX.Element {
             onChangeText={setContent}
             multiline
           />
-          <Pressable style={styles.btn} onPress={onSubmit} disabled={loading}>
+          <Pressable style={[styles.btn, shadows.orangeButton]} onPress={onSubmit} disabled={loading}>
             <Text style={styles.btnText}>{loading ? '저장 중…' : '저장'}</Text>
           </Pressable>
-          <Pressable onPress={() => (navigation as any).goBack()}>
+          <Pressable style={styles.cancelButton} onPress={() => (navigation as any).goBack()}>
             <Text style={styles.back}>취소</Text>
           </Pressable>
         </View>
@@ -103,27 +105,44 @@ function BoardEditPage(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  scroll: { padding: spacing.lg },
-  card: { borderRadius: borderRadius.xl, borderWidth: 1, borderColor: colors.gray200, padding: spacing.lg, gap: spacing.sm },
-  title: { fontSize: fontSize['2xl'], fontWeight: '800' },
-  label: { marginTop: spacing.sm, fontWeight: '700', color: colors.gray800 },
+  scroll: { padding: spacing.md, paddingBottom: spacing['2xl'] },
+  card: {
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: colors.stone200,
+    backgroundColor: colors.white,
+    padding: spacing.xl,
+    gap: spacing.sm,
+  },
+  eyebrow: {
+    fontSize: fontSize.xs,
+    fontWeight: '700',
+    letterSpacing: 1.4,
+    color: colors.orange600,
+    textTransform: 'uppercase',
+  },
+  title: { fontSize: fontSize['2xl'], fontWeight: '800', color: colors.gray900 },
+  meta: { color: colors.stone500, fontSize: fontSize.sm, lineHeight: fontSize.sm * 1.45 },
+  label: { marginTop: spacing.sm, fontWeight: '700', color: colors.stone700 },
   input: {
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     borderRadius: borderRadius.md,
+    backgroundColor: colors.stone50,
     padding: spacing.md,
     color: colors.gray900,
   },
   textarea: { minHeight: 160, textAlignVertical: 'top' },
   btn: {
     marginTop: spacing.md,
-    backgroundColor: colors.gray900,
-    borderRadius: borderRadius.lg,
+    backgroundColor: colors.orange600,
+    borderRadius: borderRadius.md,
     paddingVertical: spacing.md,
     alignItems: 'center',
   },
   btnText: { color: colors.white, fontWeight: '800' },
-  back: { marginTop: spacing.md, textAlign: 'center', color: colors.gray600, textDecorationLine: 'underline' },
+  cancelButton: { marginTop: spacing.sm, alignItems: 'center', paddingVertical: spacing.sm },
+  back: { textAlign: 'center', color: colors.stone500, fontWeight: '700' },
 });
 
 export default BoardEditPage;

@@ -2,9 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import Svg, { Path } from 'react-native-svg';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import Top from '../common/Top';
 import TabNavigation from '../common/TabNavigation';
+import { requireLogin } from '../../lib/authGuard';
 
 const CATEGORY_TABS = ['공지', '자유'] as const;
 const CATEGORY_TO_KEY: Record<string, string> = {
@@ -83,15 +85,6 @@ function BoardPage(): React.JSX.Element {
             />
           </View>
 
-          <Pressable
-            style={styles.writeShortcut}
-            onPress={() =>
-              (navigation as any).navigate('BoardWrite', { boardType: category as 'notice' | 'free' })
-            }
-          >
-            <Text style={styles.writeShortcutText}>✏️ 새 글 작성</Text>
-          </Pressable>
-
           {/* 게시글 리스트 */}
           {loading && (
             <View style={styles.centerContainer}>
@@ -145,8 +138,21 @@ function BoardPage(): React.JSX.Element {
                   <View style={styles.postActions}>
                     <Pressable 
                       style={styles.editButton}
-                      onPress={(e) => {
+                      onPress={async (e) => {
                         e.stopPropagation();
+                        const target = {
+                          name: 'Main',
+                          params: {
+                            screen: 'Board',
+                            params: {
+                              screen: 'BoardEdit',
+                              params: { id: post._id, type: category },
+                            },
+                          },
+                        };
+                        if (!(await requireLogin(navigation, target))) {
+                          return;
+                        }
                         (navigation as any).navigate('BoardEdit', {
                           id: post._id,
                           type: category,
@@ -164,6 +170,24 @@ function BoardPage(): React.JSX.Element {
           )}
         </View>
       </ScrollView>
+      <Pressable
+        style={[styles.floatingWriteButton, shadows.orangeButton]}
+        onPress={async () => {
+          const params = { boardType: category as 'notice' | 'free' };
+          const target = {
+            name: 'Main',
+            params: { screen: 'Board', params: { screen: 'BoardWrite', params } },
+          };
+          if (await requireLogin(navigation, target)) {
+            (navigation as any).navigate('BoardWrite', params);
+          }
+        }}
+      >
+        <Svg width={24} height={24} viewBox="0 0 24 24">
+          <Path d="M12 5v14" stroke={colors.white} strokeWidth={2.4} strokeLinecap="round" />
+          <Path d="M5 12h14" stroke={colors.white} strokeWidth={2.4} strokeLinecap="round" />
+        </Svg>
+      </Pressable>
     </View>
   );
 }
@@ -188,19 +212,18 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
   },
   tabContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xs,
   },
-  writeShortcut: {
-    alignSelf: 'flex-end',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.gray900,
-  },
-  writeShortcutText: {
-    color: colors.white,
-    fontSize: fontSize.sm,
-    fontWeight: '600',
+  floatingWriteButton: {
+    position: 'absolute',
+    right: spacing.lg,
+    bottom: spacing['2xl'],
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.orange600,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   centerContainer: {
     alignItems: 'center',
@@ -234,11 +257,11 @@ const styles = StyleSheet.create({
   },
   postCard: {
     flex: 1,
-    minWidth: '45%',
-    maxWidth: '48%',
+    minWidth: '100%',
+    maxWidth: '100%',
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     backgroundColor: colors.white,
     padding: spacing.md,
   },
@@ -248,8 +271,8 @@ const styles = StyleSheet.create({
   postHeaderContent: {
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: colors.gray200,
-    backgroundColor: colors.gray50,
+    borderColor: colors.orange100,
+    backgroundColor: colors.orange50,
     padding: spacing.md,
   },
   postLabel: {
@@ -257,21 +280,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 1.6,
-    color: colors.gray600,
+    color: colors.orange700,
   },
   postCategoryBadge: {
     alignSelf: 'flex-end',
     marginTop: spacing.md,
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.orange200,
+    backgroundColor: colors.white,
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
   postCategoryText: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.gray900,
+    color: colors.orange700,
   },
   postTitle: {
     fontSize: fontSize.xl,
@@ -281,7 +305,7 @@ const styles = StyleSheet.create({
   },
   postContent: {
     fontSize: fontSize.sm,
-    color: colors.gray600,
+    color: colors.stone700,
     marginBottom: spacing.md,
   },
   postFooter: {
@@ -297,7 +321,7 @@ const styles = StyleSheet.create({
   },
   postDate: {
     fontSize: fontSize.xs,
-    color: colors.gray500,
+    color: colors.stone500,
     maxWidth: 120,
   },
   postActions: {
@@ -308,23 +332,24 @@ const styles = StyleSheet.create({
   editButton: {
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.orange200,
+    backgroundColor: colors.orange50,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
   editButtonText: {
     fontSize: fontSize.xs,
     fontWeight: '500',
-    color: colors.gray700,
+    color: colors.orange700,
   },
   viewText: {
     fontSize: fontSize.xs,
-    color: colors.gray500,
+    color: colors.stone500,
   },
   arrow: {
     fontSize: fontSize.xs,
     fontWeight: '600',
-    color: colors.gray800,
+    color: colors.orange600,
   },
 });
 

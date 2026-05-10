@@ -45,64 +45,81 @@ export const API_CONFIG = {
 
 /** 웹과 동일한 OAuth 리다이렉트(백엔드). 앱에서는 브라우저로 열어 처리합니다. */
 export const KAKAO_CONFIG = {
-  REST_API_KEY: '', // 필요 시 빌드 설정으로 주입
+  REST_API_KEY: '27686de4626adc4c281dfae610633baf', // 필요 시 빌드 설정으로 주입
   AUTH_URL: 'https://kauth.kakao.com/oauth/authorize',
   REDIRECT_URI: `${BASE_URL}/customer/kakaoLogin`,
 } as const;
 
 export const GOOGLE_CONFIG = {
-  CLIENT_ID: '',
+  CLIENT_ID: '399800693722-5j3ih6au8l6c68ilok932sbp6u5q466g.apps.googleusercontent.com',
   AUTH_URL: 'https://accounts.google.com/o/oauth2/v2/auth',
   REDIRECT_URI: `${API_CONFIG.BASE_URL}/customer/googleLogin`,
   SCOPE: 'openid email profile',
 } as const;
 
 export const NAVER_CONFIG = {
-  CLIENT_ID: '',
+  CLIENT_ID: 'zIdg_ZgETYWKN4RQqD0h',
   AUTH_URL: 'https://nid.naver.com/oauth2.0/authorize',
   REDIRECT_URI: `${API_CONFIG.BASE_URL}/customer/naverLogin`,
   STATE_LOGIN: 'leschef_naver_login',
   STATE_LINK: 'leschef_naver_link',
 } as const;
 
-export function getKakaoLoginUrl(mode: 'login' | 'link' = 'login'): string {
+function toQueryString(params: Record<string, string>): string {
+  return Object.entries(params)
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+}
+
+function getOAuthState(mode: 'login' | 'link', appLinkToken?: string): string {
+  if (appLinkToken) {
+    return `app_link:${appLinkToken}`;
+  }
+  return mode === 'link' ? 'link' : 'app_login';
+}
+
+export function getKakaoLoginUrl(mode: 'login' | 'link' = 'login', appLinkToken?: string): string {
   if (!KAKAO_CONFIG.REST_API_KEY) {
     throw new Error('카카오 REST API 키가 설정되지 않았습니다.');
   }
-  const params = new URLSearchParams({
+  const params = toQueryString({
     client_id: KAKAO_CONFIG.REST_API_KEY,
     redirect_uri: KAKAO_CONFIG.REDIRECT_URI,
     response_type: 'code',
-    state: mode === 'link' ? 'link' : 'login',
+    state: getOAuthState(mode, appLinkToken),
   });
-  return `${KAKAO_CONFIG.AUTH_URL}?${params.toString()}`;
+  return `${KAKAO_CONFIG.AUTH_URL}?${params}`;
 }
 
-export function getGoogleLoginUrl(mode: 'login' | 'link' = 'login'): string {
+export function getGoogleLoginUrl(mode: 'login' | 'link' = 'login', appLinkToken?: string): string {
   if (!GOOGLE_CONFIG.CLIENT_ID) {
     throw new Error('구글 클라이언트 ID가 설정되지 않았습니다.');
   }
-  const params = new URLSearchParams({
+  const params = toQueryString({
     client_id: GOOGLE_CONFIG.CLIENT_ID,
     redirect_uri: GOOGLE_CONFIG.REDIRECT_URI,
     response_type: 'code',
     scope: GOOGLE_CONFIG.SCOPE,
     access_type: 'offline',
     prompt: 'consent',
-    state: mode,
+    state: getOAuthState(mode, appLinkToken),
   });
-  return `${GOOGLE_CONFIG.AUTH_URL}?${params.toString()}`;
+  return `${GOOGLE_CONFIG.AUTH_URL}?${params}`;
 }
 
-export function getNaverLoginUrl(mode: 'login' | 'link' = 'login'): string {
+export function getNaverLoginUrl(mode: 'login' | 'link' = 'login', appLinkToken?: string): string {
   if (!NAVER_CONFIG.CLIENT_ID) {
     throw new Error('네이버 클라이언트 ID가 설정되지 않았습니다.');
   }
-  const params = new URLSearchParams({
+  const params = toQueryString({
     response_type: 'code',
     client_id: NAVER_CONFIG.CLIENT_ID,
     redirect_uri: NAVER_CONFIG.REDIRECT_URI,
-    state: mode === 'link' ? NAVER_CONFIG.STATE_LINK : NAVER_CONFIG.STATE_LOGIN,
+    state: appLinkToken
+      ? `app_link:${appLinkToken}`
+      : mode === 'link'
+        ? NAVER_CONFIG.STATE_LINK
+        : 'app_login',
   });
-  return `${NAVER_CONFIG.AUTH_URL}?${params.toString()}`;
+  return `${NAVER_CONFIG.AUTH_URL}?${params}`;
 }

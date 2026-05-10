@@ -1,7 +1,7 @@
 // 웹의 홈 페이지를 React Native로 변환
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Animated, Image } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, ScrollView, Pressable, StyleSheet, Animated, Image, BackHandler, ToastAndroid } from 'react-native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
@@ -28,6 +28,29 @@ function HomePage({ isAppInitialized: isAppInitializedProp }: HomePageProps): Re
   const dotAnim1 = useRef(new Animated.Value(0)).current;
   const dotAnim2 = useRef(new Animated.Value(0)).current;
   const dotAnim3 = useRef(new Animated.Value(0)).current;
+  const lastBackPressAt = useRef(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+        const now = Date.now();
+
+        if (now - lastBackPressAt.current < 2000) {
+          BackHandler.exitApp();
+          return true;
+        }
+
+        lastBackPressAt.current = now;
+        ToastAndroid.show('한 번 더 누르면 종료됩니다.', ToastAndroid.SHORT);
+        return true;
+      });
+
+      return () => {
+        lastBackPressAt.current = 0;
+        subscription.remove();
+      };
+    }, [])
+  );
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -130,7 +153,7 @@ function HomePage({ isAppInitialized: isAppInitializedProp }: HomePageProps): Re
         clearTimeout(timer);
       }
     };
-  }, [isAppInitialized, route.params]);
+  }, [dotAnim1, dotAnim2, dotAnim3, fadeAnim, isAppInitialized, rotateAnim, route.params, scaleAnim]);
 
   const rotateInterpolate = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -249,27 +272,28 @@ function HomePage({ isAppInitialized: isAppInitializedProp }: HomePageProps): Re
       >
         <View style={styles.content}>
           {/* 히어로 섹션 */}
-          <View style={[styles.heroSection, shadows.card, { backgroundColor: colors.orange50 }]}>
+          <View style={[styles.heroSection, shadows.card]}>
             <View style={styles.heroContent}>
               <Text style={styles.heroTitle}>
-                나만의 요리 여정을 시작하세요
+                내 식재료를{'\n'}
+                <Text style={styles.heroTitleAccent}>스마트하게</Text> 관리하세요
               </Text>
               <Text style={styles.heroDescription}>
-                냉장고 속 재료로 만들 수 있는 레시피를 찾고, 유통기한을 관리하며, 
-                요리의 모든 것을 LesChef와 함께하세요.
+                유통기한 알림으로 낭비를 줄이고,{'\n'}
+                검색으로 레시피를 찾아보세요
               </Text>
               <View style={styles.heroButtons}>
                 <Pressable 
-                  style={styles.heroButton}
-                  onPress={() => navigation.navigate('Recipe' as never)}
-                >
-                  <Text style={styles.heroButtonText}>레시피 둘러보기 →</Text>
-                </Pressable>
-                <Pressable 
-                  style={styles.heroButton}
+                  style={[styles.heroButton, styles.heroButtonPrimary, shadows.orangeButton]}
                   onPress={() => navigation.navigate('MyPage' as never)}
                 >
-                  <Text style={styles.heroButtonText}>내 냉장고 관리 →</Text>
+                  <Text style={styles.heroButtonPrimaryText}>식재료 관리하기</Text>
+                </Pressable>
+                <Pressable 
+                  style={[styles.heroButton, styles.heroButtonSecondary]}
+                  onPress={() => navigation.navigate('Recipe' as never)}
+                >
+                  <Text style={styles.heroButtonSecondaryText}>레시피 둘러보기</Text>
                 </Pressable>
               </View>
             </View>
@@ -325,15 +349,20 @@ function HomePage({ isAppInitialized: isAppInitializedProp }: HomePageProps): Re
             <Text style={styles.sectionTitle}>빠른 링크</Text>
             <View style={styles.linkGrid}>
               {[
-                { name: '한식 레시피', route: 'Recipe', emoji: '🍲' },
-                { name: '일식 레시피', route: 'Recipe', emoji: '🍱' },
-                { name: '중식 레시피', route: 'Recipe', emoji: '🥟' },
-                { name: '양식 레시피', route: 'Recipe', emoji: '🍝' },
+                { name: '한식 레시피', category: 'korean', emoji: '🍲' },
+                { name: '일식 레시피', category: 'japanese', emoji: '🍱' },
+                { name: '중식 레시피', category: 'chinese', emoji: '🥟' },
+                { name: '양식 레시피', category: 'western', emoji: '🍝' },
               ].map((link) => (
                 <Pressable
                   key={link.name}
                   style={styles.linkCard}
-                  onPress={() => navigation.navigate(link.route as never)}
+                  onPress={() =>
+                    (navigation as any).navigate('Recipe', {
+                      screen: 'RecipeList',
+                      params: { category: link.category },
+                    })
+                  }
                 >
                   <Text style={styles.linkEmoji}>{link.emoji}</Text>
                   <Text style={styles.linkName}>{link.name}</Text>
@@ -427,15 +456,17 @@ const styles = StyleSheet.create({
     maxWidth: 1152, // max-w-6xl
     width: '100%',
     alignSelf: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     paddingTop: spacing.xl,
     gap: spacing.xl,
   },
   heroSection: {
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
-    padding: spacing.xl,
+    borderColor: colors.orange100,
+    backgroundColor: colors.orange50,
+    paddingVertical: spacing['2xl'],
+    paddingHorizontal: spacing.lg,
   },
   heroContent: {
     alignItems: 'center',
@@ -443,15 +474,21 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: fontSize['4xl'],
-    fontWeight: '700',
+    fontWeight: '800',
     color: colors.gray900,
     textAlign: 'center',
+    lineHeight: fontSize['4xl'] * 1.18,
+    letterSpacing: -0.6,
+  },
+  heroTitleAccent: {
+    color: colors.orange600,
   },
   heroDescription: {
     fontSize: fontSize.lg,
-    color: colors.gray600,
+    color: colors.gray700,
     textAlign: 'center',
     maxWidth: 672, // max-w-2xl
+    lineHeight: fontSize.lg * 1.5,
   },
   heroButtons: {
     flexDirection: 'row',
@@ -461,24 +498,36 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
   },
   heroButton: {
-    borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: colors.gray300,
-    backgroundColor: colors.white,
+    minWidth: 148,
+    alignItems: 'center',
+    borderRadius: borderRadius.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: 12,
   },
-  heroButtonText: {
+  heroButtonPrimary: {
+    backgroundColor: colors.orange600,
+  },
+  heroButtonSecondary: {
+    borderWidth: 2,
+    borderColor: colors.orange600,
+    backgroundColor: colors.white,
+  },
+  heroButtonPrimaryText: {
     fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.gray900,
+    fontWeight: '700',
+    color: colors.white,
+  },
+  heroButtonSecondaryText: {
+    fontSize: fontSize.sm,
+    fontWeight: '700',
+    color: colors.orange600,
   },
   section: {
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     backgroundColor: colors.white,
-    padding: spacing.lg,
+    padding: spacing.xl,
   },
   sectionHeader: {
     marginBottom: spacing.lg,
@@ -491,7 +540,7 @@ const styles = StyleSheet.create({
   },
   sectionSubtitle: {
     fontSize: fontSize.sm,
-    color: colors.gray500,
+    color: colors.stone500,
   },
   newsGrid: {
     gap: spacing.lg,
@@ -499,8 +548,8 @@ const styles = StyleSheet.create({
   newsCard: {
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
-    backgroundColor: colors.gray50,
+    borderColor: colors.stone200,
+    backgroundColor: colors.stone50,
     padding: spacing.lg,
   },
   newsCardHeader: {
@@ -517,11 +566,11 @@ const styles = StyleSheet.create({
   },
   newsCardDate: {
     fontSize: fontSize.xs,
-    color: colors.gray400,
+    color: colors.stone500,
   },
   newsCardContent: {
     fontSize: fontSize.sm,
-    color: colors.gray600,
+    color: colors.stone700,
   },
   priceGrid: {
     flexDirection: 'row',
@@ -533,7 +582,7 @@ const styles = StyleSheet.create({
     minWidth: '45%',
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.orange100,
     backgroundColor: colors.orange50,
     padding: spacing.md,
     alignItems: 'center',
@@ -550,7 +599,7 @@ const styles = StyleSheet.create({
   },
   priceLabel: {
     fontSize: fontSize.xs,
-    color: colors.gray600,
+    color: colors.orange700,
   },
   linkGrid: {
     flexDirection: 'row',
@@ -562,7 +611,7 @@ const styles = StyleSheet.create({
     minWidth: '45%',
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: colors.gray200,
+    borderColor: colors.stone200,
     backgroundColor: colors.white,
     padding: spacing.lg,
     alignItems: 'center',

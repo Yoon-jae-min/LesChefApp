@@ -23,6 +23,7 @@ function TabNavigation({ tabs, activeTab, onTabChange }: TabNavigationProps): Re
             <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
               {tab}
             </Text>
+            {isActive && <View style={styles.activeIndicator} />}
           </Pressable>
         );
       })}
@@ -35,18 +36,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 32,
+    flexWrap: 'wrap',
+    gap: 28,
   },
   tab: {
-    paddingVertical: 8,
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    paddingTop: 8,
+    paddingBottom: 10,
   },
   tabText: {
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
     fontWeight: '600',
-    color: colors.gray400,
+    color: colors.stone500,
   },
   tabTextActive: {
-    color: colors.black,
+    color: colors.orange600,
+  },
+  activeIndicator: {
+    position: 'absolute',
+    left: 4,
+    right: 4,
+    bottom: 2,
+    height: 3,
+    borderRadius: 999,
+    backgroundColor: colors.orange500,
   },
 });
 
