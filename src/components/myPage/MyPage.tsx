@@ -1,23 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Linking, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import FilterTabs from '../common/FilterTabs';
 import { STORAGE_KEYS } from '../../constants/storageKeys';
-import { API_CONFIG, getGoogleLoginUrl, getKakaoLoginUrl, getNaverLoginUrl } from '../../config/apiConfig';
+import { getGoogleLoginUrl, getKakaoLoginUrl, getNaverLoginUrl } from '../../config/apiConfig';
 import { fetchUserInfo } from '../../api/auth/user';
 import { getAccessToken } from '../../api/tokenStorage';
 import { unlinkSocial, type SocialProvider } from '../../api/auth/socialLink';
-import { fetchMyRecipeList, fetchWishRecipeList } from '../../api/recipe/queries';
-import type { RecipeListItem } from '../../types/apiRecipe';
 import type { UserInfoResponse } from '../../api/auth/types';
-import {
-  getNotificationSettings,
-  saveNotificationSettings,
-  type NotificationSettings,
-} from '../../utils/notificationSettings';
 import { borderRadius, colors, fontSize, shadows, spacing } from '../../styles/theme';
-import MyPageLayout, { type MyPageTabLabel } from './MyPageLayout';
+import MyPageLayout from './MyPageLayout';
 
 type StoredUser = {
   id?: string;
@@ -37,26 +28,6 @@ const SOCIAL_PROVIDERS: SocialProviderConfig[] = [
   { provider: 'google', label: 'Google', linkedKey: 'googleLinked' },
   { provider: 'naver', label: 'Naver', linkedKey: 'naverLinked' },
 ];
-
-type StorageZone = '냉장실' | '냉동실' | '야채칸' | '실온';
-
-const STORAGE_ZONES: StorageZone[] = ['냉장실', '냉동실', '야채칸', '실온'];
-
-const SAMPLE_INVENTORY: Record<StorageZone, Array<{ id: string; name: string; amount: string; dday: string }>> = {
-  냉장실: [
-    { id: '1', name: '방울토마토', amount: '1팩', dday: 'D-3' },
-    { id: '2', name: '두부', amount: '2모', dday: 'D-1' },
-  ],
-  냉동실: [{ id: '3', name: '닭가슴살', amount: '5팩', dday: 'D-30' }],
-  야채칸: [{ id: '4', name: '양파', amount: '3개', dday: 'D-7' }],
-  실온: [{ id: '5', name: '감자', amount: '6개', dday: 'D-5' }],
-};
-
-function resolveUrl(u?: string) {
-  if (!u) return undefined;
-  if (u.startsWith('http')) return u;
-  return `${API_CONFIG.BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`;
-}
 
 function hasSuccessfulSocialLink(url: string): boolean {
   return url.startsWith('leschefapp://social/callback') && url.includes('linkStatus=success');
@@ -248,195 +219,11 @@ function InfoContent() {
   );
 }
 
-function StorageContent() {
-  const [activePlace, setActivePlace] = useState<StorageZone>('냉장실');
-  const items = SAMPLE_INVENTORY[activePlace];
-
-  return (
-    <View style={styles.stack}>
-      <View style={[styles.card, shadows.card]}>
-        <SectionHeader
-          eyebrow="My Fridge"
-          title="보관 재료 인벤토리"
-          subtitle="재료가 얼마나 남았는지, 언제 써야 하는지 한눈에 확인하세요."
-          count={`${items.length} items`}
-        />
-        <FilterTabs
-          items={STORAGE_ZONES}
-          activeItem={activePlace}
-          onItemChange={(item) => setActivePlace(item as StorageZone)}
-          variant="gray"
-        />
-      </View>
-
-      <View style={styles.grid}>
-        {items.map((item) => (
-          <View key={item.id} style={[styles.storageCard, shadows.card]}>
-            <Text style={styles.eyebrow}>Ingredient</Text>
-            <Text style={styles.itemTitle}>{item.name}</Text>
-            <Text style={styles.subtitle}>{item.amount}</Text>
-            <View style={styles.orangePill}>
-              <Text style={styles.orangePillText}>{item.dday}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-}
-
-function NotificationContent({ activeTab }: { activeTab: MyPageTabLabel }) {
-  const [settings, setSettings] = useState<NotificationSettings | null>(null);
-
-  useEffect(() => {
-    if (activeTab !== '알림 설정') {
-      return;
-    }
-    getNotificationSettings().then(setSettings);
-  }, [activeTab]);
-
-  const patch = async (partial: Partial<NotificationSettings>) => {
-    if (!settings) return;
-    const next = { ...settings, ...partial };
-    setSettings(next);
-    await saveNotificationSettings(partial);
-  };
-
-  if (activeTab === '알림 설정') {
-    return (
-      <View style={[styles.card, shadows.card]}>
-        <SectionHeader
-          eyebrow="Notification"
-          title="알림 설정"
-          subtitle="유통기한 알림 기준과 표시 방식을 조정해요."
-        />
-        {settings ? (
-          <View style={styles.stackSmall}>
-            {[
-              ['알림 사용', 'enabled'],
-              ['만료 표시', 'showExpired'],
-              ['1일 전', 'showUrgent'],
-              ['3일 전', 'showWarning'],
-              ['7일 전', 'showNotice'],
-            ].map(([label, key]) => (
-              <View key={key} style={styles.settingRow}>
-                <Text style={styles.settingLabel}>{label}</Text>
-                <Switch
-                  value={Boolean(settings[key as keyof NotificationSettings])}
-                  onValueChange={(value) => patch({ [key]: value } as Partial<NotificationSettings>)}
-                  thumbColor={Boolean(settings[key as keyof NotificationSettings]) ? colors.orange600 : colors.white}
-                  trackColor={{ false: colors.stone200, true: colors.orange200 }}
-                />
-              </View>
-            ))}
-          </View>
-        ) : (
-          <ActivityIndicator color={colors.orange600} />
-        )}
-      </View>
-    );
-  }
-
-  return (
-    <View style={[styles.card, shadows.card]}>
-      <SectionHeader
-        eyebrow="Inventory Alert"
-        title="유통기한 알림 기록"
-        subtitle="웹과 동일하게 로컬에 쌓인 알림 기록을 확인합니다."
-        count="0 items"
-      />
-      <EmptyBox>기록이 없습니다.</EmptyBox>
-    </View>
-  );
-}
-
-function RecipeContent({ activeTab }: { activeTab: MyPageTabLabel }) {
-  const navigation = useNavigation();
-  const [list, setList] = useState<RecipeListItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data =
-          activeTab === '찜 레시피'
-            ? await fetchWishRecipeList()
-            : await fetchMyRecipeList();
-        const nextList = activeTab === '찜 레시피' ? data.wishList || [] : data.list || [];
-        if (!cancelled) setList(nextList);
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : '불러오지 못했습니다.');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    if (activeTab === '찜 레시피' || activeTab === '나의 레시피') {
-      load();
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [activeTab]);
-
-  return (
-    <View style={[styles.card, shadows.card]}>
-      <SectionHeader
-        eyebrow={activeTab === '찜 레시피' ? 'Favorites' : 'My Recipes'}
-        title={activeTab}
-        subtitle="레시피 탭 안에서 아래 콘텐츠만 바뀌도록 구성했어요."
-        count={`${list.length} items`}
-      />
-      {loading ? <ActivityIndicator color={colors.orange600} /> : null}
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <View style={styles.stackSmall}>
-        {list.map((recipe) => {
-          const id = recipe._id || recipe.recipeName;
-          const uri = resolveUrl(recipe.recipeImg);
-          return (
-            <Pressable
-              key={id}
-              style={styles.recipeRow}
-              onPress={() =>
-                (navigation as any).navigate('Recipe', {
-                  screen: 'RecipeDetail',
-                  params: { id, recipeName: recipe.recipeName },
-                })
-              }
-            >
-              {uri ? <Image source={{ uri }} style={styles.thumb} /> : <View style={[styles.thumb, styles.thumbEmpty]} />}
-              <View style={styles.recipeText}>
-                <Text style={styles.itemTitle}>{recipe.recipeName}</Text>
-                <Text style={styles.subtitle}>{recipe.subCategory || recipe.majorCategory || '카테고리 없음'}</Text>
-              </View>
-            </Pressable>
-          );
-        })}
-      </View>
-      {!loading && !error && list.length === 0 ? (
-        <EmptyBox>{activeTab === '찜 레시피' ? '찜한 레시피가 없습니다.' : '등록한 레시피가 없습니다.'}</EmptyBox>
-      ) : null}
-    </View>
-  );
-}
 
 function MyPage(): React.JSX.Element {
-  const [activeTab, setActiveTab] = useState<MyPageTabLabel>('내 정보');
-
-  const content = useMemo(() => {
-    if (activeTab === '내 정보') return <InfoContent />;
-    if (activeTab === '보관함') return <StorageContent />;
-    if (activeTab === '알림 기록' || activeTab === '알림 설정') return <NotificationContent activeTab={activeTab} />;
-    return <RecipeContent activeTab={activeTab} />;
-  }, [activeTab]);
-
   return (
-    <MyPageLayout activeTab={activeTab} onTabChange={setActiveTab}>
-      {content}
+    <MyPageLayout activeTab="내 정보">
+      <InfoContent />
     </MyPageLayout>
   );
 }

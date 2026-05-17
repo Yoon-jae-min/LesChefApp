@@ -1,81 +1,59 @@
-// 웹의 보관함 페이지를 React Native로 변환
-import React, { useState, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal, TextInput } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Modal,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, borderRadius, shadows, fontSize, spacing } from '../../styles/theme';
 import FilterTabs from '../common/FilterTabs';
 import MyPageLayout from './MyPageLayout';
+import {
+  addFoodItem,
+  deleteFoodItem,
+  updateFoodItem,
+} from '../../api/foods/content';
+import {
+  addStoragePlace,
+  deleteStoragePlace,
+  fetchFoodsList,
+  updateStoragePlace,
+} from '../../api/foods/place';
+import type { FoodItem, StoragePlace } from '../../api/foods/types';
 
-type StorageZone = '냉장실' | '냉동실' | '야채칸' | '실온' | '기타';
-
-type InventoryItem = {
-  id: string;
+type ItemFormState = {
   name: string;
-  quantity: number;
+  volume: number;
   unit: string;
-  purchaseDate: string;
   expiryDate: string;
-  memo?: string;
+  memo: string;
 };
 
-type InventoryMap = Record<StorageZone, InventoryItem[]>;
-
-const STORAGE_ZONES: StorageZone[] = ['냉장실', '냉동실', '야채칸', '실온', '기타'];
-
-const SAMPLE_INVENTORY: InventoryMap = {
-  냉장실: [
-    {
-      id: '1',
-      name: '방울토마토',
-      quantity: 1,
-      unit: '팩',
-      purchaseDate: '2025-01-15',
-      expiryDate: '2025-01-25',
-    },
-    {
-      id: '2',
-      name: '두부',
-      quantity: 2,
-      unit: '모',
-      purchaseDate: '2025-01-21',
-      expiryDate: '2025-01-28',
-    },
-  ],
-  냉동실: [
-    {
-      id: '3',
-      name: '닭가슴살',
-      quantity: 5,
-      unit: '팩',
-      purchaseDate: '2025-01-10',
-      expiryDate: '2025-03-10',
-    },
-  ],
-  야채칸: [
-    {
-      id: '4',
-      name: '양파',
-      quantity: 3,
-      unit: '개',
-      purchaseDate: '2025-01-12',
-      expiryDate: '2025-02-05',
-    },
-  ],
-  실온: [
-    {
-      id: '5',
-      name: '감자',
-      quantity: 6,
-      unit: '개',
-      purchaseDate: '2025-01-09',
-      expiryDate: '2025-02-01',
-    },
-  ],
-  기타: [],
+const EMPTY_FORM: ItemFormState = {
+  name: '',
+  volume: 1,
+  unit: '개',
+  expiryDate: '',
+  memo: '',
 };
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
+const formatExpiry = (value: Date | string) => {
+  if (typeof value === 'string') {
+    return value.slice(0, 10);
+  }
+  return new Date(value).toISOString().slice(0, 10);
+};
+
 const getDday = (dateStr: string) => {
+  if (!dateStr) return null;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const target = new Date(dateStr);
@@ -86,212 +64,391 @@ const getDday = (dateStr: string) => {
 };
 
 const getPriority = (dday: number | null) => {
-  if (dday === null) return { label: '정보 없음', tone: { backgroundColor: colors.gray100, borderColor: colors.gray200, textColor: colors.gray500 } };
-  if (dday < 0) return { label: '폐기 필요', tone: { backgroundColor: colors.red50, borderColor: colors.red200, textColor: colors.red600 } };
-  if (dday <= 2) return { label: '긴급', tone: { backgroundColor: colors.orange50, borderColor: colors.orange200, textColor: colors.orange500 } };
-  if (dday <= 5) return { label: '주의', tone: { backgroundColor: colors.yellow50, borderColor: colors.yellow200, textColor: colors.gray700 } };
-  return { label: '안정', tone: { backgroundColor: colors.green50, borderColor: colors.green100, textColor: colors.green600 } };
+  if (dday === null) {
+    return {
+      label: '정보 없음',
+      tone: { backgroundColor: colors.gray100, borderColor: colors.gray200, textColor: colors.gray500 },
+    };
+  }
+  if (dday < 0) {
+    return {
+      label: '폐기 필요',
+      tone: { backgroundColor: colors.red50, borderColor: colors.red200, textColor: colors.red600 },
+    };
+  }
+  if (dday <= 2) {
+    return {
+      label: '긴급',
+      tone: { backgroundColor: colors.orange50, borderColor: colors.orange200, textColor: colors.orange500 },
+    };
+  }
+  if (dday <= 5) {
+    return {
+      label: '주의',
+      tone: { backgroundColor: colors.yellow50, borderColor: colors.yellow200, textColor: colors.gray700 },
+    };
+  }
+  return {
+    label: '안정',
+    tone: { backgroundColor: colors.green50, borderColor: colors.green100, textColor: colors.green600 },
+  };
 };
 
 function StoragePage(): React.JSX.Element {
-  const [activePlace, setActivePlace] = useState<StorageZone>('냉장실');
-  const [inventory, setInventory] = useState<InventoryMap>(SAMPLE_INVENTORY);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [places, setPlaces] = useState<StoragePlace[]>([]);
+  const [activePlaceId, setActivePlaceId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [form, setForm] = useState<ItemFormState>(EMPTY_FORM);
+
+  const [isPlaceModalOpen, setIsPlaceModalOpen] = useState(false);
+  const [newPlaceName, setNewPlaceName] = useState('');
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
+  const [renamePlaceValue, setRenamePlaceValue] = useState('');
+  const [placeActionLoading, setPlaceActionLoading] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchFoodsList();
+      const nextPlaces = data.sectionList || [];
+      setPlaces(nextPlaces);
+      setActivePlaceId((prev) => {
+        if (prev && nextPlaces.some((p) => p._id === prev)) return prev;
+        return nextPlaces[0]?._id || '';
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '보관함을 불러오지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load]),
+  );
+
+  const activePlace = useMemo(
+    () => places.find((p) => p._id === activePlaceId) || null,
+    [places, activePlaceId],
+  );
+
+  const filteredItems = activePlace?.foodList || [];
 
   const editingItem = useMemo(() => {
     if (!editingItemId) return null;
-    return inventory[activePlace].find((item) => item.id === editingItemId) || null;
-  }, [editingItemId, inventory, activePlace]);
+    return filteredItems.find((item) => item._id === editingItemId) || null;
+  }, [editingItemId, filteredItems]);
 
-  const [form, setForm] = useState<Omit<InventoryItem, 'id'>>({
-    name: '',
-    quantity: 1,
-    unit: '개',
-    purchaseDate: '',
-    expiryDate: '',
-    memo: '',
-  });
+  const placeTabLabels = places.map((p) => p.name);
 
-  const filteredItems = inventory[activePlace];
-
-  const handleOpenModal = (item?: InventoryItem) => {
+  const handleOpenItemModal = (item?: FoodItem) => {
     if (item) {
-      setEditingItemId(item.id);
+      setEditingItemId(item._id);
       setForm({
-        name: item.name,
-        quantity: item.quantity,
-        unit: item.unit,
-        purchaseDate: item.purchaseDate,
-        expiryDate: item.expiryDate,
-        memo: item.memo || '',
+        name: item.name ?? '',
+        volume: item.volume ?? 1,
+        unit: item.unit || '개',
+        expiryDate: formatExpiry(item.expirate),
+        memo: '',
       });
     } else {
       setEditingItemId(null);
-      setForm({
-        name: '',
-        quantity: 1,
-        unit: '개',
-        purchaseDate: '',
-        expiryDate: '',
-        memo: '',
-      });
+      setForm({ ...EMPTY_FORM });
     }
-    setIsModalOpen(true);
+    setIsItemModalOpen(true);
   };
 
-  const handleSubmit = () => {
-    const newItem: InventoryItem = {
-      id: editingItemId ?? `item-${Date.now()}`,
-      ...form,
-    };
+  const handleSubmitItem = async () => {
+    if (!activePlaceId) {
+      Alert.alert('알림', '보관 장소를 먼저 추가해주세요.');
+      return;
+    }
+    const trimmedName = form.name.trim();
+    if (!trimmedName) {
+      Alert.alert('알림', '재료명을 입력해주세요.');
+      return;
+    }
+    if (!form.expiryDate.trim()) {
+      Alert.alert('알림', '유통기한을 입력해주세요.');
+      return;
+    }
 
-    setInventory((prev) => {
-      const list = prev[activePlace];
-      const existingIndex = list.findIndex((item) => item.id === editingItemId);
-      let nextList: InventoryItem[];
-      if (existingIndex >= 0) {
-        nextList = [...list];
-        nextList[existingIndex] = newItem;
+    setSubmitting(true);
+    try {
+      if (editingItem) {
+        await updateFoodItem({
+          contentId: editingItem._id,
+          name: trimmedName,
+          volume: Number(form.volume) || 0,
+          unit: form.unit,
+          date: form.expiryDate,
+        });
       } else {
-        nextList = [...list, newItem];
+        await addFoodItem({
+          placeId: activePlaceId,
+          name: trimmedName,
+          volume: Number(form.volume) || 0,
+          unit: form.unit,
+          expiryDate: form.expiryDate,
+        });
       }
-      return { ...prev, [activePlace]: nextList };
-    });
-
-    setIsModalOpen(false);
+      setIsItemModalOpen(false);
+      setEditingItemId(null);
+      setForm({ ...EMPTY_FORM });
+      await load();
+    } catch (e) {
+      Alert.alert('오류', e instanceof Error ? e.message : '저장에 실패했습니다.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setInventory((prev) => ({
-      ...prev,
-      [activePlace]: prev[activePlace].filter((item) => item.id !== id),
-    }));
+  const handleDeleteItem = (item: FoodItem) => {
+    Alert.alert('재료 삭제', `"${item.name}"을(를) 삭제할까요?`, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: async () => {
+          setDeletingId(item._id);
+          try {
+            await deleteFoodItem(item._id);
+            await load();
+          } catch (e) {
+            Alert.alert('오류', e instanceof Error ? e.message : '삭제에 실패했습니다.');
+          } finally {
+            setDeletingId(null);
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleAddPlace = async () => {
+    const placeName = newPlaceName.trim();
+    if (!placeName) {
+      Alert.alert('알림', '보관 장소 이름을 입력해주세요.');
+      return;
+    }
+    setPlaceActionLoading(true);
+    try {
+      await addStoragePlace(placeName);
+      setNewPlaceName('');
+      setIsPlaceModalOpen(false);
+      await load();
+    } catch (e) {
+      Alert.alert('오류', e instanceof Error ? e.message : '장소 추가에 실패했습니다.');
+    } finally {
+      setPlaceActionLoading(false);
+    }
+  };
+
+  const handleRenamePlace = async () => {
+    if (!activePlaceId) return;
+    const nextName = renamePlaceValue.trim();
+    if (!nextName) {
+      Alert.alert('알림', '새 장소 이름을 입력해주세요.');
+      return;
+    }
+    setPlaceActionLoading(true);
+    try {
+      const res = await updateStoragePlace(activePlaceId, nextName);
+      if (res.exist) {
+        throw new Error('이미 같은 이름의 보관 장소가 있습니다.');
+      }
+      setIsRenameModalOpen(false);
+      setRenamePlaceValue('');
+      await load();
+    } catch (e) {
+      Alert.alert('오류', e instanceof Error ? e.message : '이름 변경에 실패했습니다.');
+    } finally {
+      setPlaceActionLoading(false);
+    }
+  };
+
+  const handleDeletePlace = () => {
+    if (!activePlaceId || !activePlace) return;
+    const count = filteredItems.length;
+    Alert.alert(
+      '보관 장소 삭제',
+      count > 0
+        ? `"${activePlace.name}" 장소와 등록된 재료 ${count}개가 함께 삭제됩니다.`
+        : `"${activePlace.name}" 장소를 삭제할까요?`,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '삭제',
+          style: 'destructive',
+          onPress: async () => {
+            setPlaceActionLoading(true);
+            try {
+              await deleteStoragePlace(activePlaceId);
+              await load();
+            } catch (e) {
+              Alert.alert('오류', e instanceof Error ? e.message : '장소 삭제에 실패했습니다.');
+            } finally {
+              setPlaceActionLoading(false);
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handlePlaceTabChange = (placeName: string) => {
+    const target = places.find((p) => p.name === placeName);
+    if (target) setActivePlaceId(target._id);
   };
 
   return (
-    <MyPageLayout activeTab="보관함">
-          {/* 헤더 */}
-          <View style={[styles.header, shadows.card]}>
-            <View>
-              <Text style={styles.headerLabel}>My Fridge</Text>
-              <Text style={styles.headerTitle}>보관 재료 인벤토리</Text>
-              <Text style={styles.headerSubtitle}>
-                재료가 얼마나 남았는지, 언제 써야 하는지 한눈에 확인하세요.
-              </Text>
-            </View>
-            <Pressable 
-              style={styles.addButton}
-              onPress={() => handleOpenModal()}
-            >
-              <Text style={styles.addButtonText}>재료 추가하기</Text>
-            </Pressable>
-          </View>
+    <MyPageLayout
+      activeTab="보관함"
+      scrollProps={{
+        refreshControl: <RefreshControl refreshing={loading} onRefresh={load} />,
+      }}
+    >
+      <View style={[styles.header, shadows.card]}>
+        <View>
+          <Text style={styles.headerLabel}>My Fridge</Text>
+          <Text style={styles.headerTitle}>보관 재료 인벤토리</Text>
+          <Text style={styles.headerSubtitle}>
+            재료가 얼마나 남았는지, 언제 써야 하는지 한눈에 확인하세요.
+          </Text>
+        </View>
+        <View style={styles.headerActions}>
+          <Pressable style={styles.secondaryButton} onPress={() => setIsPlaceModalOpen(true)}>
+            <Text style={styles.secondaryButtonText}>장소 추가</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.secondaryButton, !activePlaceId && styles.disabledButton]}
+            disabled={!activePlaceId}
+            onPress={() => {
+              setRenamePlaceValue(activePlace?.name || '');
+              setIsRenameModalOpen(true);
+            }}
+          >
+            <Text style={styles.secondaryButtonText}>이름 변경</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.secondaryButton, styles.dangerOutlineButton, !activePlaceId && styles.disabledButton]}
+            disabled={!activePlaceId || placeActionLoading}
+            onPress={handleDeletePlace}
+          >
+            <Text style={styles.dangerOutlineButtonText}>장소 삭제</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.addButton, !activePlaceId && styles.disabledButton]}
+            disabled={!activePlaceId}
+            onPress={() => handleOpenItemModal()}
+          >
+            <Text style={styles.addButtonText}>재료 추가하기</Text>
+          </Pressable>
+        </View>
+      </View>
 
-          {/* 필터 탭 */}
-          <View style={styles.filterContainer}>
-            <FilterTabs
-              items={STORAGE_ZONES}
-              activeItem={activePlace}
-              onItemChange={(item) => setActivePlace(item as StorageZone)}
-              variant="gray"
-            />
-          </View>
+      {loading && places.length === 0 ? (
+        <ActivityIndicator color={colors.orange600} style={styles.loader} />
+      ) : null}
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          {/* 재료 리스트 */}
-          {filteredItems.length === 0 ? (
-            <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>
-                아직 {activePlace}에 등록된 재료가 없어요.
-              </Text>
-            </View>
-          ) : (
-            <View style={styles.itemsGrid}>
-              {filteredItems.map((item) => {
-                const dday = getDday(item.expiryDate);
-                const priority = getPriority(dday);
-                return (
-                  <View key={item.id} style={[styles.itemCard, shadows.card]}>
-                    <View style={styles.itemHeader}>
-                      <View>
-                        <Text style={styles.itemLabel}>Ingredient</Text>
-                        <Text style={styles.itemName}>{item.name}</Text>
-                        <Text style={styles.itemQuantity}>
-                          {item.quantity}
-                          {item.unit}
-                        </Text>
-                      </View>
-                      <View style={[styles.priorityBadge, priority.tone]}>
-                        <Text style={[styles.priorityText, { color: priority.tone.textColor }]}>
-                          {priority.label}
-                        </Text>
-                      </View>
-                    </View>
+      {places.length > 0 ? (
+        <View style={styles.filterContainer}>
+          <FilterTabs
+            items={placeTabLabels}
+            activeItem={activePlace?.name || placeTabLabels[0]}
+            onItemChange={handlePlaceTabChange}
+            variant="gray"
+          />
+        </View>
+      ) : null}
 
-                    <View style={styles.itemInfo}>
-                      <View style={styles.infoItem}>
-                        <Text style={styles.infoLabel}>구매일</Text>
-                        <Text style={styles.infoValue}>{item.purchaseDate || '-'}</Text>
-                      </View>
-                      <View style={styles.infoItem}>
-                        <Text style={styles.infoLabel}>유통기한</Text>
-                        <Text style={[styles.infoValue, dday !== null && dday < 3 && { color: colors.orange500 }]}> 
-                          {item.expiryDate || '-'}
-                        </Text>
-                      </View>
-                      <View style={styles.infoItem}>
-                        <Text style={styles.infoLabel}>D-Day</Text>
-                        <Text style={[styles.infoValue, dday !== null && dday < 0 && { color: colors.red600 }]}>
-                          {dday === null ? '-' : dday === 0 ? 'D-DAY' : dday > 0 ? `D-${dday}` : `D+${Math.abs(dday)}`}
-                        </Text>
-                      </View>
-                    </View>
-
-                    {item.memo && (
-                      <View style={styles.memoBox}>
-                        <Text style={styles.memoText}>{item.memo}</Text>
-                      </View>
-                    )}
-
-                    <View style={styles.itemActions}>
-                      <Pressable 
-                        style={styles.actionButton}
-                        onPress={() => handleOpenModal(item)}
-                      >
-                        <Text style={styles.actionButtonText}>수정</Text>
-                      </Pressable>
-                      <Pressable 
-                        style={[styles.actionButton, styles.deleteActionButton]}
-                        onPress={() => handleDelete(item.id)}
-                      >
-                        <Text style={[styles.actionButtonText, styles.deleteActionButtonText]}>삭제</Text>
-                      </Pressable>
-                      <Pressable style={[styles.actionButton, styles.findActionButton]}>
-                        <Text style={[styles.actionButtonText, styles.findActionButtonText]}>레시피 찾기</Text>
-                      </Pressable>
-                    </View>
+      {!loading && !error && places.length === 0 ? (
+        <View style={styles.emptyBox}>
+          <Text style={styles.emptyText}>아직 등록된 보관 장소가 없어요. 장소 추가로 시작해보세요.</Text>
+        </View>
+      ) : !loading && !error && filteredItems.length === 0 ? (
+        <View style={styles.emptyBox}>
+          <Text style={styles.emptyText}>
+            아직 {activePlace?.name ?? '이 장소'}에 등록된 재료가 없어요.
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.itemsGrid}>
+          {filteredItems.map((item) => {
+            const expiry = formatExpiry(item.expirate);
+            const dday = getDday(expiry);
+            const priority = getPriority(dday);
+            const isDeleting = deletingId === item._id;
+            return (
+              <View key={item._id} style={[styles.itemCard, shadows.card]}>
+                <View style={styles.itemHeader}>
+                  <View>
+                    <Text style={styles.itemLabel}>Ingredient</Text>
+                    <Text style={styles.itemName}>{item.name}</Text>
+                    <Text style={styles.itemQuantity}>
+                      {item.volume}
+                      {item.unit}
+                    </Text>
                   </View>
-                );
-              })}
-            </View>
-          )}
+                  <View style={[styles.priorityBadge, priority.tone]}>
+                    <Text style={[styles.priorityText, { color: priority.tone.textColor }]}>
+                      {priority.label}
+                    </Text>
+                  </View>
+                </View>
 
-      {/* 모달 */}
-      <Modal
-        visible={isModalOpen}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setIsModalOpen(false)}
-      >
+                <View style={styles.itemInfo}>
+                  <View style={styles.infoItem}>
+                    <Text style={styles.infoLabel}>유통기한</Text>
+                    <Text style={[styles.infoValue, dday !== null && dday < 3 && { color: colors.orange500 }]}>
+                      {expiry || '-'}
+                    </Text>
+                  </View>
+                  <View style={styles.infoItem}>
+                    <Text style={styles.infoLabel}>D-Day</Text>
+                    <Text style={[styles.infoValue, dday !== null && dday < 0 && { color: colors.red600 }]}>
+                      {dday === null ? '-' : dday === 0 ? 'D-DAY' : dday > 0 ? `D-${dday}` : `D+${Math.abs(dday)}`}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.itemActions}>
+                  <Pressable style={styles.actionButton} onPress={() => handleOpenItemModal(item)}>
+                    <Text style={styles.actionButtonText}>수정</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[styles.actionButton, styles.deleteActionButton]}
+                    disabled={isDeleting}
+                    onPress={() => handleDeleteItem(item)}
+                  >
+                    <Text style={[styles.actionButtonText, styles.deleteActionButtonText]}>
+                      {isDeleting ? '삭제 중…' : '삭제'}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      )}
+
+      <Modal visible={isItemModalOpen} transparent animationType="fade" onRequestClose={() => setIsItemModalOpen(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalLabel}>Inventory</Text>
-              <Text style={styles.modalTitle}>
-                {editingItem ? '재료 수정' : '새 재료 추가'}
-              </Text>
+              <Text style={styles.modalTitle}>{editingItem ? '재료 수정' : '새 재료 추가'}</Text>
               <Text style={styles.modalSubtitle}>
-                {activePlace}에 보관 중인 재료 정보를 입력해주세요.
+                {activePlace?.name ?? '보관 장소'}에 보관 중인 재료 정보를 입력해주세요.
               </Text>
             </View>
 
@@ -311,38 +468,18 @@ function StoragePage(): React.JSX.Element {
                 <View style={[styles.formGroup, { flex: 1 }]}>
                   <Text style={styles.formLabel}>수량</Text>
                   <TextInput
-                    value={form.quantity.toString()}
-                    onChangeText={(text) => setForm((prev) => ({ ...prev, quantity: Number(text) || 0 }))}
+                    value={String(form.volume)}
+                    onChangeText={(text) => setForm((prev) => ({ ...prev, volume: Number(text) || 0 }))}
                     keyboardType="numeric"
                     style={styles.formInput}
                   />
                 </View>
                 <View style={[styles.formGroup, { flex: 1 }]}>
                   <Text style={styles.formLabel}>단위</Text>
-                  <View style={styles.formInput}>
-                    {/* TODO: Picker 추가 */}
-                    <Text style={styles.formInputText}>{form.unit}</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View style={styles.formRow}>
-                <View style={[styles.formGroup, { flex: 1 }]}>
-                  <Text style={styles.formLabel}>구매일</Text>
                   <TextInput
-                    value={form.purchaseDate}
-                    onChangeText={(text) => setForm((prev) => ({ ...prev, purchaseDate: text }))}
-                    placeholder="YYYY-MM-DD"
-                    style={styles.formInput}
-                    placeholderTextColor={colors.gray500}
-                  />
-                </View>
-                <View style={[styles.formGroup, { flex: 1 }]}>
-                  <Text style={styles.formLabel}>유통기한</Text>
-                  <TextInput
-                    value={form.expiryDate}
-                    onChangeText={(text) => setForm((prev) => ({ ...prev, expiryDate: text }))}
-                    placeholder="YYYY-MM-DD"
+                    value={form.unit}
+                    onChangeText={(text) => setForm((prev) => ({ ...prev, unit: text }))}
+                    placeholder="개, 팩, g"
                     style={styles.formInput}
                     placeholderTextColor={colors.gray500}
                   />
@@ -350,31 +487,83 @@ function StoragePage(): React.JSX.Element {
               </View>
 
               <View style={styles.formGroup}>
-                <Text style={styles.formLabel}>메모 (선택)</Text>
+                <Text style={styles.formLabel}>유통기한</Text>
                 <TextInput
-                  value={form.memo}
-                  onChangeText={(text) => setForm((prev) => ({ ...prev, memo: text }))}
-                  placeholder="레시피 계획, 손질 상태 등 자유롭게 기록하세요."
-                  multiline
-                  style={[styles.formInput, styles.formTextarea]}
+                  value={form.expiryDate}
+                  onChangeText={(text) => setForm((prev) => ({ ...prev, expiryDate: text }))}
+                  placeholder="YYYY-MM-DD"
+                  style={styles.formInput}
                   placeholderTextColor={colors.gray500}
                 />
               </View>
 
-              <Pressable 
-                style={styles.submitButton}
-                onPress={handleSubmit}
+              <Pressable
+                style={[styles.submitButton, submitting && styles.disabledButton]}
+                disabled={submitting}
+                onPress={handleSubmitItem}
               >
                 <Text style={styles.submitButtonText}>
-                  {editingItem ? '재료 정보 업데이트' : '재료 추가하기'}
+                  {submitting ? '저장 중…' : editingItem ? '재료 정보 업데이트' : '재료 추가하기'}
                 </Text>
               </Pressable>
             </View>
 
-            <Pressable 
-              style={styles.closeButton}
-              onPress={() => setIsModalOpen(false)}
+            <Pressable style={styles.closeButton} onPress={() => setIsItemModalOpen(false)}>
+              <Text style={styles.closeButtonText}>✕</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={isPlaceModalOpen} transparent animationType="fade" onRequestClose={() => setIsPlaceModalOpen(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>보관 장소 추가</Text>
+            <TextInput
+              value={newPlaceName}
+              onChangeText={setNewPlaceName}
+              placeholder="예) 냉장실"
+              style={[styles.formInput, { marginTop: spacing.md }]}
+              placeholderTextColor={colors.gray500}
+            />
+            <Pressable
+              style={[styles.submitButton, placeActionLoading && styles.disabledButton]}
+              disabled={placeActionLoading}
+              onPress={handleAddPlace}
             >
+              <Text style={styles.submitButtonText}>{placeActionLoading ? '추가 중…' : '추가하기'}</Text>
+            </Pressable>
+            <Pressable style={styles.closeButton} onPress={() => setIsPlaceModalOpen(false)}>
+              <Text style={styles.closeButtonText}>✕</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={isRenameModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsRenameModalOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>보관 장소 이름 변경</Text>
+            <TextInput
+              value={renamePlaceValue}
+              onChangeText={setRenamePlaceValue}
+              placeholder="새 장소 이름"
+              style={[styles.formInput, { marginTop: spacing.md }]}
+              placeholderTextColor={colors.gray500}
+            />
+            <Pressable
+              style={[styles.submitButton, placeActionLoading && styles.disabledButton]}
+              disabled={placeActionLoading}
+              onPress={handleRenamePlace}
+            >
+              <Text style={styles.submitButtonText}>{placeActionLoading ? '변경 중…' : '변경하기'}</Text>
+            </Pressable>
+            <Pressable style={styles.closeButton} onPress={() => setIsRenameModalOpen(false)}>
               <Text style={styles.closeButtonText}>✕</Text>
             </Pressable>
           </View>
@@ -409,8 +598,32 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.stone500,
   },
+  headerActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  secondaryButton: {
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: colors.stone200,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+  },
+  secondaryButtonText: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.stone800,
+  },
+  dangerOutlineButton: {
+    borderColor: colors.red200,
+  },
+  dangerOutlineButtonText: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.red600,
+  },
   addButton: {
-    alignSelf: 'flex-start',
     borderRadius: borderRadius.xl,
     borderWidth: 1,
     borderColor: colors.stone200,
@@ -421,6 +634,16 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     fontWeight: '600',
     color: colors.stone800,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  loader: {
+    marginVertical: spacing.lg,
+  },
+  errorText: {
+    color: colors.red600,
+    fontSize: fontSize.sm,
   },
   filterContainer: {
     borderRadius: borderRadius.xl + 8,
@@ -509,16 +732,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.gray900,
   },
-  memoBox: {
-    borderRadius: borderRadius.xl,
-    backgroundColor: colors.gray50,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-  },
-  memoText: {
-    fontSize: fontSize.sm,
-    color: colors.gray600,
-  },
   itemActions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -526,7 +739,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    minWidth: '30%',
+    minWidth: '40%',
     borderRadius: borderRadius.xl,
     borderWidth: 1,
     borderColor: colors.gray200,
@@ -543,12 +756,6 @@ const styles = StyleSheet.create({
   },
   deleteActionButtonText: {
     color: colors.red600,
-  },
-  findActionButton: {
-    borderColor: colors.green100,
-  },
-  findActionButtonText: {
-    color: colors.green600,
   },
   modalOverlay: {
     flex: 1,
@@ -610,14 +817,6 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.gray900,
   },
-  formInputText: {
-    fontSize: fontSize.sm,
-    color: colors.gray900,
-  },
-  formTextarea: {
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
   submitButton: {
     width: '100%',
     borderRadius: borderRadius.xl,
@@ -647,4 +846,3 @@ const styles = StyleSheet.create({
 });
 
 export default StoragePage;
-

@@ -1,10 +1,9 @@
 //기타
 import React from "react";
-import { Image, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 
 //Type
 import { CommentType } from "../../../../types/recipeTypes";
-import { Images } from "../../../../assets/images";
 
 //style
 import styles from "./cmtBox.style";
@@ -24,11 +23,10 @@ function CommentBox(props: Prop): React.JSX.Element{
                 <View key={index} style={styles.comment}>
                     <View style={styles.commentTop}>
                         <View style={styles.profileBox}>
-                            <Image source={Images.profile} style={styles.profileImg}/>
                             <Text style={styles.userId}>{item.userId}</Text>
                             <Text style={styles.time}>{item.time}</Text>
                         </View>
-                        <Image source={Images.delete} style={styles.deleteBtn}/>
+                        <Text style={styles.deleteBtn}>삭제</Text>
                     </View>
                     <Text style={styles.content}>{item.content}</Text>
                 </View>

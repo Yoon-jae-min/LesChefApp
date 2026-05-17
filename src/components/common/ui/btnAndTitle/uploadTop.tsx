@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Image, Pressable, TextInput, View, Alert, Modal, Text } from "react-native";
 import { validateText } from "@utils/validation";
 import { pickImage, ImagePickerMethod, getAvailableMethods } from "@utils/imagePicker";
-import { Images } from "../../../../assets/images";
-
 //Style
 import styles from "./uploadTop.style";
 
@@ -114,7 +112,7 @@ function UploadTop(props: Props): React.JSX.Element{
         <View>
             <View style={styles.container}>
                 <Pressable onPress={() => pressBtn("back")}>
-                    <Image style={styles.leftIcon} source={Images.back}/>
+                    <Text style={styles.leftIcon}>←</Text>
                 </Pressable>
                 <TextInput 
                     style={[styles.center, styles.inputTitle]} 
@@ -124,7 +122,7 @@ function UploadTop(props: Props): React.JSX.Element{
                     maxLength={100}
                 />
                 <Pressable onPress={() => pressBtn("upload")}>
-                    <Image style={styles.rightIcon} source={Images.upload}/>
+                    <Text style={styles.rightIcon}>↑</Text>
                 </Pressable>
             </View>
             

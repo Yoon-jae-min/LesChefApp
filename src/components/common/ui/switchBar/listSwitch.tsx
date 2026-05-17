@@ -1,12 +1,10 @@
 //기타
 import React, { useEffect, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
 //Type
 import { CategoryTotalType, CategoryValueType } from "../../../../types/commonTypes";
-import { Images } from "../../../../assets/images";
-
 //style
 import {styles, pickerStyles} from "./listSwitch.style";
 
@@ -74,7 +72,7 @@ function ListSwitch(props: Props): React.JSX.Element{
     return(
         <View style={styles.container}>
             <Pressable onPress={() => switchMenu("left", element)}>
-                <Image style={styles.arrow} source={Images.leftArrow}/>
+                <Text style={styles.arrow}>‹</Text>
             </Pressable>
             <RNPickerSelect
                 style={pickerStyles}
@@ -84,7 +82,7 @@ function ListSwitch(props: Props): React.JSX.Element{
                 items={elements.map(item => ({label: item, value: item}))}
                 onValueChange={(value) => switchMenu("center", value)}/>
             <Pressable onPress={() => switchMenu("right", element)}>
-                <Image style={styles.arrow} source={Images.rightArrow}/>
+                <Text style={styles.arrow}>›</Text>
             </Pressable>
         </View>
     )

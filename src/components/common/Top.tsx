@@ -65,14 +65,9 @@ function Top(): React.JSX.Element {
         <View style={styles.container}>
           <View style={styles.header}>
             {/* 로고 */}
-            <Pressable 
-              onPress={async () => {
-                // 로고 클릭 플래그 설정
-                await AsyncStorage.setItem('fromLogoClick', 'true');
-                (navigation as any).navigate('Main', {
-                  screen: 'Home',
-                  params: { fromLogoClick: true },
-                });
+            <Pressable
+              onPress={() => {
+                (navigation as any).navigate('Main', { screen: 'Home' });
               }}
               style={styles.logoContainer}
             >

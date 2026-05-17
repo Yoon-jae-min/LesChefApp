@@ -1,7 +1,6 @@
 //기타
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
-import { Images } from "../../../../assets/images";
+import { Pressable, Text, View } from "react-native";
 
 //style
 import styles from "./titleTop.style";
@@ -57,13 +56,11 @@ function LikeTop(props: Props): React.JSX.Element{
     return(
         <View style={styles.container}>
             <Pressable onPress={() => pressBtn("back")}>
-                <Image style={styles.leftIcon} source={Images.back}/>
+                <Text style={styles.leftIcon}>←</Text>
             </Pressable>
             <Text style={[styles.center, styles.title]}>{selectedTitle}</Text>
             <Pressable onPress={() => pressBtn("like")}>
-                {categoryValue.main === "Community" ? 
-                    <Image style={styles.rightIcon} source={Images.thumb}/>:
-                    <Image style={styles.rightIcon} source={Images.unlike}/>}
+                <Text style={styles.rightIcon}>{categoryValue.main === "Community" ? "👍" : "♡"}</Text>
             </Pressable>
         </View>
     )

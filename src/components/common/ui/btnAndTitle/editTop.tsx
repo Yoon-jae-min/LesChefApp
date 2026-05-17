@@ -1,7 +1,6 @@
 //기타
 import React from "react";
-import { Image, Pressable, Text, View } from "react-native";
-import { Images } from "../../../../assets/images";
+import { Pressable, Text, View } from "react-native";
 
 //Navigation
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -68,11 +67,11 @@ function EditTop(props: Props): React.JSX.Element{
     return(
         <View style={styles.container}>
             <Pressable onPress={() => pressBtn("back")}>
-                <Image style={styles.leftIcon} source={Images.back}/>
+                <Text style={styles.leftIcon}>←</Text>
             </Pressable>
             <Text style={[styles.center, styles.title]}>{selectedTitle}</Text>
             <Pressable onPress={() => pressBtn("edit")}>
-                <Image style={styles.rightIcon} source={Images.write}/>
+                <Text style={styles.rightIcon}>✎</Text>
             </Pressable>
         </View>
     )

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "LesChefApp",
+    "name": "LesChef",
     "slug": "leschef-app",
     "version": "0.0.1",
     "sdkVersion": "52.0.0",
@@ -8,7 +8,7 @@
     "icon": "./assets/leschef_app_icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./src/assets/image/LesChef_Logo.png",
+      "image": "./src/assets/image/LesChef_SplashLogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,12 +22,12 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/leschef_app_icon.png",
-        "backgroundColor": "#FFF3DE"
+        "backgroundColor": "#FFFFFF"
       },
       "package": "com.leschef.app"
     },
     "web": {
-      "favicon": "./src/assets/image/LesChef_Logo.png"
+      "favicon": "./src/assets/image/LesChef_AppIconMark.png"
     },
     "plugins": [
       [

@@ -59,3 +59,27 @@ export const submitRecipe = async (data: RecipeSubmitData): Promise<Response> =>
   }
   return response;
 };
+
+export const deleteRecipe = async (recipeId: string): Promise<Response> => {
+  if (!recipeId) {
+    throw new Error('레시피 ID가 필요합니다.');
+  }
+
+  const response = await authFetch(`${API_BASE_URL}/${recipeId}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    let errorMessage = `레시피 삭제 실패: ${response.status}`;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.error || errorMessage;
+    } catch {
+      const text = await response.text();
+      errorMessage = text || errorMessage;
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response;
+};

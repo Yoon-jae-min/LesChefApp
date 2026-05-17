@@ -6,7 +6,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNavigationContainerRef, NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
-import { AppInitProvider } from './src/context/AppInitContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { setTokens } from './src/api/tokenStorage';
 import { persistUserSession } from './src/lib/session';
@@ -132,11 +131,9 @@ function App(): React.JSX.Element {
           <StartupSplash onFinish={handleStartupSplashFinish} />
         ) : (
           <Provider store={store}>
-            <AppInitProvider isAppInitialized={false}>
-              <NavigationContainer ref={navigationRef}>
-                <RootNavigator />
-              </NavigationContainer>
-            </AppInitProvider>
+            <NavigationContainer ref={navigationRef}>
+              <RootNavigator />
+            </NavigationContainer>
           </Provider>
         )}
       </GestureHandlerRootView>
